@@ -103,6 +103,11 @@ class SiteAssetTests(unittest.TestCase):
         boot = (SITE / "boot.js").read_text(encoding="utf-8")
         self.assertIn('classList.add("installed")', boot)
 
+    def test_numbered_steps_let_their_text_flow_as_one_piece(self):
+        # A grid splits a sentence around its bold words and links into separate cells, so steps must not use one.
+        css = (SITE / "site.css").read_text(encoding="utf-8")
+        self.assertIsNone(re.search(r"\.steps li\s*\{[^}]*display:\s*grid", css))
+
 
 if __name__ == "__main__":
     unittest.main()

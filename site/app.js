@@ -125,7 +125,7 @@
     // so the bar says where to tap instead.
     savePref(DOWNLOADED_KEY, JSON.stringify(s));
     $("download-status").textContent = "Download started. If nothing happens, allow downloads for this site.";
-    $("save-status").textContent = "Downloaded. In Settings, tap Quiet DNS under Downloaded Profile.";
+    $("save-status").textContent = "Downloaded. Next, open Settings, tap General, then VPN & Device Management.";
     render();
   }
 

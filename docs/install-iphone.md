@@ -6,7 +6,7 @@ Quiet DNS works through one configuration profile. It shows up as one entry, nam
 
 1. Download the profile from the website, or AirDrop the `.mobileconfig` file to your iPhone.
 2. When Safari asks to download a configuration profile, tap **Allow**.
-3. Open **Settings**. Under **Downloaded Profile**, tap **Quiet DNS**.
+3. Open **Settings**, tap **General**, then tap **VPN & Device Management**. **Quiet DNS** is listed there.
 4. Tap **Install**, enter your passcode, tap **Install** again, then tap **Done**.
 5. Check it worked. **Settings › General › VPN & Device Management** should list **Quiet DNS**.
 

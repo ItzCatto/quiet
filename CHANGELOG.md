@@ -6,14 +6,14 @@
 - **"The profile version is not supported" on iPhone.** Every profile now uses PayloadVersion 1, at the top level and in the DNS payload. Apple's examples and WireGuard's documentation use 1, and iPhone rejected the Unix time we had been writing. A profile with the same PayloadIdentifier overwrites the one installed before it, so a new download still replaces the Quiet DNS entry. The command line and the website build the same profile.
 - **Website builds and the command line no longer take a version option.** The version is fixed, so nothing can produce a version iPhone rejects.
 - **The Settings link.** A web page can't open Settings on iPhone, so the Open Settings link has gone. After Save, the bar says where to tap.
-- **Install steps.** The steps say to tap Quiet DNS under Downloaded Profile, as Settings shows it.
+- **Install steps.** Three steps: download the profile, open Settings, tap General, then VPN & Device Management, and install. Step text no longer splits into fragments on the page.
 - **The switch name.** Screen readers announce the switch as Quiet DNS, on or off, instead of the status sentence.
 - **Download links last longer.** A download link stays valid for five minutes, so a slow tap on Allow still works.
 - **Browser tab titles.** Each screen sets its own title, such as "Filters – Quiet DNS".
 - **Download failures.** If a download doesn't start, the page says to open it in Safari.
 
 ### Added
-- **Install pictures.** The Install page has four numbered steps, with pictures from an iPhone's Settings. The pictures have their photo details removed.
+- **Install pictures.** The Install page has three numbered steps, with two pictures from an iPhone's Settings. The pictures have their photo details removed.
 - **Help page.** Short answers to common questions: ads that still show, the "Not Signed" label, local devices, changing the filter, and removing Quiet DNS.
 - **First-run steps.** The dashboard shows three steps until the first profile is downloaded.
 - **Privacy and Help in a browser tab.** Both open from the home page without the Home Screen app.

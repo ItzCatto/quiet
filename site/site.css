@@ -116,7 +116,9 @@ body.installed[data-screen="home"] .bar { display: none; }
 .fine { color: var(--text-2); font-size: .875rem; line-height: 1.45; text-wrap: pretty; }
 .field-label { font: 600 .9375rem/1.2 var(--font); color: var(--text-2); }
 .section-title { font: 700 1.25rem/1.3 var(--font); letter-spacing: -.01em; }
-.textlink { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+/* A link inside a sentence stays inline, so it can't stretch the line. A link on its own line gets a full tap target. */
+.textlink { font-weight: 600; }
+.link-action { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 
 /* Browser home page. The dashboard only shows in the installed app. */
 body.installed .landing { display: none; }
@@ -326,15 +328,19 @@ body.hide-keys code.key { display: none; }
 
 /* Steps: numbered only because they really are in order */
 .steps { display: grid; gap: 16px; counter-reset: step; }
+/* The text of a step flows as normal text, so bold words and links stay inside their sentence.
+   The number hangs in the margin. Pictures and paragraphs inside a step stack below its text. */
 .steps li {
   counter-increment: step;
-  display: grid;
-  grid-template-columns: 1.75rem minmax(0, 1fr);
-  gap: 12px;
-  align-items: baseline;
+  position: relative;
+  padding-left: 2rem;
   line-height: 1.5;
 }
+.steps li > * + * { margin-top: 12px; }
 .steps li::before {
+  position: absolute;
+  top: 0;
+  left: 0;
   content: counter(step);
   color: var(--on);
   font: 700 1rem/1.5 var(--font);
@@ -342,22 +348,8 @@ body.hide-keys code.key { display: none; }
 }
 .steps strong { font-weight: 600; }
 
-/* Install steps with pictures: the number sits beside the title, and the pictures follow the text */
+/* The install steps have more room between them, for their pictures */
 .steps-tutorial { gap: 36px; }
-.steps-tutorial li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 12px;
-  padding-left: 2.25rem;
-  position: relative;
-}
-.steps-tutorial li::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font: 700 1.1875rem/1.3 var(--font);
-}
-.step-title { font: 700 1.1875rem/1.3 var(--font); letter-spacing: -.01em; }
 .shots { display: flex; flex-wrap: wrap; gap: 20px; }
 .shot { display: grid; gap: 8px; width: min(100%, 15rem); }
 .shot img {
@@ -448,7 +440,8 @@ body.hide-keys code.key { display: none; }
   background: var(--raised);
   color: var(--text-2);
   font: 400 .8125rem/1.6 var(--mono);
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* Save bar: only in the installed app, pinned to the bottom */

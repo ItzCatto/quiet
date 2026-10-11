@@ -210,7 +210,7 @@
         <button class="btn" id="download" type="button">Download profile</button>
         <p class="note" id="next-step"></p>
         <p class="status-line" id="download-status" role="status" aria-live="polite"></p>
-        <p class="note"><a class="textlink" href="#install">Show me how to install it</a></p>
+        <p class="note"><a class="link-action" href="#install">Show me how to install it</a></p>
       </div>
       <div>
         <details class="more">
@@ -224,41 +224,30 @@
       </div>
     </section>
 
-    <!-- Install: four steps, with pictures from an iPhone -->
+    <!-- Install: three steps, with pictures from an iPhone -->
     <section class="screen" id="screen-install" aria-labelledby="title-install" hidden>
       <h1 class="title" id="title-install" tabindex="-1">Install Quiet DNS</h1>
-      <p class="lede">Four steps, all on your iPhone. You only need them when you first set up, or after you change a setting.</p>
+      <p class="lede">Three steps, all on your iPhone. You only need them when you first set up, or after you change a setting.</p>
       <ol class="steps steps-tutorial">
         <li>
-          <h2 class="step-title">Download the profile</h2>
-          <p>Go to <a class="textlink" href="#profile">Profile</a> and tap <strong>Download profile</strong>. If Safari asks, tap <strong>Allow</strong>.</p>
+          <p>Download the profile. Go to <a class="textlink" href="#profile">Profile</a> and tap <strong>Download profile</strong>. If Safari asks, tap <strong>Allow</strong>.</p>
         </li>
         <li>
-          <h2 class="step-title">Open Settings</h2>
-          <p>Under <strong>Downloaded Profile</strong>, tap <strong>Quiet DNS</strong>.</p>
-          <figure class="shot">
-            <img src="tutorial/profile-downloaded.jpg" width="670" height="794" loading="lazy" alt="The Settings app with Quiet DNS listed under Downloaded Profile.">
-            <figcaption>Settings, under Downloaded Profile.</figcaption>
-          </figure>
-        </li>
-        <li>
-          <h2 class="step-title">Install it</h2>
-          <p>Tap <strong>Install</strong>, enter your passcode, then tap <strong>Install</strong> again. Tap <strong>Done</strong>.</p>
-          <p class="note">iPhone may say the profile is not signed. This profile isn't signed with a certificate, so that label is expected.</p>
-        </li>
-        <li>
-          <h2 class="step-title">Check it</h2>
-          <p>Open Settings, tap <strong>General</strong>, then tap <strong>VPN &amp; Device Management</strong>. Quiet DNS is listed there.</p>
+          <p>Open <strong>Settings</strong>, tap <strong>General</strong>, then tap <strong>VPN &amp; Device Management</strong>. Quiet DNS is listed there.</p>
           <div class="shots">
             <figure class="shot">
-              <img src="tutorial/settings-general.jpg" width="697" height="1061" loading="lazy" alt="The Settings app with General at the top of the list.">
-              <figcaption>Settings, then General.</figcaption>
+              <img src="tutorial/settings-general.jpg" width="697" height="1061" loading="lazy" alt="The Settings app with General in the list.">
+              <figcaption>Settings: tap General.</figcaption>
             </figure>
             <figure class="shot">
               <img src="tutorial/vpn-device-management.jpg" width="678" height="831" loading="lazy" alt="The General page with VPN and Device Management highlighted.">
-              <figcaption>General, then VPN &amp; Device Management.</figcaption>
+              <figcaption>General: tap VPN &amp; Device Management.</figcaption>
             </figure>
           </div>
+        </li>
+        <li>
+          <p>Tap <strong>Install</strong>, enter your passcode, then tap <strong>Install</strong> again. Tap <strong>Done</strong>.</p>
+          <p class="note">iPhone may say the profile is not signed. This profile isn't signed with a certificate, so that label is expected.</p>
         </li>
       </ol>
 
