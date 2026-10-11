@@ -3,8 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <title>Quiet DNS</title>
-<meta name="description" content="Encrypted DNS with ad and tracker blocking for iPhone. Add it to your Home Screen, download a profile, and install it.">
+<meta name="description" content="Ad and tracker blocking for your whole iPhone. Quiet DNS sets up encrypted DNS through AdGuard with a profile you can remove any time.">
+<meta property="og:title" content="Quiet DNS">
+<meta property="og:description" content="Ad and tracker blocking for your whole iPhone, with a profile you can remove any time.">
+<meta property="og:type" content="website">
 <meta name="theme-color" content="#F5F6F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0C0E11" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,15 +21,10 @@
 <link rel="stylesheet" href="site.css">
 </head>
 <body data-screen="home" class="hide-keys">
-<script>
-  // Mark the installed app before the first paint, so the right home screen shows at once.
-  if (window.navigator.standalone === true || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)) {
-    document.body.classList.add("installed");
-  }
-</script>
+<script src="boot.js"></script>
 
 <div class="wrap">
-  <noscript><p class="note">Quiet DNS needs JavaScript to build the profile.</p></noscript>
+  <noscript><p class="note">Quiet DNS needs JavaScript to build the profile. Turn JavaScript on in Safari settings, then reload this page.</p></noscript>
 
   <header class="bar">
     <a class="back" href="#home">Back</a>
@@ -34,23 +34,52 @@
   <main>
 
     <!-- Home: the home page in a browser, the dashboard in the installed app. -->
-    <section class="screen" id="screen-home" aria-labelledby="title-home">
+    <section class="screen" id="screen-home">
 
       <div class="landing">
         <div class="hero">
-          <h1 class="hero-title" id="title-landing" tabindex="-1">Block ads and trackers on your iPhone</h1>
-          <p class="lede">Encrypted DNS through AdGuard. Set it up once with a profile you can remove any time.</p>
-          <a class="btn" href="#setup">Set up</a>
+          <h1 class="hero-title" id="title-landing" tabindex="-1">Ad and tracker blocking for your whole iPhone</h1>
+          <p class="lede">Quiet DNS changes where your iPhone looks up website names. Ads and trackers get no answer, so they don't load, in Safari and most other apps.</p>
+          <a class="btn" href="#setup">Get started</a>
         </div>
-        <p class="fine">Not affiliated with AdGuard or Proton. Not yet tested on an iPhone.</p>
+
+        <ul class="benefits">
+          <li>
+            <h2>Blocks ads and trackers</h2>
+            <p>Ad and tracking websites get no answer, so they never load on your phone.</p>
+          </li>
+          <li>
+            <h2>Keeps lookups from your network</h2>
+            <p>Your Wi-Fi network or carrier can't see which websites you look up. AdGuard DNS can.</p>
+          </li>
+          <li>
+            <h2>Easy to undo</h2>
+            <p>Remove the profile in Settings and your iPhone goes back to its own DNS.</p>
+          </li>
+        </ul>
+
+        <p class="fine">Quiet DNS is an independent project. It is not affiliated with AdGuard or Proton.</p>
+        <nav class="fine-links" aria-label="More information">
+          <a href="#privacy">Privacy</a>
+          <a href="#help">Help</a>
+        </nav>
       </div>
 
       <div class="dashboard">
         <h1 class="brand-title" id="title-home" tabindex="-1"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12C4 5 7 5 9.5 12S15 19 17.5 12 22 5 22.5 12"/></svg>Quiet DNS</h1>
 
+        <section class="start" id="start" aria-labelledby="start-title">
+          <h2 class="start-title" id="start-title">Set up in three steps</h2>
+          <ol class="steps">
+            <li>Choose a filter below.</li>
+            <li>Tap <strong>Save</strong> at the bottom of the screen.</li>
+            <li>Install the profile in Settings. <a class="textlink" href="#install">Show me how</a></li>
+          </ol>
+        </section>
+
         <section class="power" id="widget" aria-labelledby="w-title">
           <label class="switch-big">
-            <input class="switch-input" type="checkbox" id="enabled" role="switch" aria-labelledby="w-title" aria-describedby="w-sub" checked>
+            <input class="switch-input" type="checkbox" id="enabled" role="switch" aria-label="Quiet DNS" aria-describedby="w-title w-sub" checked>
             <span class="track" aria-hidden="true"><span class="track-off">Off</span><span class="track-on">On</span><span class="knob"></span></span>
           </label>
           <h2 class="status-title" id="w-title">Quiet DNS is on</h2>
@@ -73,6 +102,7 @@
             <li><a href="#connection">Connection <span class="value" id="v-connection"></span></a></li>
             <li><a href="#profile">Profile</a></li>
             <li><a href="#install">Install</a></li>
+            <li><a href="#help">Help</a></li>
             <li><a href="#privacy">Privacy</a></li>
             <li><a href="#settings">Settings</a></li>
           </ul>
@@ -81,26 +111,27 @@
 
     </section>
 
-    <!-- Setup: add the site to the Home Screen -->
+    <!-- Setup: add the site to the Home Screen. Open in Safari. -->
     <section class="screen" id="screen-setup" aria-labelledby="title-setup" hidden>
-      <h1 class="title" id="title-setup" tabindex="-1">Add to Home Screen</h1>
-      <p class="lede">Do this once, in Safari. Then open Quiet DNS from your Home Screen.</p>
+      <h1 class="title" id="title-setup" tabindex="-1">Add Quiet DNS to your Home Screen</h1>
+      <p class="lede">Do this once, in Safari. Quiet DNS then opens from its own icon, like an app.</p>
       <ol class="steps">
         <li>Tap <strong>Share</strong>, then <strong>View More</strong>.</li>
         <li>Tap <strong>Add to Home Screen</strong>.</li>
         <li>Turn on <strong>Open as Web App</strong>, then tap <strong>Add</strong>.</li>
       </ol>
-      <p class="note">The dashboard only opens from the Home Screen.</p>
+      <p class="note">The settings only open from the Quiet DNS icon on your Home Screen.</p>
     </section>
 
     <!-- Filters -->
     <section class="screen" id="screen-filters" aria-labelledby="title-filters" hidden>
       <h1 class="title" id="title-filters" tabindex="-1">Filters</h1>
+      <p class="lede">Choose what Quiet DNS blocks. After a change, tap Save, then install the new profile.</p>
       <div class="opts">
         <label class="opt">
           <span class="opt-main">
             <span class="opt-label" id="l-block_ads">Block ads and trackers</span>
-            <span class="opt-desc">Also blocks phishing sites.</span>
+            <span class="opt-desc">Ad and tracking websites get no answer. Also blocks known phishing sites.</span>
             <span class="opt-note" id="note-block_ads" hidden>Stays on while adult sites are blocked.</span>
             <code class="key">ServerURL</code>
           </span>
@@ -112,7 +143,7 @@
         <label class="opt">
           <span class="opt-main">
             <span class="opt-label" id="l-block_adult">Block adult sites</span>
-            <span class="opt-desc">Also turns on safe search.</span>
+            <span class="opt-desc">Blocks adult websites and turns on safe search.</span>
             <code class="key">ServerURL</code>
           </span>
           <span class="switch-wrap">
@@ -126,11 +157,12 @@
     <!-- Connection -->
     <section class="screen" id="screen-connection" aria-labelledby="title-connection" hidden>
       <h1 class="title" id="title-connection" tabindex="-1">Connection</h1>
+      <p class="lede">Most people never need to change these.</p>
       <div class="opts">
         <label class="opt">
           <span class="opt-main">
             <span class="opt-label" id="l-use_tls">Use DNS over TLS</span>
-            <span class="opt-desc">Port 853 instead of 443. Some networks block it.</span>
+            <span class="opt-desc">A different connection type, on port 853 instead of 443. Try it only if the default doesn't work on your network.</span>
             <code class="key">DNSProtocol</code>
           </span>
           <span class="switch-wrap">
@@ -141,7 +173,7 @@
         <label class="opt">
           <span class="opt-main">
             <span class="opt-label" id="l-bootstrap_ips">Include AdGuard's IP addresses</span>
-            <span class="opt-desc">Connects without a DNS lookup first.</span>
+            <span class="opt-desc">Connects to AdGuard's addresses directly, so the first lookup doesn't need another.</span>
             <code class="key">ServerAddresses</code>
           </span>
           <span class="switch-wrap">
@@ -152,7 +184,7 @@
         <label class="opt">
           <span class="opt-main">
             <span class="opt-label" id="l-failover">Fall back to your network's DNS</span>
-            <span class="opt-desc">Unencrypted if AdGuard can't be reached. Needs iOS or macOS 26 or later.</span>
+            <span class="opt-desc">If AdGuard DNS can't be reached, use your network's DNS. Those lookups aren't encrypted. Needs iOS or macOS 26 or later.</span>
             <code class="key">AllowFailover</code>
           </span>
           <span class="switch-wrap">
@@ -173,11 +205,12 @@
         <div><dt>Protocol</dt><dd id="fact-proto"></dd></div>
         <div><dt>Addresses</dt><dd id="fact-ips"></dd></div>
       </dl>
-      <p class="callout" id="warn" hidden>Fallback is on. If AdGuard can't be reached, lookups aren't encrypted.</p>
+      <p class="callout" id="warn" hidden>Fallback is on. If AdGuard DNS can't be reached, lookups aren't encrypted.</p>
       <div class="actions">
         <button class="btn" id="download" type="button">Download profile</button>
         <p class="note" id="next-step"></p>
         <p class="status-line" id="download-status" role="status" aria-live="polite"></p>
+        <p class="note"><a class="textlink" href="#install">Show me how to install it</a></p>
       </div>
       <div>
         <details class="more">
@@ -191,25 +224,91 @@
       </div>
     </section>
 
-    <!-- Install -->
+    <!-- Install: four steps, with pictures from an iPhone -->
     <section class="screen" id="screen-install" aria-labelledby="title-install" hidden>
-      <h1 class="title" id="title-install" tabindex="-1">Install</h1>
-      <ol class="steps">
-        <li>Download the profile. If Safari asks, tap <strong>Allow</strong>.</li>
-        <li>Open <strong>Settings</strong> and tap <strong>Profile Downloaded</strong>.</li>
-        <li>Tap <strong>Install</strong>, enter your passcode, then tap <strong>Install</strong> again.</li>
+      <h1 class="title" id="title-install" tabindex="-1">Install Quiet DNS</h1>
+      <p class="lede">Four steps, all on your iPhone. You only need them when you first set up, or after you change a setting.</p>
+      <ol class="steps steps-tutorial">
+        <li>
+          <h2 class="step-title">Download the profile</h2>
+          <p>Go to <a class="textlink" href="#profile">Profile</a> and tap <strong>Download profile</strong>. If Safari asks, tap <strong>Allow</strong>.</p>
+        </li>
+        <li>
+          <h2 class="step-title">Open Settings</h2>
+          <p>Under <strong>Downloaded Profile</strong>, tap <strong>Quiet DNS</strong>.</p>
+          <figure class="shot">
+            <img src="tutorial/profile-downloaded.jpg" width="670" height="794" loading="lazy" alt="The Settings app with Quiet DNS listed under Downloaded Profile.">
+            <figcaption>Settings, under Downloaded Profile.</figcaption>
+          </figure>
+        </li>
+        <li>
+          <h2 class="step-title">Install it</h2>
+          <p>Tap <strong>Install</strong>, enter your passcode, then tap <strong>Install</strong> again. Tap <strong>Done</strong>.</p>
+          <p class="note">iPhone may say the profile is not signed. This profile isn't signed with a certificate, so that label is expected.</p>
+        </li>
+        <li>
+          <h2 class="step-title">Check it</h2>
+          <p>Open Settings, tap <strong>General</strong>, then tap <strong>VPN &amp; Device Management</strong>. Quiet DNS is listed there.</p>
+          <div class="shots">
+            <figure class="shot">
+              <img src="tutorial/settings-general.jpg" width="697" height="1061" loading="lazy" alt="The Settings app with General at the top of the list.">
+              <figcaption>Settings, then General.</figcaption>
+            </figure>
+            <figure class="shot">
+              <img src="tutorial/vpn-device-management.jpg" width="678" height="831" loading="lazy" alt="The General page with VPN and Device Management highlighted.">
+              <figcaption>General, then VPN &amp; Device Management.</figcaption>
+            </figure>
+          </div>
+        </li>
       </ol>
-      <dl class="notes">
-        <div><dt>Check it</dt><dd>Settings, General, VPN &amp; Device Management lists Quiet DNS.</dd></div>
-        <div><dt>Change a setting</dt><dd>Save and install again. There should still be one entry. If there are two, remove both, then install once.</dd></div>
-        <div><dt>Pause</dt><dd>Switch Quiet DNS off, save and install. Experimental, so check your DNS afterwards.</dd></div>
-        <div><dt>Remove</dt><dd>In the same place, tap Quiet DNS, then Remove Profile. This always works.</dd></div>
-      </dl>
+
+      <div>
+        <h2 class="section-title">Later</h2>
+        <dl class="notes">
+          <div><dt>Change a setting</dt><dd>Change it on the Filters or Connection page, tap Save, then install the new profile. There should still be one Quiet DNS entry. If there are two, remove both, then install once.</dd></div>
+          <div><dt>Pause</dt><dd>Switch Quiet DNS off, then install the paused profile. Pausing is experimental, so check your DNS afterwards.</dd></div>
+          <div><dt>Remove</dt><dd>Go to Settings, General, VPN &amp; Device Management, tap Quiet DNS, then tap Remove Profile. Your iPhone goes back to its own DNS.</dd></div>
+        </dl>
+      </div>
     </section>
 
-    <!-- Settings -->
+    <!-- Help -->
+    <section class="screen" id="screen-help" aria-labelledby="title-help" hidden>
+      <h1 class="title" id="title-help" tabindex="-1">Help</h1>
+      <p class="lede">Answers to the questions people ask most.</p>
+      <div>
+        <details class="more">
+          <summary>Some ads still show</summary>
+          <p>Ads served from the same website as the content, such as ads inside a video, can't be blocked by DNS. Most other ads and trackers are blocked.</p>
+        </details>
+        <details class="more">
+          <summary>iPhone says the profile is not signed</summary>
+          <p>This profile isn't signed with a certificate, so iPhone shows that label. It's expected, and it doesn't change what Quiet DNS does.</p>
+        </details>
+        <details class="more">
+          <summary>Devices on my home network stop resolving</summary>
+          <p>While Quiet DNS is on, AdGuard DNS can't see your home network, so names for local devices may stop working. Use their IP addresses instead, or pause Quiet DNS.</p>
+        </details>
+        <details class="more">
+          <summary>Can I change the filter without removing anything?</summary>
+          <p>Yes. Change the filter, tap Save, then install the new profile. You don't need to remove the old one first.</p>
+        </details>
+        <details class="more">
+          <summary>How do I know it's working?</summary>
+          <p>This website can't check your DNS for you. If Quiet DNS is listed under VPN &amp; Device Management, the profile is installed. Ads should stop showing on most sites.</p>
+        </details>
+        <details class="more">
+          <summary>How do I remove Quiet DNS?</summary>
+          <p>Go to Settings, General, VPN &amp; Device Management. Tap Quiet DNS, then tap Remove Profile.</p>
+        </details>
+      </div>
+      <p class="note">Still stuck? The <a class="textlink" href="#install">Install</a> page has the steps with pictures.</p>
+    </section>
+
+    <!-- Settings: how this website looks. Nothing here changes the iPhone. -->
     <section class="screen" id="screen-settings" aria-labelledby="title-settings" hidden>
       <h1 class="title" id="title-settings" tabindex="-1">Settings</h1>
+      <p class="lede">These change how this website looks and reads. They don't change your iPhone.</p>
       <div class="field">
         <h2 class="field-label" id="appearance-title">Appearance</h2>
         <div class="choices" role="radiogroup" aria-labelledby="appearance-title">
@@ -217,12 +316,13 @@
           <label><input type="radio" name="theme" value="light"><span>Light</span></label>
           <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
         </div>
+        <p class="note">System follows the appearance setting on your iPhone.</p>
       </div>
       <div class="opts">
         <label class="opt">
           <span class="opt-main">
             <span class="opt-label" id="l-show_keys">Show profile keys</span>
-            <span class="opt-desc">Adds the iPhone key name under each setting.</span>
+            <span class="opt-desc">Shows the iPhone profile key behind each setting. Useful if you want to check the profile yourself.</span>
           </span>
           <span class="switch-wrap">
             <input class="switch-input" type="checkbox" id="show_keys" role="switch" aria-labelledby="l-show_keys">
@@ -235,11 +335,12 @@
     <!-- Privacy -->
     <section class="screen" id="screen-privacy" aria-labelledby="title-privacy" hidden>
       <h1 class="title" id="title-privacy" tabindex="-1">Privacy</h1>
+      <p class="lede">What Quiet DNS and this website can see.</p>
       <ul class="points">
-        <li>Your network can't see the sites you look up, but AdGuard DNS can. Read its privacy policy first.</li>
+        <li><strong>Your network can't see the sites you look up</strong> while Quiet DNS is on. AdGuard DNS can. Read AdGuard DNS's privacy policy on its website.</li>
         <li>While Quiet DNS is paused, your network's DNS sees your lookups again.</li>
-        <li>The profile is built in your browser. This site has no accounts or analytics.</li>
-        <li>This site keeps your theme and last saved settings in this browser only.</li>
+        <li>The profile is built in your browser. This website has no accounts, no analytics and no ads.</li>
+        <li>This website keeps only your appearance choice, your profile-key choice and the settings you last downloaded. They stay in this browser.</li>
       </ul>
     </section>
 

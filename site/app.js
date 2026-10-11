@@ -1,18 +1,22 @@
-/* Quiet DNS website: screens, settings and the profile download. Depends on core.js. */
+/* Quiet DNS website: screens, settings and the profile download. Depends on core.js and boot.js. */
 (function () {
   var TOGGLES = ["enabled", "block_ads", "block_adult", "use_tls", "bootstrap_ips", "failover"];
-  var SCREENS = ["home", "setup", "filters", "connection", "profile", "install", "privacy", "settings"];
+  var SCREENS = ["home", "setup", "filters", "connection", "profile", "install", "help", "privacy", "settings"];
+  // A browser tab can open these. The other screens need the installed app, so they go to the setup page.
+  var BROWSER_SCREENS = ["home", "setup", "privacy", "help"];
   var THEME_KEY = "quiet.theme";
   var KEYS_KEY = "quiet.showKeys";
   // The settings last downloaded as a profile. The save bar compares the current settings with them.
   var DOWNLOADED_KEY = "quiet.downloaded";
   var FILTER_LABEL = {"default": "Standard", "family": "Family", "unfiltered": "Unfiltered"};
   var FILTER_NOTE = {
-    "default": "Blocks ads and trackers.",
-    "family": "Also blocks adult sites. Safe search is on.",
+    "default": "Blocks ads, trackers and phishing sites.",
+    "family": "Also blocks adult websites and turns on safe search.",
     "unfiltered": "Nothing is blocked. Lookups are still encrypted."
   };
   var state = {enabled: true, block_ads: true, block_adult: false, use_tls: false, bootstrap_ips: true, failover: false};
+  // Set by boot.js before this file runs.
+  var installed = document.body.classList.contains("installed");
 
   function $(id) { return document.getElementById(id); }
 
@@ -35,11 +39,27 @@
     return "Quiet-DNS-" + base + ".mobileconfig";
   }
 
+  // Website preferences. They are remembered in this browser only, and never touch the profile.
+  // Storage can be blocked (private windows, some previews), so every read and write is guarded.
+  function readPref(key, fallback) {
+    try {
+      var value = window.localStorage.getItem(key);
+      return value === null ? fallback : value;
+    } catch (err) {
+      return fallback;
+    }
+  }
+
+  function savePref(key, value) {
+    try { window.localStorage.setItem(key, value); } catch (err) { /* keep working without memory */ }
+  }
+
   function render() {
     var s = normalized();
     var key = QuietCore.resolverKey(s);
     var r = QuietCore.RESOLVERS[key];
     var transport = s.use_tls ? "TLS" : "HTTPS";
+    var downloaded = readPref(DOWNLOADED_KEY, "");
 
     TOGGLES.forEach(function (id) { $(id).checked = s[id]; });
     $("block_ads").disabled = state.block_adult;
@@ -68,16 +88,19 @@
     $("warn").hidden = !(s.enabled && s.failover);
     $("download").textContent = s.enabled ? "Download profile" : "Download paused profile";
     $("next-step").textContent = s.enabled
-      ? "Installing updates the Quiet DNS entry already on your iPhone."
+      ? "Installing replaces any Quiet DNS profile already on your iPhone, so you won't end up with two."
       : "Installing this pauses Quiet DNS. Install the normal profile to turn it back on.";
     $("consent").textContent = QuietCore.consentText(s);
     $("xml").textContent = QuietCore.profileXML(s);
 
     // Save bar: unsaved until the profile is downloaded with these settings
-    var unsaved = readPref(DOWNLOADED_KEY, "") !== JSON.stringify(s);
+    var unsaved = downloaded !== JSON.stringify(s);
     $("savebar-text").textContent = unsaved ? "Unsaved" : "Saved";
     $("savebar-text").classList.toggle("is-unsaved", unsaved);
     $("save").disabled = !unsaved;
+
+    // First run: the three-step card shows until a profile has been downloaded once
+    $("start").hidden = downloaded !== "";
   }
 
   function download() {
@@ -92,26 +115,27 @@
       document.body.appendChild(link);
       link.click();
       link.remove();
-      setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+      // Keep the link valid for a while, so a slow tap on Allow still works.
+      setTimeout(function () { URL.revokeObjectURL(url); }, 5 * 60 * 1000);
     } catch (err) {
-      $("download-status").textContent = "The download didn't start. Try another browser.";
+      $("download-status").textContent = "The download didn't start. Open this page in Safari and try again.";
       return;
     }
     // Remember what was downloaded, so the save bar shows Saved. A web page can't open Settings on iPhone,
     // so the bar says where to tap instead.
     savePref(DOWNLOADED_KEY, JSON.stringify(s));
     $("download-status").textContent = "Download started. If nothing happens, allow downloads for this site.";
-    $("save-status").textContent = "Downloaded. Open Settings and tap Profile Downloaded.";
+    $("save-status").textContent = "Downloaded. In Settings, tap Quiet DNS under Downloaded Profile.";
     render();
   }
 
   // Screens are chosen by the URL hash, so every row is a real link that works without a page reload.
-  // In a browser tab only the home page and the setup page open. The app screens open from the Home Screen,
-  // so any other link goes to the setup page and the address bar shows #setup.
+  // In a browser tab only the pages in BROWSER_SCREENS open. The rest open from the Home Screen, so any other
+  // link goes to the setup page and the address bar shows #setup.
   function current() {
     var name = (window.location.hash || "").replace(/^#/, "");
     if (SCREENS.indexOf(name) < 0) { name = "home"; }
-    if (!installed && name !== "home" && name !== "setup") {
+    if (!installed && BROWSER_SCREENS.indexOf(name) < 0) {
       name = "setup";
       if (window.history && window.history.replaceState) { window.history.replaceState(null, "", "#setup"); }
     }
@@ -121,10 +145,22 @@
   function show(name, moveFocus) {
     SCREENS.forEach(function (id) { $("screen-" + id).hidden = id !== name; });
     document.body.setAttribute("data-screen", name);
+
+    // The browser tab title follows the screen, so each page has its own name in history and tabs.
+    var titleId = name === "home" && !installed ? "title-landing" : "title-" + name;
+    var heading = $(titleId);
+    var text = heading.textContent.trim();
+    if (name === "home") {
+      document.title = "Quiet DNS";
+    } else if (text.indexOf("Quiet DNS") >= 0) {
+      document.title = text;
+    } else {
+      document.title = text + " – Quiet DNS";
+    }
+
     if (moveFocus) {
       // Move focus to the new screen's title, so screen readers announce the change.
-      var title = name === "home" && !installed ? "title-landing" : "title-" + name;
-      $(title).focus({preventScroll: true});
+      heading.focus({preventScroll: true});
       window.scrollTo(0, 0);
     }
   }
@@ -158,21 +194,6 @@
   $("download").addEventListener("click", download);
   $("save").addEventListener("click", download);
 
-  // Website preferences. They are remembered in this browser only, and never touch the profile.
-  // Storage can be blocked (private windows, some previews), so every read and write is guarded.
-  function readPref(key, fallback) {
-    try {
-      var value = window.localStorage.getItem(key);
-      return value === null ? fallback : value;
-    } catch (err) {
-      return fallback;
-    }
-  }
-
-  function savePref(key, value) {
-    try { window.localStorage.setItem(key, value); } catch (err) { /* keep working without memory */ }
-  }
-
   function applyTheme(value) {
     var root = document.documentElement;
     if (value === "light" || value === "dark") {
@@ -204,12 +225,6 @@
 
   applyTheme(readPref(THEME_KEY, "dark"));
   applyKeys(readPref(KEYS_KEY, "0") === "1");
-
-  // The app is installed when it opens from the Home Screen. iOS sets navigator.standalone;
-  // other browsers use the display-mode media query.
-  var installed = window.navigator.standalone === true ||
-    (window.matchMedia ? window.matchMedia("(display-mode: standalone)").matches : false);
-  document.body.classList.toggle("installed", installed);
 
   render();
   show(current(), false);

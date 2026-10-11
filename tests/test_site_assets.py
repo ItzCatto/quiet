@@ -66,6 +66,43 @@ class SiteAssetTests(unittest.TestCase):
         self.assertNotIn("@import", css)
         self.assertIsNone(re.search(r"url\(\s*['\"]?https?:", css))
 
+    def test_page_runs_under_a_strict_policy_with_no_inline_scripts(self):
+        self.assertIn('http-equiv="Content-Security-Policy"', self.html)
+        self.assertIn("default-src 'self'", self.html)
+        self.assertIn("script-src 'self'", self.html)
+        self.assertIsNone(re.search(r"<script(?![^>]*\bsrc=)", self.html), "inline script found")
+
+    def test_every_picture_has_a_file_on_disk_and_alt_text(self):
+        pictures = re.findall(r"<img\b[^>]*>", self.html)
+        self.assertTrue(pictures)
+        for tag in pictures:
+            src = re.search(r'\bsrc="([^"]+)"', tag).group(1)
+            alt = re.search(r'\balt="([^"]*)"', tag)
+            with self.subTest(src=src):
+                self.assertTrue((SITE / src).exists(), src)
+                self.assertTrue(alt and alt.group(1).strip(), "missing alt text")
+
+    def test_pictures_carry_no_photo_metadata(self):
+        # Screenshots can carry dates and device details in their EXIF block, so the copies on the site have none.
+        pictures = list((SITE / "tutorial").glob("*.jpg"))
+        self.assertTrue(pictures)
+        for path in pictures:
+            with self.subTest(path=path.name):
+                self.assertNotIn(b"Exif\x00\x00", path.read_bytes())
+
+    def test_the_page_never_links_to_settings_by_url(self):
+        # Safari doesn't open a Settings screen from a web link, so the page gives the steps instead.
+        self.assertIsNone(re.search(r"prefs:", self.html, re.IGNORECASE))
+
+    def test_each_screen_sets_its_own_browser_tab_title(self):
+        js = (SITE / "app.js").read_text(encoding="utf-8")
+        self.assertIn("document.title", js)
+
+    def test_installed_check_runs_before_the_page_is_drawn(self):
+        self.assertIn('<script src="boot.js"></script>', self.html)
+        boot = (SITE / "boot.js").read_text(encoding="utf-8")
+        self.assertIn('classList.add("installed")', boot)
+
 
 if __name__ == "__main__":
     unittest.main()

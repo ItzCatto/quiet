@@ -6,7 +6,7 @@ Quiet DNS works through one configuration profile. It shows up as one entry, nam
 
 1. Download the profile from the website, or AirDrop the `.mobileconfig` file to your iPhone.
 2. When Safari asks to download a configuration profile, tap **Allow**.
-3. Open **Settings** and tap **Profile Downloaded** near the top.
+3. Open **Settings**. Under **Downloaded Profile**, tap **Quiet DNS**.
 4. Tap **Install**, enter your passcode, tap **Install** again, then tap **Done**.
 5. Check it worked. **Settings › General › VPN & Device Management** should list **Quiet DNS**.
 
@@ -48,5 +48,5 @@ Removing the profile turns Quiet DNS off completely, and iPhone goes back to you
 - **Lookups still go through AdGuard after pausing.** The paused profile may not work on your iPhone yet. Remove the profile to stop Quiet DNS.
 - **No internet after installing.** Remove the profile. If AdGuard is unreachable, the device can't resolve names, unless you turned on the fallback setting. Removing the profile restores your network's DNS.
 - **Safari doesn't offer to install the profile.** Make sure you downloaded it from a normal web host, not a preview. Otherwise AirDrop the file from a Mac.
-- **The profile shows "Unsigned".** That's expected for the included profiles. Signing with your own certificate changes the label. See [security.md](security.md).
+- **iPhone says the profile is "Not Signed".** That's expected for the included profiles, which aren't signed with a certificate. Signing with your own certificate changes the label. See [security.md](security.md).
 - **You installed a version 2.0 turn-off profile.** It has no DNS settings. Installing a current profile should replace it. Check that only one entry is listed.
