@@ -43,49 +43,68 @@
   <main>
 
     <!-- Home screen -->
-    <section class="screen home" id="screen-home" aria-labelledby="title-home">
-      <h1 class="sr-only" id="title-home" tabindex="-1">Quiet DNS</h1>
+    <section class="screen" id="screen-home" aria-labelledby="title-home">
+      <div class="head">
+        <h1 class="title" id="title-home" tabindex="-1">Quiet DNS</h1>
+      </div>
 
-      <!-- Shown in a browser. The dashboard below appears only when Quiet DNS is opened from the Home Screen. -->
-      <section class="welcome" aria-labelledby="welcome-title">
-        <div class="welcome-card">
-          <p class="widget-kicker">Quiet DNS</p>
-          <h2 class="welcome-title" id="welcome-title">Set up encrypted DNS on your iPhone</h2>
-          <p class="welcome-text">Add Quiet DNS to your Home Screen to set it up. It then opens as its own app.</p>
-          <a class="welcome-btn" href="#setup">Get started</a>
+      <!-- In a browser this is the website's home page. Installed from the Home Screen, the dashboard below shows instead. -->
+      <div class="landing">
+        <p class="kicker">Encrypted DNS for iPhone</p>
+        <h2 class="hero">Block ads and trackers, and encrypt your lookups.</h2>
+        <p class="lede">Quiet DNS sends your iPhone's lookups to AdGuard DNS over an encrypted connection, with the filters you choose. You set it up by adding this site to your Home Screen.</p>
+        <div class="actions">
+          <a class="btn" href="#setup">Get started</a>
+        </div>
+
+        <div class="group">
+          <ul class="points">
+            <li><strong>Ads and trackers blocked.</strong> Optional adult-site blocking with safe search.</li>
+            <li><strong>Encrypted lookups.</strong> Sent to AdGuard DNS over HTTPS, or over TLS if you choose.</li>
+            <li><strong>Pause and resume.</strong> Install a paused profile to turn Quiet DNS off, then install the normal one to turn it back on.</li>
+          </ul>
+        </div>
+
+        <section class="block" aria-labelledby="how-title">
+          <h2 class="block-title" id="how-title">Setting it up</h2>
+          <ol class="steps">
+            <li>Add this site to your Home Screen. <a href="#setup">Show me how</a></li>
+            <li>Open Quiet DNS from its Home Screen icon. The dashboard shows there.</li>
+            <li>Download the profile on the Profile screen and install it in Settings.</li>
+          </ol>
+        </section>
+      </div>
+
+      <div class="dashboard">
+      <section class="widget" id="widget" aria-labelledby="w-title">
+        <div class="widget-main">
+          <h2 class="widget-title" id="w-title">Quiet DNS is on</h2>
+          <p class="widget-sub" id="w-sub">Ads and trackers are blocked. Lookups are encrypted.</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="enabled" role="switch" aria-labelledby="w-title" aria-describedby="w-sub" checked>
+          <span class="track" aria-hidden="true"></span>
+        </label>
+        <div class="widget-foot">
+          <p id="w-meta">Standard filter, using HTTPS</p>
+          <a href="#profile">Profile and download</a>
         </div>
       </section>
 
-      <div class="home-grid">
-        <section class="widget" id="widget" aria-labelledby="w-title">
-          <div class="widget-main">
-            <p class="widget-kicker">Quiet DNS</p>
-            <h2 class="widget-title" id="w-title">Quiet DNS is on</h2>
-            <p class="widget-sub" id="w-sub">Ads and trackers are blocked. Lookups are encrypted.</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="enabled" role="switch" aria-labelledby="w-title" aria-describedby="w-sub" checked>
-            <span class="track" aria-hidden="true"></span>
-          </label>
-          <div class="widget-foot">
-            <p id="w-meta">Standard filter, using HTTPS</p>
-            <a href="#profile">Profile</a>
-          </div>
-        </section>
+      <nav aria-label="Sections">
+        <ul class="tiles">
+          <li><a class="tile" href="#filters"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-filters"/></svg></span><span>Filters</span></a></li>
+          <li><a class="tile" href="#connection"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-connection"/></svg></span><span>Connection</span></a></li>
+          <li><a class="tile" href="#profile"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-profile"/></svg></span><span>Profile</span></a></li>
+          <li><a class="tile" href="#install"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-install"/></svg></span><span>Install</span></a></li>
+          <li><a class="tile" href="#privacy"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-privacy"/></svg></span><span>Privacy</span></a></li>
+          <li><a class="tile" href="#settings"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-settings"/></svg></span><span>Settings</span></a></li>
+        </ul>
+      </nav>
 
-        <nav class="apps-nav" aria-label="Sections">
-          <ul class="apps">
-            <li><a class="app app--filters" href="#filters"><span class="app-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-filters"/></svg></span><span class="app-name">Filters</span></a></li>
-            <li><a class="app app--connection" href="#connection"><span class="app-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-connection"/></svg></span><span class="app-name">Connection</span></a></li>
-            <li><a class="app app--profile" href="#profile"><span class="app-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-profile"/></svg></span><span class="app-name">Profile</span></a></li>
-            <li><a class="app app--install" href="#install"><span class="app-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-install"/></svg></span><span class="app-name">Install</span></a></li>
-            <li><a class="app app--privacy" href="#privacy"><span class="app-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-privacy"/></svg></span><span class="app-name">Privacy</span></a></li>
-            <li><a class="app app--settings" href="#settings"><span class="app-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-settings"/></svg></span><span class="app-name">Settings</span></a></li>
-          </ul>
-        </nav>
       </div>
 
-      <p class="home-foot">Not affiliated with AdGuard or Proton. Not yet tested on an iPhone.</p>
+      <p class="foot">Quiet is not affiliated with AdGuard or Proton. The profiles have not been tested on an iPhone yet.</p>
     </section>
 
     <!-- Setup: how to add the site to the Home Screen -->
