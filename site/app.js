@@ -68,14 +68,14 @@
       ? "Install it on your iPhone. If Quiet DNS is already installed, this updates that entry."
       : "Install it to pause Quiet DNS. Install the normal profile again to turn it back on.";
     $("consent").textContent = QuietCore.consentText(s);
-    $("xml").textContent = QuietCore.profileXML(s, QuietCore.profileVersion(Math.floor(Date.now() / 1000)));
+    $("xml").textContent = QuietCore.profileXML(s);
   }
 
   function download() {
     var s = normalized();
     var name = fileName(s);
-    // The version counts minutes, so every download made a minute apart replaces the profile installed before it.
-    var xml = QuietCore.profileXML(s, QuietCore.profileVersion(Math.floor(Date.now() / 1000)));
+    // Every download has the same identifiers and PayloadVersion 1, so it replaces the Quiet DNS entry already installed.
+    var xml = QuietCore.profileXML(s);
     try {
       var blob = new Blob([xml], {type: "application/x-apple-aspen-config"});
       var url = URL.createObjectURL(blob);
@@ -111,7 +111,8 @@
     document.body.setAttribute("data-screen", name);
     if (moveFocus) {
       // Move focus to the new screen's title, so screen readers announce the change.
-      $("title-" + name).focus({preventScroll: true});
+      var title = name === "home" && !installed ? "title-landing" : "title-" + name;
+      $(title).focus({preventScroll: true});
       window.scrollTo(0, 0);
     }
   }

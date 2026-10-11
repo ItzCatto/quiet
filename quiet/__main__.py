@@ -13,7 +13,6 @@ import argparse
 import os
 import sys
 import tempfile
-import time
 from pathlib import Path
 
 from . import profiles, signing, wireguard
@@ -30,17 +29,14 @@ PRESETS: list[tuple[str, Settings]] = [
 
 
 def _add_build_options(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--version", type=int, default=None,
-                   help="PayloadVersion. Default: the current Unix time, so every new build "
-                        "replaces the one installed before it.")
     p.add_argument("--sign", nargs=2, metavar=("CERT_PEM", "KEY_PEM"),
                    help="sign with your own certificate and private key")
     p.add_argument("--chain", type=Path, metavar="PEM",
                    help="intermediate certificates to include when signing")
 
 
-def _build(s: Settings, version: int) -> bytes:
-    data = profiles.build_profile(s, version)
+def _build(s: Settings) -> bytes:
+    data = profiles.build_profile(s)
     problems = profiles.check_profile(data)
     if problems:
         raise profiles.ProfileError(f"{data['PayloadDisplayName']}: {'; '.join(problems)}")
@@ -68,9 +64,8 @@ def _inside_project(path: Path) -> bool:
 
 
 def _cmd_presets(args: argparse.Namespace) -> int:
-    version = args.version or profiles.profile_version(int(time.time()))
     # Build and check every preset before writing anything, so a failure never leaves a mix of files.
-    built = [(args.out / name, _build(s, version)) for name, s in PRESETS]
+    built = [(args.out / name, _build(s)) for name, s in PRESETS]
     for path, raw in built:
         _write(path, raw, args.sign, args.chain)
     return 0
@@ -85,7 +80,7 @@ def _cmd_profile(args: argparse.Namespace) -> int:
         bootstrap_ips=not args.no_bootstrap,
         failover=args.failover,
     )
-    raw = _build(s, args.version or profiles.profile_version(int(time.time())))
+    raw = _build(s)
     _write(args.output, raw, args.sign, args.chain)
     return 0
 

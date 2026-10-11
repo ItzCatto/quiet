@@ -3,15 +3,16 @@
 ## 2.2.1
 
 ### Fixed
-- **"The profile version is not supported" on iPhone.** The profile's PayloadVersion was the Unix time in seconds, which iPhone rejected. It is now the number of minutes since 1 January 2000, so it stays small and still rises with each download. The command line and the website use the same value.
+- **"The profile version is not supported" on iPhone.** Every profile now uses PayloadVersion 1, at the top level and in the DNS payload. Apple's examples and WireGuard's documentation use 1, and iPhone rejected the Unix time we had been writing. A profile with the same PayloadIdentifier overwrites the one installed before it, so a new download still replaces the Quiet DNS entry. The command line and the website build the same profile.
+- **Website builds and the command line no longer take a version option.** The version is fixed, so nothing can produce a version iPhone rejects.
 
 ### Changed
-- **Website home page.** In a browser, the home page explains Quiet DNS and has a Get started button. The dashboard (the on/off switch and the sections) appears only when the site is opened from the Home Screen icon. In a browser, the other screens open the Get started page instead.
-- **Dashboard restored.** The installed app's home screen is back to the 2.2.0 look. The other screens were not changed.
+- **New website home page.** In a browser, the home page explains Quiet DNS, shows what it does, lists the setup steps, and has a Get started button in the header and at the end. The Get started button opens the Add to Home Screen steps.
+- **The dashboard shows only in the installed app.** Opened from the Home Screen icon, the home screen is the dashboard: the on/off switch and the sections. It is the 2.2.0 design. In a browser tab, the other screens open the Get started page instead.
 - **Get started screen.** Share, View More, Add to Home Screen, and Open as Web App, with each step numbered.
 
 ### Tests
-- 55 automated tests, up from 54. A new test checks the profile version.
+- 56 automated tests, up from 54. New tests check that every profile uses PayloadVersion 1 and that other versions are rejected.
 
 ## 2.2.0
 

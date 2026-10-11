@@ -7,7 +7,6 @@ from quiet import profiles
 from quiet.__main__ import PRESETS
 from quiet.settings import RESOLVERS, Settings
 
-VERSION = 1700000000
 
 
 def every_combination():
@@ -16,7 +15,7 @@ def every_combination():
 
 
 def build(s: Settings) -> dict:
-    return profiles.build_profile(s, VERSION)
+    return profiles.build_profile(s)
 
 
 def dns_of(s: Settings) -> dict:
@@ -111,10 +110,10 @@ class ProfileTests(unittest.TestCase):
         data["PayloadContent"][0]["DNSSettings"]["ServerAddresses"] = RESOLVERS["default"]["ipv4"]
         self.assertTrue(any("do not belong" in p for p in profiles.check_profile(data)))
 
-    def test_checker_catches_version_mismatch(self):
+    def test_checker_catches_a_payload_version_other_than_1(self):
         data = build(Settings())
-        data["PayloadContent"][0]["PayloadVersion"] = 1
-        self.assertTrue(any("differ" in p for p in profiles.check_profile(data)))
+        data["PayloadContent"][0]["PayloadVersion"] = 14083754
+        self.assertTrue(any("must be 1" in p for p in profiles.check_profile(data)))
 
     def test_checker_catches_a_profile_that_cannot_be_removed(self):
         data = build(Settings())
@@ -136,12 +135,16 @@ if __name__ == "__main__":
     unittest.main()
 
 
-class ProfileVersionTests(unittest.TestCase):
-    def test_version_is_a_small_integer_that_rises_with_each_minute(self):
-        # A raw Unix time (about 1.79 billion) made iPhone reject the profile as "not supported".
-        start = profiles.EPOCH_2000 + 60 * 1000  # the start of a minute
-        version = profiles.profile_version(start)
-        self.assertEqual(version, 1000)
-        self.assertEqual(profiles.profile_version(start + 59), 1000)
-        self.assertEqual(profiles.profile_version(start + 60), 1001)
-        self.assertLess(profiles.profile_version(1791705995), 2**31)
+class PayloadVersionTests(unittest.TestCase):
+    def test_every_profile_uses_payload_version_1(self):
+        # iPhone rejects other values with "The profile version is not supported".
+        for s in (Settings(), Settings(enabled=False)):
+            data = profiles.build_profile(s)
+            self.assertEqual(data["PayloadVersion"], 1)
+            self.assertEqual(data["PayloadContent"][0]["PayloadVersion"], 1)
+            self.assertEqual(profiles.check_profile(data), [])
+
+    def test_checker_rejects_a_top_level_version_other_than_1(self):
+        data = profiles.build_profile(Settings())
+        data["PayloadVersion"] = 2
+        self.assertTrue(any("PayloadVersion must be 1" in p for p in profiles.check_profile(data)))

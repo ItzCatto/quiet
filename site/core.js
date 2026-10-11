@@ -63,7 +63,10 @@ var QuietCore = (function () {
     return text + " " + REMOVE_HINT;
   }
 
-  function dnsPayload(s, version) {
+  // Same as profiles.PAYLOAD_VERSION. Every profile uses 1.
+  var PAYLOAD_VERSION = 1;
+
+  function dnsPayload(s) {
     var r = RESOLVERS[resolverKey(s)];
     var dns = {DNSProtocol: s.use_tls ? "TLS" : "HTTPS"};
     if (s.use_tls) {
@@ -80,7 +83,7 @@ var QuietCore = (function () {
       PayloadIdentifier: SLOT.dnsId,
       PayloadType: "com.apple.dnsSettings.managed",
       PayloadUUID: SLOT.dnsUuid,
-      PayloadVersion: version
+      PayloadVersion: PAYLOAD_VERSION
     };
     if (!s.enabled) {
       payload.OnDemandRules = PAUSED_RULES.map(function (rule) { return {Action: rule.Action}; });
@@ -88,10 +91,10 @@ var QuietCore = (function () {
     return payload;
   }
 
-  function buildProfile(s, version) {
+  function buildProfile(s) {
     return {
       ConsentText: {"default": consentText(s)},
-      PayloadContent: [dnsPayload(s, version)],
+      PayloadContent: [dnsPayload(s)],
       PayloadDescription: summary(s),
       PayloadDisplayName: DISPLAY_NAME,
       PayloadIdentifier: SLOT.profileId,
@@ -100,7 +103,7 @@ var QuietCore = (function () {
       PayloadScope: "System",
       PayloadType: "Configuration",
       PayloadUUID: SLOT.profileUuid,
-      PayloadVersion: version
+      PayloadVersion: PAYLOAD_VERSION
     };
   }
 
@@ -125,20 +128,14 @@ var QuietCore = (function () {
     }).join("\n") + "\n" + pad + "</dict>";
   }
 
-  // Same as profiles.profile_version: minutes since 1 January 2000, never a raw Unix time.
-  function profileVersion(unixSeconds) {
-    return Math.floor((unixSeconds - 946684800) / 60);
-  }
-
-  function profileXML(s, version) {
+  function profileXML(s) {
     return '<?xml version="1.0" encoding="UTF-8"?>\n' +
       '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
-      '<plist version="1.0">\n' + plistValue(buildProfile(s, version), 0) + '\n</plist>\n';
+      '<plist version="1.0">\n' + plistValue(buildProfile(s), 0) + '\n</plist>\n';
   }
 
   return {
     RESOLVERS: RESOLVERS,
-    profileVersion: profileVersion,
     resolverKey: resolverKey,
     profileName: profileName,
     summary: summary,

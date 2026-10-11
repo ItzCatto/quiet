@@ -34,14 +34,11 @@ class ProfileError(ValueError):
     """A profile failed its checks."""
 
 
-# iPhone rejects a profile whose PayloadVersion is a raw Unix time ("The profile version is not supported").
-# Versions count minutes since 1 January 2000 instead. They stay small, still rise with every build,
-# and differ between two builds made a minute apart, so a new download replaces the one before it.
-EPOCH_2000 = 946684800
-
-
-def profile_version(unix_seconds: int) -> int:
-    return (unix_seconds - EPOCH_2000) // 60
+# Every profile uses PayloadVersion 1, at the top level and in the DNS payload. Apple's examples and
+# WireGuard's documentation use 1, and iPhone reports "The profile version is not supported" for other
+# values (a Unix time was rejected). A profile with the same PayloadIdentifier overwrites the one
+# installed before it, so a new download replaces the Quiet DNS entry.
+PAYLOAD_VERSION = 1
 
 
 def profile_name(s: Settings) -> str:
@@ -68,7 +65,7 @@ def consent_text(s: Settings) -> str:
     return text + " " + REMOVE_HINT
 
 
-def _dns_payload(s: Settings, version: int) -> dict[str, Any]:
+def _dns_payload(s: Settings) -> dict[str, Any]:
     r = s.resolver()
     dns: dict[str, Any] = {"DNSProtocol": "TLS" if s.use_tls else "HTTPS"}
     if s.use_tls:
@@ -87,18 +84,18 @@ def _dns_payload(s: Settings, version: int) -> dict[str, Any]:
         "PayloadIdentifier": DNS_ID,
         "PayloadType": "com.apple.dnsSettings.managed",
         "PayloadUUID": DNS_UUID,
-        "PayloadVersion": version,
+        "PayloadVersion": PAYLOAD_VERSION,
     }
     if not s.enabled:
         payload["OnDemandRules"] = [dict(rule) for rule in PAUSED_RULES]
     return payload
 
 
-def build_profile(s: Settings, version: int) -> dict[str, Any]:
+def build_profile(s: Settings) -> dict[str, Any]:
     """Return the profile as a plist-ready dict. Pausing keeps the DNS payload and adds a rule."""
     return {
         "ConsentText": {"default": consent_text(s)},
-        "PayloadContent": [_dns_payload(s, version)],
+        "PayloadContent": [_dns_payload(s)],
         "PayloadDescription": summary(s),
         "PayloadDisplayName": DISPLAY_NAME,
         "PayloadIdentifier": PROFILE_ID,
@@ -107,7 +104,7 @@ def build_profile(s: Settings, version: int) -> dict[str, Any]:
         "PayloadScope": "System",
         "PayloadType": "Configuration",
         "PayloadUUID": PROFILE_UUID,
-        "PayloadVersion": version,
+        "PayloadVersion": PAYLOAD_VERSION,
     }
 
 
@@ -122,14 +119,14 @@ def _resolver_for_host(host: Any) -> dict[str, Any] | None:
     return None
 
 
-def _check_dns_payload(payload: dict[str, Any], version: Any) -> list[str]:
+def _check_dns_payload(payload: dict[str, Any]) -> list[str]:
     problems: list[str] = []
     if payload.get("PayloadType") != "com.apple.dnsSettings.managed":
         problems.append("DNS payload has the wrong PayloadType")
     if payload.get("PayloadIdentifier") != DNS_ID or payload.get("PayloadUUID") != DNS_UUID:
         problems.append("DNS payload identifier or UUID is not the Quiet DNS slot")
-    if payload.get("PayloadVersion") != version:
-        problems.append("DNS payload and profile PayloadVersion differ")
+    if type(payload.get("PayloadVersion")) is not int or payload["PayloadVersion"] != PAYLOAD_VERSION:
+        problems.append("DNS payload PayloadVersion must be 1")
 
     dns = payload.get("DNSSettings")
     if not isinstance(dns, dict):
@@ -188,8 +185,8 @@ def check_profile(data: dict[str, Any]) -> list[str]:
         problems.append("PayloadRemovalDisallowed must be false so the person can remove the profile")
 
     version = data.get("PayloadVersion")
-    if not isinstance(version, int) or isinstance(version, bool):
-        problems.append("PayloadVersion must be an integer")
+    if type(version) is not int or version != PAYLOAD_VERSION:
+        problems.append("PayloadVersion must be 1")
 
     consent = data.get("ConsentText")
     if not isinstance(consent, dict) or not str(consent.get("default", "")).strip():
@@ -200,7 +197,7 @@ def check_profile(data: dict[str, Any]) -> list[str]:
         return problems + ["a Quiet DNS profile needs exactly one DNS payload"]
 
     payload = content[0]
-    problems.extend(_check_dns_payload(payload, version))
+    problems.extend(_check_dns_payload(payload))
     if "OnDemandRules" in payload and payload["OnDemandRules"] != PAUSED_RULES:
         problems.append("OnDemandRules is only used to pause Quiet DNS")
     return problems

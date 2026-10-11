@@ -14,7 +14,6 @@ from quiet import profiles
 from quiet.settings import Settings
 
 ROOT = Path(__file__).resolve().parent.parent
-VERSION = 1700000000
 
 # Loads the page's <script id="quiet-core"> in a sandbox and asks it for each profile.
 NODE_RUNNER = r"""
@@ -23,7 +22,7 @@ const input = JSON.parse(require('fs').readFileSync(0, 'utf8'));
 const ctx = {};
 vm.createContext(ctx);
 vm.runInContext(input.core, ctx);
-const out = input.cases.map(c => ctx.QuietCore.profileXML(c.settings, c.version));
+const out = input.cases.map(c => ctx.QuietCore.profileXML(c.settings));
 process.stdout.write(JSON.stringify(out));
 """
 
@@ -37,7 +36,7 @@ class SiteParityTests(unittest.TestCase):
                            if p.suffix in {".html", ".js", ".css"}]
 
     def test_browser_builder_matches_python_for_every_combination(self):
-        cases = [{"settings": asdict(Settings(*values)), "version": VERSION}
+        cases = [{"settings": asdict(Settings(*values))}
                  for values in itertools.product([True, False], repeat=6)]
         proc = subprocess.run(["node", "-e", NODE_RUNNER],
                               input=json.dumps({"core": self.core, "cases": cases}),
@@ -48,7 +47,7 @@ class SiteParityTests(unittest.TestCase):
             s = Settings(**case["settings"])
             with self.subTest(settings=case["settings"]):
                 self.assertEqual(plistlib.loads(xml.encode("utf-8")),
-                                 profiles.build_profile(s, VERSION))
+                                 profiles.build_profile(s))
 
     def test_page_never_accepts_a_config_file(self):
         # The site must not take WireGuard configs or keys, so nothing secret reaches a web page.

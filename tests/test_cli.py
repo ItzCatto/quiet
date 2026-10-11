@@ -9,7 +9,6 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-VERSION = "1700000000"
 PRESET_FILES = {
     "Quiet-DNS-Standard.mobileconfig",
     "Quiet-DNS-Family.mobileconfig",
@@ -41,7 +40,7 @@ class CliTests(unittest.TestCase):
 
     def test_presets_write_four_profiles_and_the_paused_one_keeps_its_dns_settings(self):
         out = self.tmp / "dist"
-        result = run("presets", "--out", str(out), "--version", VERSION)
+        result = run("presets", "--out", str(out))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual({p.name for p in out.glob("*.mobileconfig")}, PRESET_FILES)
         paused = plistlib.loads((out / "Quiet-DNS-Paused.mobileconfig").read_bytes())
@@ -49,7 +48,7 @@ class CliTests(unittest.TestCase):
 
     def test_profile_command_builds_a_family_profile_over_tls(self):
         target = self.tmp / "custom.mobileconfig"
-        result = run("profile", "-o", str(target), "--adult", "--tls", "--version", "5")
+        result = run("profile", "-o", str(target), "--adult", "--tls")
         self.assertEqual(result.returncode, 0, result.stderr)
         dns = plistlib.loads(target.read_bytes())["PayloadContent"][0]["DNSSettings"]
         self.assertEqual(dns["DNSProtocol"], "TLS")
@@ -97,8 +96,8 @@ class CliTests(unittest.TestCase):
 
         unsigned = self.tmp / "unsigned"
         signed = self.tmp / "signed"
-        self.assertEqual(run("presets", "--out", str(unsigned), "--version", VERSION).returncode, 0)
-        result = run("presets", "--out", str(signed), "--version", VERSION,
+        self.assertEqual(run("presets", "--out", str(unsigned)).returncode, 0)
+        result = run("presets", "--out", str(signed),
                      "--sign", str(cert), str(key))
         self.assertEqual(result.returncode, 0, result.stderr)
 
