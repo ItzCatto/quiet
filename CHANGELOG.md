@@ -10,7 +10,7 @@
 - **New website home page.** In a browser, the home page explains Quiet DNS, shows what it does, lists the setup steps, and has a Get started button in the header and at the end. The Get started button opens the Add to Home Screen steps.
 - **The dashboard shows only in the installed app.** Opened from the Home Screen icon, the home screen is the dashboard: the on/off switch and the sections. It is the 2.2.0 design. In a browser tab, the other screens open the Get started page instead.
 - **Dashboard filter picker.** Standard, Family, or Unfiltered, right on the dashboard. The same settings as the Filters screen.
-- **Update bar.** Changes are collected in one bar, and the profile is downloaded once. The bar remembers the last download and shows when your settings differ from it. Installing the profile is still a step in Settings, and a web page cannot change the iPhone's DNS settings itself.
+- **Save bar.** A bar at the bottom of the installed app shows "Unsaved" when settings differ from the last downloaded profile. Save downloads the profile, and iPhone asks you to install it. After Save, an Open Settings link goes to the VPN & Device Management page. Installing the profile is still a step in Settings, and a web page cannot change the iPhone's DNS settings itself.
 - **Get started screen.** Share, View More, Add to Home Screen, and Open as Web App, with each step numbered.
 
 ### Tests

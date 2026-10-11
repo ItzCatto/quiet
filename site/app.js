@@ -78,12 +78,11 @@
       radio.checked = radio.value === filter;
     });
     $("pick-note").textContent = FILTER_NOTE[filter];
-    var last = readPref(DOWNLOADED_KEY, "");
-    $("pending").hidden = last === JSON.stringify(s);
-    $("pending-text").textContent = last === ""
-      ? "Download the profile to turn Quiet DNS on."
-      : "Your changes aren't on your iPhone yet.";
-    $("apply").textContent = s.enabled ? "Download updated profile" : "Download paused profile";
+    // Save bar: settings count as unsaved until the profile is downloaded with them
+    var unsaved = readPref(DOWNLOADED_KEY, "") !== JSON.stringify(s);
+    $("savebar-text").textContent = unsaved ? "Unsaved" : "Saved";
+    $("savebar-text").classList.toggle("is-unsaved", unsaved);
+    $("save").disabled = !unsaved;
     $("next-step").textContent = s.enabled
       ? "Install it on your iPhone. If Quiet DNS is already installed, this updates that entry."
       : "Install it to pause Quiet DNS. Install the normal profile again to turn it back on.";
@@ -110,7 +109,8 @@
         ". If nothing happens, allow downloads for this site.";
       // Remember what was downloaded. Installing it is still a step in Settings, so the bar says so.
       savePref(DOWNLOADED_KEY, JSON.stringify(s));
-      $("apply-status").textContent = "Downloaded. Open Settings and install the profile to apply it.";
+      $("save-status").textContent = "Install it when iPhone asks, then check the Quiet DNS entry in Settings.";
+      $("open-settings").hidden = false;
       render();
     } catch (err) {
       $("download-status").textContent = "The download didn't start. Try another browser.";
@@ -148,12 +148,13 @@
       state[id] = $(id).checked;
       if (id === "block_adult" && state.block_adult) { state.block_ads = true; }
       $("download-status").textContent = "";
-      $("apply-status").textContent = "";
+      $("save-status").textContent = "";
+      $("open-settings").hidden = true;
       render();
     });
   });
   $("download").addEventListener("click", download);
-  $("apply").addEventListener("click", download);
+  $("save").addEventListener("click", download);
 
   document.querySelectorAll('input[name="filter"]').forEach(function (radio) {
     radio.addEventListener("change", function () {
@@ -161,7 +162,8 @@
       else if (radio.value === "default") { state.block_ads = true; state.block_adult = false; }
       else { state.block_ads = false; state.block_adult = false; }
       $("download-status").textContent = "";
-      $("apply-status").textContent = "";
+      $("save-status").textContent = "";
+      $("open-settings").hidden = true;
       render();
     });
   });
