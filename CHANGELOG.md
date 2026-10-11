@@ -12,7 +12,7 @@
 - **Home page in a browser.** A headline, a Set up button, and a line about the profile. Set up opens the Add to Home Screen steps, numbered.
 - **The dashboard shows only in the installed app.** Opened from the Home Screen icon, the home screen is the dashboard: the switch, a filter choice (Standard, Family or Unfiltered) and six links to the other screens. In a browser tab, the other screens open the Add to Home Screen steps instead.
 - **Home-screen icon.** A mint trace on a near-black square, matching the dark page.
-- **Save bar.** A bar at the bottom of the installed app shows "Unsaved" when settings differ from the last downloaded profile, with a Save button. Save downloads the profile, and iPhone asks you to install it. After Save, an Open Settings link goes to the VPN & Device Management page. Installing the profile is still a step in Settings, and a web page cannot change the iPhone's DNS settings itself.
+- **Save bar.** A bar at the bottom of the installed app shows "Unsaved" when settings differ from the last downloaded profile, with a Save button. Save downloads the profile, and iPhone asks you to install it. After Save, the bar says to open Settings and tap Profile Downloaded. A web page can't open Settings on iPhone, so there is no link. Installing the profile is still a step in Settings, and a web page cannot change the iPhone's DNS settings itself.
 - **Profile keys are hidden by default.** Settings > Show profile keys shows the key name under each setting.
 - **No requests to other websites.** The site no longer loads Google Fonts. Schibsted Grotesk is served from the site's own folder, with its licence, and a test checks that the page loads nothing from another website.
 

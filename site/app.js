@@ -78,7 +78,6 @@
     $("savebar-text").textContent = unsaved ? "Unsaved" : "Saved";
     $("savebar-text").classList.toggle("is-unsaved", unsaved);
     $("save").disabled = !unsaved;
-    $("open-settings").hidden = unsaved;
   }
 
   function download() {
@@ -98,10 +97,11 @@
       $("download-status").textContent = "The download didn't start. Try another browser.";
       return;
     }
-    // Remember what was downloaded, so the save bar shows Saved and offers Open Settings.
+    // Remember what was downloaded, so the save bar shows Saved. A web page can't open Settings on iPhone,
+    // so the bar says where to tap instead.
     savePref(DOWNLOADED_KEY, JSON.stringify(s));
     $("download-status").textContent = "Download started. If nothing happens, allow downloads for this site.";
-    $("save-status").textContent = "Downloaded. Install it in Settings.";
+    $("save-status").textContent = "Downloaded. Open Settings and tap Profile Downloaded.";
     render();
   }
 

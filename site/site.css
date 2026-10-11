@@ -427,17 +427,6 @@ body.installed .savebar {
 }
 .savebar-text.is-unsaved::before { background: var(--amber); }
 .save-status { color: var(--text-2); font-size: .875rem; line-height: 1.35; }
-.savebar-link {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--on);
-  font-size: .9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-}
 
 /* Larger type from a wider phone or a tablet */
 @media (min-width: 40rem) {
