@@ -104,7 +104,8 @@
     $("start").hidden = downloaded !== "";
   }
 
-  function download() {
+  // goToInstall: after Save, open the install steps. The Download button on the Profile page stays where it is.
+  function download(goToInstall) {
     var s = normalized();
     var xml = QuietCore.profileXML(s);
     try {
@@ -128,6 +129,7 @@
     $("download-status").textContent = "Download started. If nothing happens, allow downloads for this site.";
     $("save-status").textContent = "Downloaded. Next, open Settings, tap General, then VPN & Device Management.";
     render();
+    if (goToInstall) { window.location.hash = "#install"; }
   }
 
   // Screens are chosen by the URL hash, so every row is a real link that works without a page reload.
@@ -191,8 +193,8 @@
     });
   });
 
-  $("download").addEventListener("click", download);
-  $("save").addEventListener("click", download);
+  $("download").addEventListener("click", function () { download(false); });
+  $("save").addEventListener("click", function () { download(true); });
 
   function applyTheme(value) {
     var root = document.documentElement;
