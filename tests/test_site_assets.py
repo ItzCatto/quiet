@@ -38,14 +38,14 @@ class SiteAssetTests(unittest.TestCase):
         self.assertEqual(png_size(SITE / "icons" / "apple-touch-icon.png"), (180, 180))
 
     def test_every_in_page_link_points_at_a_real_screen(self):
-        screens = set(re.findall(r'<section class="screen" id="screen-([a-z]+)"', self.html))
+        screens = set(re.findall(r'<section class="screen[^"]*" id="screen-([a-z]+)"', self.html))
         self.assertIn("home", screens)
         for name in set(re.findall(r'href="#([a-z]*)"', self.html)):
             with self.subTest(link=name):
                 self.assertIn(name, screens)
 
     def test_every_screen_has_a_focusable_title_for_keyboard_and_screen_reader_users(self):
-        screens = re.findall(r'<section class="screen" id="screen-([a-z]+)"', self.html)
+        screens = re.findall(r'<section class="screen[^"]*" id="screen-([a-z]+)"', self.html)
         for name in screens:
             with self.subTest(screen=name):
                 self.assertIn(f'id="title-{name}" tabindex="-1"', self.html)
