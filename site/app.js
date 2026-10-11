@@ -94,9 +94,16 @@
   }
 
   // Screens are chosen by the URL hash, so every tile is a real link and works without a page reload.
+  // In a browser tab only the home screen and the setup page open. The app screens open from the Home Screen,
+  // so any other link goes to the setup page and the address bar shows #setup.
   function current() {
     var name = (window.location.hash || "").replace(/^#/, "");
-    return SCREENS.indexOf(name) >= 0 ? name : "home";
+    if (SCREENS.indexOf(name) < 0) { name = "home"; }
+    if (!installed && name !== "home" && name !== "setup") {
+      name = "setup";
+      if (window.history && window.history.replaceState) { window.history.replaceState(null, "", "#setup"); }
+    }
+    return name;
   }
 
   function show(name, moveFocus) {
@@ -168,8 +175,8 @@
   applyTheme(readPref(THEME_KEY, "system"));
   applyKeys(readPref(KEYS_KEY, "1") === "1");
 
-  // The dashboard is only for the installed app. In a browser tab the home screen shows the setup instead.
-  // iOS sets navigator.standalone; other browsers use the display-mode media query.
+  // The app is installed when it opens from the Home Screen. iOS sets navigator.standalone;
+  // other browsers use the display-mode media query.
   var installed = window.navigator.standalone === true ||
     (window.matchMedia ? window.matchMedia("(display-mode: standalone)").matches : false);
   document.body.classList.toggle("installed", installed);
