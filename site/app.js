@@ -18,6 +18,8 @@
     "unfiltered": "Nothing is blocked. Lookups are still encrypted."
   };
   var state = {enabled: true, block_ads: true, block_adult: false, use_tls: false, bootstrap_ips: true, failover: false};
+  // True after Save starts a download, until the person taps Continue.
+  var awaitingAllow = false;
   // Set by boot.js before this file runs.
   var installed = document.body.classList.contains("installed");
 
@@ -94,18 +96,22 @@
     $("consent").textContent = QuietCore.consentText(s);
     $("xml").textContent = QuietCore.profileXML(s);
 
-    // Save bar: unsaved until the profile is downloaded with these settings
+    // Save bar: unsaved until the profile is downloaded with these settings. After Save it waits for Allow,
+    // and Continue then opens the install steps.
     var unsaved = downloaded !== JSON.stringify(s);
-    $("savebar-text").textContent = unsaved ? "Unsaved" : "Saved";
-    $("savebar-text").classList.toggle("is-unsaved", unsaved);
-    $("save").disabled = !unsaved;
+    var waiting = awaitingAllow && !unsaved;
+    $("savebar-text").textContent = waiting ? "Waiting for Allow" : (unsaved ? "Unsaved" : "Saved");
+    $("savebar-text").classList.toggle("is-unsaved", unsaved || waiting);
+    $("save").textContent = waiting ? "Continue" : "Save";
+    $("save").disabled = !unsaved && !waiting;
 
     // First run: the three-step card shows until a profile has been downloaded once
     $("start").hidden = downloaded !== "";
   }
 
-  // goToInstall: after Save, open the install steps. The Download button on the Profile page stays where it is.
-  function download(goToInstall) {
+  // fromSave: Save waits for the person to allow the download, then Continue opens the install steps.
+  // The Download button on the Profile page only downloads.
+  function download(fromSave) {
     var s = normalized();
     var xml = QuietCore.profileXML(s);
     try {
@@ -127,9 +133,19 @@
     // so the bar says where to tap instead.
     savePref(DOWNLOADED_KEY, JSON.stringify(s));
     $("download-status").textContent = "Download started. If nothing happens, allow downloads for this site.";
-    $("save-status").textContent = "Downloaded. Next, open Settings, tap General, then VPN & Device Management.";
+    awaitingAllow = fromSave;
+    $("save-status").textContent = fromSave
+      ? "Tap Allow in the pop-up, then tap Continue."
+      : "Downloaded. Next, open Settings, tap General, then VPN & Device Management.";
     render();
-    if (goToInstall) { window.location.hash = "#install"; }
+  }
+
+  // The page can't see whether Allow was tapped, so Continue is the confirmation. Then the install steps open.
+  function continueToInstall() {
+    awaitingAllow = false;
+    $("save-status").textContent = "Downloaded. Next, open Settings, tap General, then VPN & Device Management.";
+    window.location.hash = "#install";
+    render();
   }
 
   // Screens are chosen by the URL hash, so every row is a real link that works without a page reload.
@@ -172,6 +188,7 @@
 
   // Any change clears the messages from the last download, then redraws.
   function changed() {
+    awaitingAllow = false;
     $("download-status").textContent = "";
     $("save-status").textContent = "";
     render();
@@ -194,7 +211,9 @@
   });
 
   $("download").addEventListener("click", function () { download(false); });
-  $("save").addEventListener("click", function () { download(true); });
+  $("save").addEventListener("click", function () {
+    if (awaitingAllow) { continueToInstall(); } else { download(true); }
+  });
 
   function applyTheme(value) {
     var root = document.documentElement;
