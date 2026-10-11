@@ -2,15 +2,15 @@
 
 ## What a profile contains
 
-A Quiet DNS profile is a plain XML file. Nothing in it is secret. It names a resolver, optionally some IP addresses, and the text shown at install. You can read the profile before you install it: the website has a "Show the profile file" section, and the file opens in any text editor.
+A Quiet DNS profile is a plain XML file. Nothing in it is secret. It names a resolver, optionally some IP addresses, and the text shown at install. You can read the profile before you install it: the Profile screen has a "Profile file" section, and the file opens in any text editor.
 
 The profile never includes a WireGuard config, a private key, or your account details.
 
 ## What the website does
 
-- It builds the profile in your browser from the toggles. It has no server-side code and doesn't store your choices.
+- It builds the profile in your browser from the toggles. It has no server-side code. It keeps only your theme and the last settings you saved, in this browser.
 - It has no file upload, so there's no way to send it a config or a key. A test checks that the page has no file input.
-- It loads one font stylesheet from Google Fonts. The profile itself doesn't depend on that.
+- It loads nothing from other websites, and a test checks that too.
 
 ## Who sees your DNS lookups
 

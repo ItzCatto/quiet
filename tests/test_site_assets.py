@@ -50,6 +50,15 @@ class SiteAssetTests(unittest.TestCase):
             with self.subTest(screen=name):
                 self.assertIn(f'id="title-{name}" tabindex="-1"', self.html)
 
+    def test_page_loads_nothing_from_another_website(self):
+        # The privacy screen says the site makes no requests to other websites, so fonts and scripts stay on this host.
+        css = (SITE / "site.css").read_text(encoding="utf-8")
+        for value in re.findall(r'\b(?:src|href)="([^"]*)"', self.html):
+            with self.subTest(value=value):
+                self.assertIsNone(re.match(r"https?:", value), value)
+        self.assertNotIn("@import", css)
+        self.assertIsNone(re.search(r"url\(\s*['\"]?https?:", css))
+
 
 if __name__ == "__main__":
     unittest.main()

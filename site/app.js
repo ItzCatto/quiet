@@ -1,21 +1,16 @@
-/* Quiet DNS setup: screens, settings and the profile download. Depends on core.js. */
+/* Quiet DNS website: screens, settings and the profile download. Depends on core.js. */
 (function () {
   var TOGGLES = ["enabled", "block_ads", "block_adult", "use_tls", "bootstrap_ips", "failover"];
   var SCREENS = ["home", "setup", "filters", "connection", "profile", "install", "privacy", "settings"];
   var THEME_KEY = "quiet.theme";
   var KEYS_KEY = "quiet.showKeys";
-  // The settings last downloaded as a profile. The dashboard compares against it to show what is not on the iPhone yet.
+  // The settings last downloaded as a profile. The save bar compares the current settings with them.
   var DOWNLOADED_KEY = "quiet.downloaded";
-  var FILTER_NOTE = {
-    "default": "Ads and trackers are blocked. Adult sites are allowed.",
-    "family": "Ads, trackers and adult sites are blocked, with safe search on.",
-    "unfiltered": "Nothing is blocked. Lookups are still encrypted."
-  };
   var FILTER_LABEL = {"default": "Standard", "family": "Family", "unfiltered": "Unfiltered"};
-  var ACTIVE_SUB = {
-    "default": "Ads and trackers are blocked. Lookups are encrypted.",
-    "family": "Ads, trackers and adult sites are blocked. Lookups are encrypted.",
-    "unfiltered": "Lookups are encrypted. Nothing is blocked."
+  var FILTER_NOTE = {
+    "default": "Blocks ads and trackers.",
+    "family": "Also blocks adult sites. Safe search is on.",
+    "unfiltered": "Nothing is blocked. Lookups are still encrypted."
   };
   var state = {enabled: true, block_ads: true, block_adult: false, use_tls: false, bootstrap_ips: true, failover: false};
 
@@ -50,75 +45,68 @@
     $("block_ads").disabled = state.block_adult;
     $("note-block_ads").hidden = !state.block_adult;
 
-    // Home screen widget
+    // Status card and connection row
     $("widget").classList.toggle("is-on", s.enabled);
     $("w-title").textContent = s.enabled ? "Quiet DNS is on" : "Quiet DNS is paused";
-    $("w-sub").textContent = s.enabled ? ACTIVE_SUB[key] : "Lookups use your network's normal DNS.";
-    $("w-meta").textContent = s.enabled
-      ? FILTER_LABEL[key] + " filter, using " + transport
-      : "Your settings are kept in the paused profile.";
+    $("w-sub").textContent = s.enabled ? FILTER_LABEL[key] + " filter · " + transport : "Using your network's DNS";
+    $("v-connection").textContent = transport;
 
-    // Profile screen
-    var host = s.use_tls ? r.dot + " on port 853" : hostOf(r.doh) + " on port 443";
-    $("summary").textContent = QuietCore.summary(s);
-    $("fact-state").textContent = s.enabled
-      ? "On, using the " + FILTER_LABEL[key] + " filter"
-      : "Paused. Your network's normal DNS is used.";
-    $("fact-host").textContent = s.enabled ? host : host + " (off while paused)";
-    $("fact-proto").textContent = s.use_tls ? "DNS over TLS" : "DNS over HTTPS";
-    $("fact-ips").textContent = s.bootstrap_ips
-      ? (r.ipv4.length + r.ipv6.length) + " addresses included"
-      : "Not included";
-    $("warn").hidden = !(s.enabled && s.failover);
-    $("download").textContent = s.enabled ? "Download profile" : "Download paused profile";
-
-    // Dashboard: the filter picker and the update bar
+    // Filter picker
     var filter = s.block_adult ? "family" : (s.block_ads ? "default" : "unfiltered");
     document.querySelectorAll('input[name="filter"]').forEach(function (radio) {
       radio.checked = radio.value === filter;
     });
     $("pick-note").textContent = FILTER_NOTE[filter];
-    // Save bar: settings count as unsaved until the profile is downloaded with them
+
+    // Profile screen
+    var host = s.use_tls ? r.dot + ", port 853" : hostOf(r.doh) + ", port 443";
+    $("summary").textContent = QuietCore.summary(s);
+    $("fact-state").textContent = s.enabled ? "On · " + FILTER_LABEL[key] : "Paused";
+    $("fact-host").textContent = host;
+    $("fact-proto").textContent = transport;
+    $("fact-ips").textContent = s.bootstrap_ips ? (r.ipv4.length + r.ipv6.length) + " included" : "Not included";
+    $("warn").hidden = !(s.enabled && s.failover);
+    $("download").textContent = s.enabled ? "Download profile" : "Download paused profile";
+    $("next-step").textContent = s.enabled
+      ? "Installing updates the Quiet DNS entry already on your iPhone."
+      : "Installing this pauses Quiet DNS. Install the normal profile to turn it back on.";
+    $("consent").textContent = QuietCore.consentText(s);
+    $("xml").textContent = QuietCore.profileXML(s);
+
+    // Save bar: unsaved until the profile is downloaded with these settings
     var unsaved = readPref(DOWNLOADED_KEY, "") !== JSON.stringify(s);
     $("savebar-text").textContent = unsaved ? "Unsaved" : "Saved";
     $("savebar-text").classList.toggle("is-unsaved", unsaved);
     $("save").disabled = !unsaved;
-    $("next-step").textContent = s.enabled
-      ? "Install it on your iPhone. If Quiet DNS is already installed, this updates that entry."
-      : "Install it to pause Quiet DNS. Install the normal profile again to turn it back on.";
-    $("consent").textContent = QuietCore.consentText(s);
-    $("xml").textContent = QuietCore.profileXML(s);
+    $("open-settings").hidden = unsaved;
   }
 
   function download() {
     var s = normalized();
-    var name = fileName(s);
-    // Every download has the same identifiers and PayloadVersion 1, so it replaces the Quiet DNS entry already installed.
     var xml = QuietCore.profileXML(s);
     try {
       var blob = new Blob([xml], {type: "application/x-apple-aspen-config"});
       var url = URL.createObjectURL(blob);
       var link = document.createElement("a");
       link.href = url;
-      link.download = name;
+      link.download = fileName(s);
       document.body.appendChild(link);
       link.click();
       link.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
-      $("download-status").textContent = "Starting the download of " + name +
-        ". If nothing happens, allow downloads for this site.";
-      // Remember what was downloaded. Installing it is still a step in Settings, so the bar says so.
-      savePref(DOWNLOADED_KEY, JSON.stringify(s));
-      $("save-status").textContent = "Install it when iPhone asks, then check the Quiet DNS entry in Settings.";
-      $("open-settings").hidden = false;
-      render();
     } catch (err) {
       $("download-status").textContent = "The download didn't start. Try another browser.";
+      return;
     }
+    // Remember what was downloaded, so the save bar shows Saved and offers Open Settings.
+    savePref(DOWNLOADED_KEY, JSON.stringify(s));
+    $("download-status").textContent = "Download started. If nothing happens, allow downloads for this site.";
+    $("save-status").textContent = "Downloaded. Install it in Settings.";
+    render();
   }
 
-  // Screens are chosen by the URL hash, so every tile is a real link and works without a page reload.
-  // In a browser tab only the home screen and the setup page open. The app screens open from the Home Screen,
+  // Screens are chosen by the URL hash, so every row is a real link that works without a page reload.
+  // In a browser tab only the home page and the setup page open. The app screens open from the Home Screen,
   // so any other link goes to the setup page and the address bar shows #setup.
   function current() {
     var name = (window.location.hash || "").replace(/^#/, "");
@@ -143,30 +131,32 @@
 
   window.addEventListener("hashchange", function () { show(current(), true); });
 
+  // Any change clears the messages from the last download, then redraws.
+  function changed() {
+    $("download-status").textContent = "";
+    $("save-status").textContent = "";
+    render();
+  }
+
   TOGGLES.forEach(function (id) {
     $(id).addEventListener("change", function () {
       state[id] = $(id).checked;
       if (id === "block_adult" && state.block_adult) { state.block_ads = true; }
-      $("download-status").textContent = "";
-      $("save-status").textContent = "";
-      $("open-settings").hidden = true;
-      render();
+      changed();
     });
   });
-  $("download").addEventListener("click", download);
-  $("save").addEventListener("click", download);
 
   document.querySelectorAll('input[name="filter"]').forEach(function (radio) {
     radio.addEventListener("change", function () {
       if (radio.value === "family") { state.block_ads = true; state.block_adult = true; }
       else if (radio.value === "default") { state.block_ads = true; state.block_adult = false; }
       else { state.block_ads = false; state.block_adult = false; }
-      $("download-status").textContent = "";
-      $("save-status").textContent = "";
-      $("open-settings").hidden = true;
-      render();
+      changed();
     });
   });
+
+  $("download").addEventListener("click", download);
+  $("save").addEventListener("click", download);
 
   // Website preferences. They are remembered in this browser only, and never touch the profile.
   // Storage can be blocked (private windows, some previews), so every read and write is guarded.
@@ -213,7 +203,7 @@
   });
 
   applyTheme(readPref(THEME_KEY, "system"));
-  applyKeys(readPref(KEYS_KEY, "1") === "1");
+  applyKeys(readPref(KEYS_KEY, "0") === "1");
 
   // The app is installed when it opens from the Home Screen. iOS sets navigator.standalone;
   // other browsers use the display-mode media query.

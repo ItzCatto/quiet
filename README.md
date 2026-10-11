@@ -37,9 +37,9 @@ Every Quiet DNS profile has the same name, identifier and UUID. A new download i
 ## Status
 
 **Checked here:**
-- 54 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, and the home-screen assets.
+- 57 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, and the home-screen assets.
 - The browser builder matches the Python builder for all 64 combinations of settings.
-- A headless Chromium run at phone and desktop widths: every screen fits, tiles and links navigate with focus moved to each screen's title, every toggle works, and the downloaded profiles (including the paused one) match the Python output.
+- A headless Chromium run at phone and desktop widths: every screen fits, rows and links navigate with focus moved to each screen's title, every toggle works, and the downloaded profiles (including the paused one) match the Python output.
 
 **Not checked yet:**
 - Installing on a real iPhone or Mac. Start with [docs/install-iphone.md](docs/install-iphone.md).
