@@ -4,6 +4,13 @@
   var SCREENS = ["home", "setup", "filters", "connection", "profile", "install", "privacy", "settings"];
   var THEME_KEY = "quiet.theme";
   var KEYS_KEY = "quiet.showKeys";
+  // The settings last downloaded as a profile. The dashboard compares against it to show what is not on the iPhone yet.
+  var DOWNLOADED_KEY = "quiet.downloaded";
+  var FILTER_NOTE = {
+    "default": "Ads and trackers are blocked. Adult sites are allowed.",
+    "family": "Ads, trackers and adult sites are blocked, with safe search on.",
+    "unfiltered": "Nothing is blocked. Lookups are still encrypted."
+  };
   var FILTER_LABEL = {"default": "Standard", "family": "Family", "unfiltered": "Unfiltered"};
   var ACTIVE_SUB = {
     "default": "Ads and trackers are blocked. Lookups are encrypted.",
@@ -64,6 +71,19 @@
       : "Not included";
     $("warn").hidden = !(s.enabled && s.failover);
     $("download").textContent = s.enabled ? "Download profile" : "Download paused profile";
+
+    // Dashboard: the filter picker and the update bar
+    var filter = s.block_adult ? "family" : (s.block_ads ? "default" : "unfiltered");
+    document.querySelectorAll('input[name="filter"]').forEach(function (radio) {
+      radio.checked = radio.value === filter;
+    });
+    $("pick-note").textContent = FILTER_NOTE[filter];
+    var last = readPref(DOWNLOADED_KEY, "");
+    $("pending").hidden = last === JSON.stringify(s);
+    $("pending-text").textContent = last === ""
+      ? "Download the profile to turn Quiet DNS on."
+      : "Your changes aren't on your iPhone yet.";
+    $("apply").textContent = s.enabled ? "Download updated profile" : "Download paused profile";
     $("next-step").textContent = s.enabled
       ? "Install it on your iPhone. If Quiet DNS is already installed, this updates that entry."
       : "Install it to pause Quiet DNS. Install the normal profile again to turn it back on.";
@@ -88,6 +108,10 @@
       setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
       $("download-status").textContent = "Starting the download of " + name +
         ". If nothing happens, allow downloads for this site.";
+      // Remember what was downloaded. Installing it is still a step in Settings, so the bar says so.
+      savePref(DOWNLOADED_KEY, JSON.stringify(s));
+      $("apply-status").textContent = "Downloaded. Open Settings and install the profile to apply it.";
+      render();
     } catch (err) {
       $("download-status").textContent = "The download didn't start. Try another browser.";
     }
@@ -124,10 +148,23 @@
       state[id] = $(id).checked;
       if (id === "block_adult" && state.block_adult) { state.block_ads = true; }
       $("download-status").textContent = "";
+      $("apply-status").textContent = "";
       render();
     });
   });
   $("download").addEventListener("click", download);
+  $("apply").addEventListener("click", download);
+
+  document.querySelectorAll('input[name="filter"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      if (radio.value === "family") { state.block_ads = true; state.block_adult = true; }
+      else if (radio.value === "default") { state.block_ads = true; state.block_adult = false; }
+      else { state.block_ads = false; state.block_adult = false; }
+      $("download-status").textContent = "";
+      $("apply-status").textContent = "";
+      render();
+    });
+  });
 
   // Website preferences. They are remembered in this browser only, and never touch the profile.
   // Storage can be blocked (private windows, some previews), so every read and write is guarded.

@@ -113,6 +113,22 @@
         </div>
       </section>
 
+      <section class="pending" id="pending" aria-labelledby="pending-text" hidden>
+        <p class="pending-text" id="pending-text"></p>
+        <button class="btn" id="apply" type="button">Download updated profile</button>
+        <p class="status" id="apply-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="pick" aria-labelledby="pick-title">
+        <h2 class="pick-title" id="pick-title">Filter</h2>
+        <div class="segmented" role="radiogroup" aria-labelledby="pick-title">
+          <label class="seg"><input type="radio" name="filter" value="default"><span>Standard</span></label>
+          <label class="seg"><input type="radio" name="filter" value="family"><span>Family</span></label>
+          <label class="seg"><input type="radio" name="filter" value="unfiltered"><span>Unfiltered</span></label>
+        </div>
+        <p class="pick-note" id="pick-note"></p>
+      </section>
+
       <nav aria-label="Sections">
         <ul class="tiles">
           <li><a class="tile" href="#filters"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-filters"/></svg></span><span>Filters</span></a></li>
