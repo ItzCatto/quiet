@@ -45,7 +45,7 @@
     $("block_ads").disabled = state.block_adult;
     $("note-block_ads").hidden = !state.block_adult;
 
-    // State band, status line and connection value
+    // Switch, status line and connection value
     $("widget").classList.toggle("is-on", s.enabled);
     $("w-title").textContent = s.enabled ? "Quiet DNS is on" : "Quiet DNS is paused";
     $("w-sub").textContent = s.enabled ? FILTER_LABEL[key] + " filter, " + transport : "Using your network's DNS";
@@ -202,7 +202,7 @@
     savePref(KEYS_KEY, $("show_keys").checked ? "1" : "0");
   });
 
-  applyTheme(readPref(THEME_KEY, "system"));
+  applyTheme(readPref(THEME_KEY, "dark"));
   applyKeys(readPref(KEYS_KEY, "0") === "1");
 
   // The app is installed when it opens from the Home Screen. iOS sets navigator.standalone;

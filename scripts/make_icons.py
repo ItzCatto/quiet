@@ -2,9 +2,9 @@
 
 Run from the project folder:  python3 scripts/make_icons.py
 
-A single clean sine trace on a solid blue square: the tone that Quiet DNS leaves
-when the noise is blocked. iOS applies its own corner mask, so the icons are
-full-bleed squares with no transparency.
+A single mint sine trace on a near-black square, the same colours as the dark
+website. iOS applies its own corner mask, so the icons are full-bleed squares
+with no transparency.
 """
 
 from __future__ import annotations
@@ -17,8 +17,8 @@ from pathlib import Path
 PROJECT = Path(__file__).resolve().parent.parent
 OUT = PROJECT / "site" / "icons"
 
-BACKGROUND = (28, 43, 168)   # #1C2BA8, the signal colour
-FOREGROUND = (255, 255, 255)
+BACKGROUND = (12, 14, 17)    # #0C0E11, the dark page
+FOREGROUND = (143, 216, 194) # #8FD8C2, the "on" colour
 SUPERSAMPLE = 3              # sub-pixel samples per axis, for smooth edges
 CYCLES = 1.5                 # the trace runs one and a half cycles across the icon
 

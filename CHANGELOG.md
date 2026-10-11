@@ -7,11 +7,11 @@
 - **Website builds and the command line no longer take a version option.** The version is fixed, so nothing can produce a version iPhone rejects.
 
 ### Changed
-- **Every page redesigned again.** The site is built around one idea. A waveform shows the noise that ads and trackers make as static, and it becomes a clean tone once Quiet DNS is on. The type is Schibsted Grotesk, served with the site. The colours are an off-white page, black text and one ultramarine signal colour. There are no cards, tiles or grouped lists.
-- **On and off in a band.** On the dashboard, a band at the top turns blue when Quiet DNS is on. The words Off and On are the switch: the current one is solid and the other is hollow. Clicking either word, or pressing Space on the focused switch, changes the setting.
-- **Home page in a browser.** The waveform settles from static into a tone when the page loads. A headline, a Set up button, and a line about the profile. Set up opens the Add to Home Screen steps, numbered.
-- **The dashboard shows only in the installed app.** Opened from the Home Screen icon, the home screen is the dashboard: the band, a filter choice (Standard, Family or Unfiltered) and six links to the other screens. In a browser tab, the other screens open the Add to Home Screen steps instead.
-- **Home-screen icon.** Redrawn as one trace in the new blue.
+- **Every page redesigned again, in a dark theme.** The page is near-black with light text, and one soft mint colour means "on". The type is Schibsted Grotesk, served with the site. Light is available in Settings, and System follows the phone. There are no cards, tiles or grouped lists.
+- **One switch on the dashboard.** A large switch in the middle of the dashboard shows Off and On in a track, and a knob sits under the current word. Clicking either word, or pressing Space on the focused switch, changes the setting.
+- **Home page in a browser.** A headline, a Set up button, and a line about the profile. Set up opens the Add to Home Screen steps, numbered.
+- **The dashboard shows only in the installed app.** Opened from the Home Screen icon, the home screen is the dashboard: the switch, a filter choice (Standard, Family or Unfiltered) and six links to the other screens. In a browser tab, the other screens open the Add to Home Screen steps instead.
+- **Home-screen icon.** A mint trace on a near-black square, matching the dark page.
 - **Save bar.** A bar at the bottom of the installed app shows "Unsaved" when settings differ from the last downloaded profile, with a Save button. Save downloads the profile, and iPhone asks you to install it. After Save, an Open Settings link goes to the VPN & Device Management page. Installing the profile is still a step in Settings, and a web page cannot change the iPhone's DNS settings itself.
 - **Profile keys are hidden by default.** Settings > Show profile keys shows the key name under each setting.
 - **No requests to other websites.** The site no longer loads Google Fonts. Schibsted Grotesk is served from the site's own folder, with its licence, and a test checks that the page loads nothing from another website.
