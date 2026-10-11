@@ -7,15 +7,17 @@
 - **Website builds and the command line no longer take a version option.** The version is fixed, so nothing can produce a version iPhone rejects.
 
 ### Changed
-- **Every page redesigned, with less text.** The site uses grouped lists like iOS Settings, the system font, and one teal accent. Each page has a title, one group or one control, and a short note.
-- **Home page in a browser.** One headline, a Get started button, and three short points. Get started opens the Add to Home Screen steps, numbered.
-- **The dashboard shows only in the installed app.** Opened from the Home Screen icon, the home screen is the dashboard: the on/off switch, a filter picker and the sections. In a browser tab, the other screens open the Add to Home Screen steps instead.
+- **Every page redesigned again, in a quieter style.** The site uses Karla type, served with the site, a cool grey page and one dusk-blue accent. There are no cards or grouped lists. Each page has a title and one task, with less text.
+- **A dial for on and off.** The control is a ring of 72 ticks around a face. The ticks stand for the noise Quiet DNS blocks: they go quiet while filtering is on, and stay loud when it is paused. On the browser home page the dial settles to quiet once when the page loads.
+- **Home page in a browser.** A headline, a Set up button, and a line about the profile. Set up opens the Add to Home Screen steps, numbered.
+- **The dashboard shows only in the installed app.** Opened from the Home Screen icon, the home screen is the dashboard: the dial, a filter picker (Standard, Family or Unfiltered) and six links to the other screens. In a browser tab, the other screens open the Add to Home Screen steps instead.
+- **Home-screen icon.** Redrawn in the new accent colour.
 - **Save bar.** A bar at the bottom of the installed app shows "Unsaved" when settings differ from the last downloaded profile, with a Save button. Save downloads the profile, and iPhone asks you to install it. After Save, an Open Settings link goes to the VPN & Device Management page. Installing the profile is still a step in Settings, and a web page cannot change the iPhone's DNS settings itself.
 - **Profile keys are hidden by default.** Settings > Show profile keys shows the key name under each setting.
-- **No requests to other websites.** The site no longer loads Google Fonts, and a test checks that the page loads nothing from another website.
+- **No requests to other websites.** The site no longer loads Google Fonts. Karla is served from the site's own folder, with its licence, and a test checks that the page loads nothing from another website.
 
 ### Tests
-- 57 automated tests, up from 54. New tests check that every profile uses PayloadVersion 1 and that other versions are rejected, and that the page loads nothing from another website.
+- 58 automated tests, up from 54. New tests check that every profile uses PayloadVersion 1 and that other versions are rejected, that the page loads nothing from another website, and that the bundled font ships with its licence.
 
 ## 2.2.0
 

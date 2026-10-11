@@ -2,7 +2,7 @@
 
 Run from the project folder:  python3 scripts/make_icons.py
 
-A ring with a centre dot on a solid teal square. iOS applies its own corner mask,
+A ring with a centre dot on a solid dusk-blue square. iOS applies its own corner mask,
 so the icons are full-bleed squares with no transparency.
 """
 
@@ -16,7 +16,7 @@ from pathlib import Path
 PROJECT = Path(__file__).resolve().parent.parent
 OUT = PROJECT / "site" / "icons"
 
-BACKGROUND = (11, 110, 106)  # #0B6E6A, the accent colour
+BACKGROUND = (42, 79, 122)   # #2A4F7A, the accent colour
 FOREGROUND = (255, 255, 255)
 SUPERSAMPLE = 3              # sub-pixel samples per axis, for smooth edges
 

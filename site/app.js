@@ -45,10 +45,10 @@
     $("block_ads").disabled = state.block_adult;
     $("note-block_ads").hidden = !state.block_adult;
 
-    // Status card and connection row
+    // Dial, status line and connection value
     $("widget").classList.toggle("is-on", s.enabled);
     $("w-title").textContent = s.enabled ? "Quiet DNS is on" : "Quiet DNS is paused";
-    $("w-sub").textContent = s.enabled ? FILTER_LABEL[key] + " filter · " + transport : "Using your network's DNS";
+    $("w-sub").textContent = s.enabled ? FILTER_LABEL[key] + " filter, " + transport : "Using your network's DNS";
     $("v-connection").textContent = transport;
 
     // Filter picker
@@ -61,7 +61,7 @@
     // Profile screen
     var host = s.use_tls ? r.dot + ", port 853" : hostOf(r.doh) + ", port 443";
     $("summary").textContent = QuietCore.summary(s);
-    $("fact-state").textContent = s.enabled ? "On · " + FILTER_LABEL[key] : "Paused";
+    $("fact-state").textContent = s.enabled ? "On, " + FILTER_LABEL[key] : "Paused";
     $("fact-host").textContent = host;
     $("fact-proto").textContent = transport;
     $("fact-ips").textContent = s.bootstrap_ips ? (r.ipv4.length + r.ipv6.length) + " included" : "Not included";

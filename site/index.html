@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Quiet DNS</title>
 <meta name="description" content="Encrypted DNS with ad and tracker blocking for iPhone. Add it to your Home Screen, download a profile, and install it.">
-<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#EDF1F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0C1419" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Quiet DNS">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F766E'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='none' stroke='%23fff' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='2.7' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232A4F7A'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='none' stroke='%23fff' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='2.7' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="site.css">
 </head>
 <body data-screen="home" class="hide-keys">
@@ -25,16 +25,7 @@
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
-    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 2.8V11c0 4.6-3 8.3-7 10-4-1.7-7-5.4-7-10V5.8L12 3z"/><path d="M9 12l2.2 2.2L15 10"/></symbol>
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7.5"/></symbol>
-    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 5.5l6.5 6.5L9 18.5"/></symbol>
-    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
-    <symbol id="i-filters" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
-    <symbol id="i-connection" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
-    <symbol id="i-profile" viewBox="0 0 24 24"><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
-    <symbol id="i-install" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
-    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.3M12 18.7V21M3 12h2.3M18.7 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/></symbol>
-    <symbol id="i-privacy" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 5.1A9.7 9.7 0 0 1 12 5c5 0 8.5 4.5 9.5 7a10.6 10.6 0 0 1-2.2 3.4M6.6 6.6A10.8 10.8 0 0 0 2.5 12c1 2.5 4.5 7 9.5 7a9.6 9.6 0 0 0 4.1-.9"/></symbol>
+    <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3.5v8"/><path d="M6.4 6.6a8 8 0 1 0 11.2 0"/></symbol>
   </defs>
 </svg>
 
@@ -42,8 +33,8 @@
   <noscript><p class="note">Quiet DNS needs JavaScript to build the profile.</p></noscript>
 
   <header class="bar">
-    <a class="back" href="#home"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-back"/></svg>Back</a>
-    <a class="brand" href="#home"><span class="app-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="7.5"/><circle class="dot" cx="16" cy="16" r="2.7"/></svg></span>Quiet DNS</a>
+    <a class="back" href="#home">Back</a>
+    <a class="brand" href="#home"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle class="dot" cx="12" cy="12" r="2.6"/></svg>Quiet DNS</a>
   </header>
 
   <main>
@@ -53,34 +44,35 @@
 
       <div class="landing">
         <div class="hero">
-          <span class="app-mark app-mark-lg" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="7.5"/><circle class="dot" cx="16" cy="16" r="2.7"/></svg></span>
+          <div class="dial dial--static is-on" aria-hidden="true">
+            <span class="dial-ring"></span>
+            <span class="dial-face"><svg class="icon" viewBox="0 0 24 24"><use href="#i-power"/></svg></span>
+          </div>
           <h1 class="hero-title" id="title-landing" tabindex="-1">Block ads and trackers on your iPhone</h1>
           <p class="lede">Encrypted DNS through AdGuard. Set it up once with a profile you can remove any time.</p>
-          <a class="btn" href="#setup">Get started</a>
+          <a class="btn" href="#setup">Set up</a>
         </div>
-        <ul class="group">
-          <li class="row"><svg class="icon check" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Ads and trackers blocked</li>
-          <li class="row"><svg class="icon check" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Encrypted lookups</li>
-          <li class="row"><svg class="icon check" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"/></svg>Remove it any time in Settings</li>
-        </ul>
         <p class="fine">Not affiliated with AdGuard or Proton. Not yet tested on an iPhone.</p>
       </div>
 
       <div class="dashboard">
-        <h1 class="title" id="title-home" tabindex="-1">Quiet DNS</h1>
+        <h1 class="brand-title" id="title-home" tabindex="-1"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle class="dot" cx="12" cy="12" r="2.6"/></svg>Quiet DNS</h1>
 
-        <section class="status" id="widget" aria-labelledby="w-title">
-          <span class="status-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#i-shield"/></svg></span>
+        <section class="power" id="widget" aria-labelledby="w-title">
+          <label class="dial">
+            <span class="dial-ring" aria-hidden="true"></span>
+            <input class="dial-input" type="checkbox" id="enabled" role="switch" aria-labelledby="w-title" aria-describedby="w-sub" checked>
+            <span class="dial-face" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#i-power"/></svg></span>
+          </label>
           <div>
             <h2 class="status-title" id="w-title">Quiet DNS is on</h2>
-            <p class="status-sub" id="w-sub">Standard filter · HTTPS</p>
+            <p class="status-sub" id="w-sub">Standard filter, HTTPS</p>
           </div>
-          <input class="switch" type="checkbox" id="enabled" role="switch" aria-labelledby="w-title" aria-describedby="w-sub" checked>
         </section>
 
-        <section class="block" aria-labelledby="pick-title">
-          <h2 class="label" id="pick-title">Filter</h2>
-          <div class="segmented" role="radiogroup" aria-labelledby="pick-title">
+        <section class="field" aria-labelledby="pick-title">
+          <h2 class="field-label" id="pick-title">Filter</h2>
+          <div class="choices" role="radiogroup" aria-labelledby="pick-title">
             <label><input type="radio" name="filter" value="default"><span>Standard</span></label>
             <label><input type="radio" name="filter" value="family"><span>Family</span></label>
             <label><input type="radio" name="filter" value="unfiltered"><span>Unfiltered</span></label>
@@ -89,13 +81,13 @@
         </section>
 
         <nav aria-label="Sections">
-          <ul class="group">
-            <li><a class="row" href="#filters"><svg class="icon row-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-filters"/></svg><span class="row-label">Filters</span><svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg></a></li>
-            <li><a class="row" href="#connection"><svg class="icon row-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-connection"/></svg><span class="row-label">Connection</span><span class="row-value" id="v-connection"></span><svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg></a></li>
-            <li><a class="row" href="#profile"><svg class="icon row-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-profile"/></svg><span class="row-label">Profile</span><svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg></a></li>
-            <li><a class="row" href="#install"><svg class="icon row-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-install"/></svg><span class="row-label">Install</span><svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg></a></li>
-            <li><a class="row" href="#privacy"><svg class="icon row-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-privacy"/></svg><span class="row-label">Privacy</span><svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg></a></li>
-            <li><a class="row" href="#settings"><svg class="icon row-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-settings"/></svg><span class="row-label">Settings</span><svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron"/></svg></a></li>
+          <ul class="sections">
+            <li><a href="#filters"><span>Filters</span></a></li>
+            <li><a href="#connection"><span>Connection</span><span class="value" id="v-connection"></span></a></li>
+            <li><a href="#profile"><span>Profile</span></a></li>
+            <li><a href="#install"><span>Install</span></a></li>
+            <li><a href="#privacy"><span>Privacy</span></a></li>
+            <li><a href="#settings"><span>Settings</span></a></li>
           </ul>
         </nav>
       </div>
@@ -106,7 +98,7 @@
     <section class="screen" id="screen-setup" aria-labelledby="title-setup" hidden>
       <h1 class="title" id="title-setup" tabindex="-1">Add to Home Screen</h1>
       <p class="lede">Do this once, in Safari. Then open Quiet DNS from your Home Screen.</p>
-      <ol class="group steps">
+      <ol class="steps">
         <li>Tap <strong>Share</strong>, then <strong>View More</strong>.</li>
         <li>Tap <strong>Add to Home Screen</strong>.</li>
         <li>Turn on <strong>Open as Web App</strong>, then tap <strong>Add</strong>.</li>
@@ -117,78 +109,68 @@
     <!-- Filters -->
     <section class="screen" id="screen-filters" aria-labelledby="title-filters" hidden>
       <h1 class="title" id="title-filters" tabindex="-1">Filters</h1>
-      <ul class="group">
-        <li>
-          <label class="row">
-            <span class="row-main">
-              <span class="row-label" id="l-block_ads">Block ads and trackers</span>
-              <span class="row-desc">Also blocks phishing sites.</span>
-              <span class="row-note" id="note-block_ads" hidden>Stays on while adult sites are blocked.</span>
-              <code class="key">ServerURL</code>
-            </span>
-            <input class="switch" type="checkbox" id="block_ads" role="switch" aria-labelledby="l-block_ads" checked>
-          </label>
-        </li>
-        <li>
-          <label class="row">
-            <span class="row-main">
-              <span class="row-label" id="l-block_adult">Block adult sites</span>
-              <span class="row-desc">Also turns on safe search.</span>
-              <code class="key">ServerURL</code>
-            </span>
-            <input class="switch" type="checkbox" id="block_adult" role="switch" aria-labelledby="l-block_adult">
-          </label>
-        </li>
-      </ul>
+      <div class="opts">
+        <label class="opt">
+          <span class="opt-main">
+            <span class="opt-label" id="l-block_ads">Block ads and trackers</span>
+            <span class="opt-desc">Also blocks phishing sites.</span>
+            <span class="opt-note" id="note-block_ads" hidden>Stays on while adult sites are blocked.</span>
+            <code class="key">ServerURL</code>
+          </span>
+          <input class="switch" type="checkbox" id="block_ads" role="switch" aria-labelledby="l-block_ads" checked>
+        </label>
+        <label class="opt">
+          <span class="opt-main">
+            <span class="opt-label" id="l-block_adult">Block adult sites</span>
+            <span class="opt-desc">Also turns on safe search.</span>
+            <code class="key">ServerURL</code>
+          </span>
+          <input class="switch" type="checkbox" id="block_adult" role="switch" aria-labelledby="l-block_adult">
+        </label>
+      </div>
     </section>
 
     <!-- Connection -->
     <section class="screen" id="screen-connection" aria-labelledby="title-connection" hidden>
       <h1 class="title" id="title-connection" tabindex="-1">Connection</h1>
-      <ul class="group">
-        <li>
-          <label class="row">
-            <span class="row-main">
-              <span class="row-label" id="l-use_tls">Use DNS over TLS</span>
-              <span class="row-desc">Port 853 instead of 443. Some networks block it.</span>
-              <code class="key">DNSProtocol</code>
-            </span>
-            <input class="switch" type="checkbox" id="use_tls" role="switch" aria-labelledby="l-use_tls">
-          </label>
-        </li>
-        <li>
-          <label class="row">
-            <span class="row-main">
-              <span class="row-label" id="l-bootstrap_ips">Include AdGuard's IP addresses</span>
-              <span class="row-desc">Connects without a DNS lookup first.</span>
-              <code class="key">ServerAddresses</code>
-            </span>
-            <input class="switch" type="checkbox" id="bootstrap_ips" role="switch" aria-labelledby="l-bootstrap_ips" checked>
-          </label>
-        </li>
-        <li>
-          <label class="row">
-            <span class="row-main">
-              <span class="row-label" id="l-failover">Fall back to your network's DNS</span>
-              <span class="row-desc">Unencrypted if AdGuard can't be reached. Needs iOS or macOS 26 or later.</span>
-              <code class="key">AllowFailover</code>
-            </span>
-            <input class="switch" type="checkbox" id="failover" role="switch" aria-labelledby="l-failover">
-          </label>
-        </li>
-      </ul>
+      <div class="opts">
+        <label class="opt">
+          <span class="opt-main">
+            <span class="opt-label" id="l-use_tls">Use DNS over TLS</span>
+            <span class="opt-desc">Port 853 instead of 443. Some networks block it.</span>
+            <code class="key">DNSProtocol</code>
+          </span>
+          <input class="switch" type="checkbox" id="use_tls" role="switch" aria-labelledby="l-use_tls">
+        </label>
+        <label class="opt">
+          <span class="opt-main">
+            <span class="opt-label" id="l-bootstrap_ips">Include AdGuard's IP addresses</span>
+            <span class="opt-desc">Connects without a DNS lookup first.</span>
+            <code class="key">ServerAddresses</code>
+          </span>
+          <input class="switch" type="checkbox" id="bootstrap_ips" role="switch" aria-labelledby="l-bootstrap_ips" checked>
+        </label>
+        <label class="opt">
+          <span class="opt-main">
+            <span class="opt-label" id="l-failover">Fall back to your network's DNS</span>
+            <span class="opt-desc">Unencrypted if AdGuard can't be reached. Needs iOS or macOS 26 or later.</span>
+            <code class="key">AllowFailover</code>
+          </span>
+          <input class="switch" type="checkbox" id="failover" role="switch" aria-labelledby="l-failover">
+        </label>
+      </div>
     </section>
 
     <!-- Profile -->
     <section class="screen" id="screen-profile" aria-labelledby="title-profile" hidden>
       <h1 class="title" id="title-profile" tabindex="-1">Profile</h1>
       <p class="lede" id="summary"></p>
-      <ul class="group">
-        <li class="row"><span class="row-label">Status</span><span class="row-value" id="fact-state"></span></li>
-        <li class="row"><span class="row-label">Server</span><span class="row-value" id="fact-host"></span></li>
-        <li class="row"><span class="row-label">Protocol</span><span class="row-value" id="fact-proto"></span></li>
-        <li class="row"><span class="row-label">Addresses</span><span class="row-value" id="fact-ips"></span></li>
-      </ul>
+      <dl class="facts">
+        <div><dt>Status</dt><dd id="fact-state"></dd></div>
+        <div><dt>Server</dt><dd id="fact-host"></dd></div>
+        <div><dt>Protocol</dt><dd id="fact-proto"></dd></div>
+        <div><dt>Addresses</dt><dd id="fact-ips"></dd></div>
+      </dl>
       <p class="callout" id="warn" hidden>Fallback is on. If AdGuard can't be reached, lookups aren't encrypted.</p>
       <div class="actions">
         <button class="btn" id="download" type="button">Download profile</button>
@@ -208,36 +190,35 @@
     <!-- Install -->
     <section class="screen" id="screen-install" aria-labelledby="title-install" hidden>
       <h1 class="title" id="title-install" tabindex="-1">Install</h1>
-      <ol class="group steps">
+      <ol class="steps">
         <li>Download the profile. If Safari asks, tap <strong>Allow</strong>.</li>
         <li>Open <strong>Settings</strong> and tap <strong>Profile Downloaded</strong>.</li>
         <li>Tap <strong>Install</strong>, enter your passcode, then tap <strong>Install</strong> again.</li>
       </ol>
-      <ul class="group">
-        <li class="row"><span class="row-main"><span class="row-label">Check it</span><span class="row-desc">Settings › General › VPN &amp; Device Management lists Quiet DNS.</span></span></li>
-        <li class="row"><span class="row-main"><span class="row-label">Change a setting</span><span class="row-desc">Save and install again. There should still be one entry. If there are two, remove both, then install once.</span></span></li>
-        <li class="row"><span class="row-main"><span class="row-label">Pause</span><span class="row-desc">Switch Quiet DNS off, save and install. Experimental, so check your DNS afterwards.</span></span></li>
-        <li class="row"><span class="row-main"><span class="row-label">Remove</span><span class="row-desc">In the same place, tap Quiet DNS, then Remove Profile. This always works.</span></span></li>
-      </ul>
-      <p class="note">Not yet tested on an iPhone.</p>
+      <dl class="notes">
+        <div><dt>Check it</dt><dd>Settings, General, VPN &amp; Device Management lists Quiet DNS.</dd></div>
+        <div><dt>Change a setting</dt><dd>Save and install again. There should still be one entry. If there are two, remove both, then install once.</dd></div>
+        <div><dt>Pause</dt><dd>Switch Quiet DNS off, save and install. Experimental, so check your DNS afterwards.</dd></div>
+        <div><dt>Remove</dt><dd>In the same place, tap Quiet DNS, then Remove Profile. This always works.</dd></div>
+      </dl>
     </section>
 
     <!-- Settings -->
     <section class="screen" id="screen-settings" aria-labelledby="title-settings" hidden>
       <h1 class="title" id="title-settings" tabindex="-1">Settings</h1>
-      <div class="group">
-        <div class="row stack">
-          <span class="row-label" id="appearance-title">Appearance</span>
-          <div class="segmented" role="radiogroup" aria-labelledby="appearance-title">
-            <label><input type="radio" name="theme" value="system"><span>System</span></label>
-            <label><input type="radio" name="theme" value="light"><span>Light</span></label>
-            <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
-          </div>
+      <div class="field">
+        <h2 class="field-label" id="appearance-title">Appearance</h2>
+        <div class="choices" role="radiogroup" aria-labelledby="appearance-title">
+          <label><input type="radio" name="theme" value="system"><span>System</span></label>
+          <label><input type="radio" name="theme" value="light"><span>Light</span></label>
+          <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
         </div>
-        <label class="row">
-          <span class="row-main">
-            <span class="row-label" id="l-show_keys">Show profile keys</span>
-            <span class="row-desc">Adds the iPhone key name under each setting.</span>
+      </div>
+      <div class="opts">
+        <label class="opt">
+          <span class="opt-main">
+            <span class="opt-label" id="l-show_keys">Show profile keys</span>
+            <span class="opt-desc">Adds the iPhone key name under each setting.</span>
           </span>
           <input class="switch" type="checkbox" id="show_keys" role="switch" aria-labelledby="l-show_keys">
         </label>
@@ -247,11 +228,11 @@
     <!-- Privacy -->
     <section class="screen" id="screen-privacy" aria-labelledby="title-privacy" hidden>
       <h1 class="title" id="title-privacy" tabindex="-1">Privacy</h1>
-      <ul class="group points">
-        <li class="row">Your network can't see the sites you look up, but AdGuard DNS can. Read its privacy policy first.</li>
-        <li class="row">While Quiet DNS is paused, your network's DNS sees your lookups again.</li>
-        <li class="row">The profile is built in your browser. This site has no accounts or analytics.</li>
-        <li class="row">This site keeps your theme and last saved settings in this browser only.</li>
+      <ul class="points">
+        <li>Your network can't see the sites you look up, but AdGuard DNS can. Read its privacy policy first.</li>
+        <li>While Quiet DNS is paused, your network's DNS sees your lookups again.</li>
+        <li>The profile is built in your browser. This site has no accounts or analytics.</li>
+        <li>This site keeps your theme and last saved settings in this browser only.</li>
       </ul>
     </section>
 
