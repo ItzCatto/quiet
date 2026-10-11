@@ -37,7 +37,7 @@ Every Quiet DNS profile has the same name, identifier and UUID. A new download i
 ## Status
 
 **Checked here:**
-- 64 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, and the website's assets, install pictures, bundled font and content security policy.
+- 67 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, and the website's assets, icons, install pictures, bundled font and content security policy.
 - The browser builder matches the Python builder for all 64 combinations of settings.
 - A headless Chromium run at phone and desktop widths: every screen fits, the On and Off switch, the other switches and links work with focus moved to each screen's title, and the downloaded profiles (including the paused one) match the Python output.
 

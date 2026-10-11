@@ -271,7 +271,6 @@ body:not(.installed) .dashboard { display: none; }
 .opt-main { display: grid; gap: 4px; min-width: 0; }
 .opt-label { font: 600 1.0625rem/1.3 var(--font); }
 .opt-desc { color: var(--text-2); font-size: .9375rem; line-height: 1.4; text-wrap: pretty; }
-.opt-note { color: var(--amber); font-size: .875rem; line-height: 1.4; }
 code.key {
   display: block;
   margin-top: 2px;
@@ -305,7 +304,6 @@ body.hide-keys code.key { display: none; }
 .switch-input:checked + .switch-ui { background: var(--on); }
 .switch-input:checked + .switch-ui::after { transform: translateX(1.375rem); background: var(--on-ink); }
 .switch-input:focus-visible + .switch-ui { outline: 3px solid var(--focus); outline-offset: 3px; }
-.switch-input:disabled + .switch-ui { opacity: .4; }
 
 /* Buttons: one filled pill. Disabled reads as a quiet track. */
 .btn {

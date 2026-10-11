@@ -37,6 +37,21 @@ class SiteAssetTests(unittest.TestCase):
         self.assertIn('href="icons/apple-touch-icon.png"', self.html)
         self.assertEqual(png_size(SITE / "icons" / "apple-touch-icon.png"), (180, 180))
 
+    def test_home_screen_icons_are_solid_squares_with_no_transparency(self):
+        # iOS shows a transparent corner as black, so the icons are RGB with no alpha channel.
+        for name in ("apple-touch-icon.png", "icon-192.png", "icon-512.png"):
+            with self.subTest(icon=name):
+                data = (SITE / "icons" / name).read_bytes()
+                self.assertEqual(data[25], 2, "colour type should be RGB, not RGBA")
+
+    def test_home_screen_icon_draws_the_same_logo_as_the_page(self):
+        # The icon, the header logo, the dashboard logo and the favicon all use one path. A change to the page's
+        # logo has to be made in scripts/make_icons.py too, so the test catches the two drifting apart.
+        logo = re.search(r'<svg class="mark"[^>]*><path d="([^"]+)"', self.html).group(1)
+        generator = (ROOT / "scripts" / "make_icons.py").read_text(encoding="utf-8")
+        self.assertIn(f'MARK = "{logo}"', generator)
+        self.assertGreaterEqual(self.html.count(logo), 3)
+
     def test_every_in_page_link_points_at_a_real_screen(self):
         screens = set(re.findall(r'<section class="screen[^"]*" id="screen-([a-z]+)"', self.html))
         self.assertIn("home", screens)

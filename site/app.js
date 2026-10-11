@@ -1,7 +1,10 @@
 /* Quiet DNS website: screens, settings and the profile download. Depends on core.js and boot.js. */
 (function () {
-  var TOGGLES = ["enabled", "block_ads", "block_adult", "use_tls", "bootstrap_ips", "failover"];
-  var SCREENS = ["home", "setup", "filters", "connection", "profile", "install", "help", "privacy", "settings"];
+  // Every setting the profile depends on. The filter choice on the home screen sets block_ads and block_adult.
+  var SETTINGS = ["enabled", "block_ads", "block_adult", "use_tls", "bootstrap_ips", "failover"];
+  // The settings with a switch of their own: the power switch, and the Connection page.
+  var SWITCHES = ["enabled", "use_tls", "bootstrap_ips", "failover"];
+  var SCREENS = ["home", "setup", "connection", "profile", "install", "help", "privacy", "settings"];
   // A browser tab can open these. The other screens need the installed app, so they go to the setup page.
   var BROWSER_SCREENS = ["home", "setup", "privacy", "help"];
   var THEME_KEY = "quiet.theme";
@@ -23,7 +26,7 @@
   // What the profile will contain. Adult blocking always includes ad blocking.
   function normalized() {
     var s = {};
-    TOGGLES.forEach(function (k) { s[k] = state[k]; });
+    SETTINGS.forEach(function (k) { s[k] = state[k]; });
     if (s.block_adult) { s.block_ads = true; }
     return s;
   }
@@ -61,9 +64,7 @@
     var transport = s.use_tls ? "TLS" : "HTTPS";
     var downloaded = readPref(DOWNLOADED_KEY, "");
 
-    TOGGLES.forEach(function (id) { $(id).checked = s[id]; });
-    $("block_ads").disabled = state.block_adult;
-    $("note-block_ads").hidden = !state.block_adult;
+    SWITCHES.forEach(function (id) { $(id).checked = s[id]; });
 
     // Switch, status line and connection value
     $("widget").classList.toggle("is-on", s.enabled);
@@ -174,10 +175,9 @@
     render();
   }
 
-  TOGGLES.forEach(function (id) {
+  SWITCHES.forEach(function (id) {
     $(id).addEventListener("change", function () {
       state[id] = $(id).checked;
-      if (id === "block_adult" && state.block_adult) { state.block_ads = true; }
       changed();
     });
   });

@@ -17,7 +17,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230C0E11'/%3E%3Cpath d='M6 16c3-7 6-7 10 0s7 7 10 0' fill='none' stroke='%238FD8C2' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230C0E11'/%3E%3Cg transform='translate(12 12) scale(.7) translate(-12 -12)'%3E%3Cpath d='M1.5 12C4 5 7 5 9.5 12S15 19 17.5 12 22 5 22.5 12' fill='none' stroke='%238FD8C2' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="stylesheet" href="site.css">
 </head>
 <body data-screen="home" class="hide-keys">
@@ -58,7 +58,7 @@
           </li>
         </ul>
 
-        <p class="fine">Quiet DNS is an independent project. It is not affiliated with AdGuard or Proton.</p>
+        <p class="fine">Quiet DNS is an independent project. It is not affiliated with AdGuard.</p>
         <nav class="fine-links" aria-label="More information">
           <a href="#privacy">Privacy</a>
           <a href="#help">Help</a>
@@ -67,15 +67,6 @@
 
       <div class="dashboard">
         <h1 class="brand-title" id="title-home" tabindex="-1"><svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12C4 5 7 5 9.5 12S15 19 17.5 12 22 5 22.5 12"/></svg>Quiet DNS</h1>
-
-        <section class="start" id="start" aria-labelledby="start-title">
-          <h2 class="start-title" id="start-title">Set up in three steps</h2>
-          <ol class="steps">
-            <li>Choose a filter below.</li>
-            <li>Tap <strong>Save</strong> at the bottom of the screen.</li>
-            <li>Install the profile in Settings. <a class="textlink" href="#install">Show me how</a></li>
-          </ol>
-        </section>
 
         <section class="power" id="widget" aria-labelledby="w-title">
           <label class="switch-big">
@@ -96,13 +87,22 @@
           <p class="note" id="pick-note"></p>
         </section>
 
+        <!-- First run only: hidden once a profile has been downloaded -->
+        <section class="start" id="start" aria-labelledby="start-title">
+          <h2 class="start-title" id="start-title">Set up in three steps</h2>
+          <ol class="steps">
+            <li>Choose a filter above.</li>
+            <li>Tap <strong>Save</strong> at the bottom of the screen.</li>
+            <li>Install the profile in Settings. <a class="textlink" href="#install">Show me how</a></li>
+          </ol>
+        </section>
+
         <nav aria-label="Sections">
           <ul class="sections">
-            <li><a href="#filters">Filters</a></li>
-            <li><a href="#connection">Connection <span class="value" id="v-connection"></span></a></li>
-            <li><a href="#profile">Profile</a></li>
             <li><a href="#install">Install</a></li>
             <li><a href="#help">Help</a></li>
+            <li><a href="#connection">Connection <span class="value" id="v-connection"></span></a></li>
+            <li><a href="#profile">Profile</a></li>
             <li><a href="#privacy">Privacy</a></li>
             <li><a href="#settings">Settings</a></li>
           </ul>
@@ -120,41 +120,11 @@
         <li>Tap <strong>Add to Home Screen</strong>.</li>
         <li>Turn on <strong>Open as Web App</strong>, then tap <strong>Add</strong>.</li>
       </ol>
-      <p class="note">The settings only open from the Quiet DNS icon on your Home Screen.</p>
-    </section>
-
-    <!-- Filters -->
-    <section class="screen" id="screen-filters" aria-labelledby="title-filters" hidden>
-      <h1 class="title" id="title-filters" tabindex="-1">Filters</h1>
-      <p class="lede">Choose what Quiet DNS blocks. After a change, tap Save, then install the new profile.</p>
-      <div class="opts">
-        <label class="opt">
-          <span class="opt-main">
-            <span class="opt-label" id="l-block_ads">Block ads and trackers</span>
-            <span class="opt-desc">Ad and tracking websites get no answer. Also blocks known phishing sites.</span>
-            <span class="opt-note" id="note-block_ads" hidden>Stays on while adult sites are blocked.</span>
-            <code class="key">ServerURL</code>
-          </span>
-          <span class="switch-wrap">
-            <input class="switch-input" type="checkbox" id="block_ads" role="switch" aria-labelledby="l-block_ads" checked>
-            <span class="switch-ui" aria-hidden="true"></span>
-          </span>
-        </label>
-        <label class="opt">
-          <span class="opt-main">
-            <span class="opt-label" id="l-block_adult">Block adult sites</span>
-            <span class="opt-desc">Blocks adult websites and turns on safe search.</span>
-            <code class="key">ServerURL</code>
-          </span>
-          <span class="switch-wrap">
-            <input class="switch-input" type="checkbox" id="block_adult" role="switch" aria-labelledby="l-block_adult">
-            <span class="switch-ui" aria-hidden="true"></span>
-          </span>
-        </label>
-      </div>
+      <p class="note">Open Quiet DNS from its icon on your Home Screen from now on. Your filter and settings are there.</p>
     </section>
 
     <!-- Connection -->
+
     <section class="screen" id="screen-connection" aria-labelledby="title-connection" hidden>
       <h1 class="title" id="title-connection" tabindex="-1">Connection</h1>
       <p class="lede">Most people never need to change these.</p>
@@ -173,7 +143,7 @@
         <label class="opt">
           <span class="opt-main">
             <span class="opt-label" id="l-bootstrap_ips">Include AdGuard's IP addresses</span>
-            <span class="opt-desc">Connects to AdGuard's addresses directly, so the first lookup doesn't need another.</span>
+            <span class="opt-desc">Lets your iPhone reach AdGuard DNS without first looking up its address.</span>
             <code class="key">ServerAddresses</code>
           </span>
           <span class="switch-wrap">
@@ -254,8 +224,8 @@
       <div>
         <h2 class="section-title">Later</h2>
         <dl class="notes">
-          <div><dt>Change a setting</dt><dd>Change it on the Filters or Connection page, tap Save, then install the new profile. There should still be one Quiet DNS entry. If there are two, remove both, then install once.</dd></div>
-          <div><dt>Pause</dt><dd>Switch Quiet DNS off, then install the paused profile. Pausing is experimental, so check your DNS afterwards.</dd></div>
+          <div><dt>Change a setting</dt><dd>Change the filter on the home screen, or a setting on the Connection page. Then tap Save and install the new profile. You should still see one Quiet DNS entry.</dd></div>
+          <div><dt>Pause</dt><dd>Switch Quiet DNS off, then install the paused profile. Pausing is new, so check that ads come back afterwards.</dd></div>
           <div><dt>Remove</dt><dd>Go to Settings, General, VPN &amp; Device Management, tap Quiet DNS, then tap Remove Profile. Your iPhone goes back to its own DNS.</dd></div>
         </dl>
       </div>
@@ -279,8 +249,8 @@
           <p>While Quiet DNS is on, AdGuard DNS can't see your home network, so names for local devices may stop working. Use their IP addresses instead, or pause Quiet DNS.</p>
         </details>
         <details class="more">
-          <summary>Can I change the filter without removing anything?</summary>
-          <p>Yes. Change the filter, tap Save, then install the new profile. You don't need to remove the old one first.</p>
+          <summary>I see two Quiet DNS profiles</summary>
+          <p>Older versions used different names. Remove both, then install the profile once.</p>
         </details>
         <details class="more">
           <summary>How do I know it's working?</summary>
