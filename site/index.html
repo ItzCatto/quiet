@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quiet DNS Setup</title>
+<meta name="description" content="Build an encrypted, filtered DNS profile for iPhone. Choose your filters, download the profile, and install it.">
+<meta name="theme-color" content="#0B6E6A" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0C1113" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Quiet DNS">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230B6E6A'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='none' stroke='%23fff' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='2.7' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body data-screen="home">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-filters" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+    <symbol id="i-connection" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-profile" viewBox="0 0 24 24"><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+    <symbol id="i-install" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.3M12 18.7V21M3 12h2.3M18.7 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/></symbol>
+    <symbol id="i-privacy" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 5.1A9.7 9.7 0 0 1 12 5c5 0 8.5 4.5 9.5 7a10.6 10.6 0 0 1-2.2 3.4M6.6 6.6A10.8 10.8 0 0 0 2.5 12c1 2.5 4.5 7 9.5 7a9.6 9.6 0 0 0 4.1-.9"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  </defs>
+</svg>
+
+<noscript><p class="wrap">This page needs JavaScript to build the profile.</p></noscript>
+
+<div class="wrap">
+
+  <header class="bar">
+    <a class="back" href="#home"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-back"/></svg>Home</a>
+    <span class="brand"><span class="mark" aria-hidden="true"></span>Quiet</span>
+  </header>
+
+  <main>
+
+    <!-- Home screen -->
+    <section class="screen" id="screen-home" aria-labelledby="title-home">
+      <div class="head">
+        <h1 class="title" id="title-home" tabindex="-1">Quiet DNS</h1>
+      </div>
+
+      <section class="widget" id="widget" aria-labelledby="w-title">
+        <div class="widget-main">
+          <h2 class="widget-title" id="w-title">Quiet DNS is on</h2>
+          <p class="widget-sub" id="w-sub">Ads and trackers are blocked. Lookups are encrypted.</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="enabled" role="switch" aria-labelledby="w-title" aria-describedby="w-sub" checked>
+          <span class="track" aria-hidden="true"></span>
+        </label>
+        <div class="widget-foot">
+          <p id="w-meta">Standard filter, using HTTPS</p>
+          <a href="#profile">Profile and download</a>
+        </div>
+      </section>
+
+      <nav aria-label="Sections">
+        <ul class="tiles">
+          <li><a class="tile" href="#filters"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-filters"/></svg></span><span>Filters</span></a></li>
+          <li><a class="tile" href="#connection"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-connection"/></svg></span><span>Connection</span></a></li>
+          <li><a class="tile" href="#profile"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-profile"/></svg></span><span>Profile</span></a></li>
+          <li><a class="tile" href="#install"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-install"/></svg></span><span>Install</span></a></li>
+          <li><a class="tile" href="#privacy"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-privacy"/></svg></span><span>Privacy</span></a></li>
+          <li><a class="tile" href="#settings"><span class="tile-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-settings"/></svg></span><span>Settings</span></a></li>
+        </ul>
+      </nav>
+
+      <p class="foot">Quiet is not affiliated with AdGuard or Proton. The profiles have not been tested on an iPhone yet.</p>
+    </section>
+
+    <!-- Filters -->
+    <section class="screen" id="screen-filters" aria-labelledby="title-filters" hidden>
+      <div class="head">
+        <h1 class="title" id="title-filters" tabindex="-1">Filters</h1>
+        <p class="intro">Choose what Quiet DNS blocks. After you change a setting, download the profile again and install it.</p>
+      </div>
+      <div class="group">
+        <label class="row">
+          <span class="row-text">
+            <span class="row-title" id="l-block_ads">Block ads and trackers</span>
+            <span class="row-desc">Stops ad and tracker domains from loading. Also blocks phishing sites.</span>
+            <span class="row-note" id="note-block_ads" hidden>Stays on while adult blocking is on.</span>
+            <span class="key"><code>DNSSettings.ServerURL</code></span>
+          </span>
+          <span class="switch">
+            <input type="checkbox" id="block_ads" role="switch" aria-labelledby="l-block_ads" checked>
+            <span class="track" aria-hidden="true"></span>
+          </span>
+        </label>
+        <label class="row">
+          <span class="row-text">
+            <span class="row-title" id="l-block_adult">Block adult sites and turn on safe search</span>
+            <span class="row-desc">Uses AdGuard's family filter, which also blocks ads and trackers.</span>
+            <span class="key"><code>DNSSettings.ServerURL</code></span>
+          </span>
+          <span class="switch">
+            <input type="checkbox" id="block_adult" role="switch" aria-labelledby="l-block_adult">
+            <span class="track" aria-hidden="true"></span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Connection -->
+    <section class="screen" id="screen-connection" aria-labelledby="title-connection" hidden>
+      <div class="head">
+        <h1 class="title" id="title-connection" tabindex="-1">Connection</h1>
+        <p class="intro">How lookups reach AdGuard. Most people can keep these as they are.</p>
+      </div>
+      <div class="group">
+        <label class="row">
+          <span class="row-text">
+            <span class="row-title" id="l-use_tls">Use DNS over TLS instead of HTTPS</span>
+            <span class="row-desc">Sends lookups on port 853 instead of 443. Some networks block port 853, so keep HTTPS unless you need TLS.</span>
+            <span class="key"><code>DNSProtocol</code></span>
+          </span>
+          <span class="switch">
+            <input type="checkbox" id="use_tls" role="switch" aria-labelledby="l-use_tls">
+            <span class="track" aria-hidden="true"></span>
+          </span>
+        </label>
+        <label class="row">
+          <span class="row-text">
+            <span class="row-title" id="l-bootstrap_ips">Include AdGuard's IP addresses</span>
+            <span class="row-desc">Lets your iPhone reach AdGuard before DNS switches over. Leave this on unless you have a reason to turn it off.</span>
+            <span class="key"><code>ServerAddresses</code></span>
+          </span>
+          <span class="switch">
+            <input type="checkbox" id="bootstrap_ips" role="switch" aria-labelledby="l-bootstrap_ips" checked>
+            <span class="track" aria-hidden="true"></span>
+          </span>
+        </label>
+        <label class="row">
+          <span class="row-text">
+            <span class="row-title" id="l-failover">Fall back to your network's DNS</span>
+            <span class="row-desc">If AdGuard can't be reached, lookups use your network's DNS. Those lookups are not encrypted or filtered. Needs iOS or macOS 26 or later.</span>
+            <span class="key"><code>AllowFailover</code></span>
+          </span>
+          <span class="switch">
+            <input type="checkbox" id="failover" role="switch" aria-labelledby="l-failover">
+            <span class="track" aria-hidden="true"></span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Profile -->
+    <section class="screen" id="screen-profile" aria-labelledby="title-profile" hidden>
+      <div class="head">
+        <h1 class="title" id="title-profile" tabindex="-1">Profile</h1>
+        <p class="intro">Download the profile for your current settings. Installing it updates the Quiet DNS entry already on your iPhone.</p>
+      </div>
+      <p class="summary" id="summary"></p>
+      <div class="group">
+        <dl class="kv">
+          <div class="kv-row"><dt>Name on iPhone</dt><dd>Quiet DNS</dd></div>
+          <div class="kv-row"><dt>Status</dt><dd id="fact-state"></dd></div>
+          <div class="kv-row"><dt>Resolver</dt><dd id="fact-host"></dd></div>
+          <div class="kv-row"><dt>Protocol</dt><dd id="fact-proto"></dd></div>
+          <div class="kv-row"><dt>AdGuard IP addresses</dt><dd id="fact-ips"></dd></div>
+        </dl>
+      </div>
+      <p class="callout" id="warn" hidden>If AdGuard DNS can't be reached, lookups go to your network's DNS without encryption.</p>
+      <div class="actions" id="download-actions">
+        <button class="btn" id="download" type="button">Download profile</button>
+        <p class="next" id="next-step"></p>
+        <p class="status" id="download-status" role="status" aria-live="polite"></p>
+      </div>
+      <details>
+        <summary>What the install screen will say</summary>
+        <p id="consent"></p>
+      </details>
+      <details>
+        <summary>Show the profile file</summary>
+        <p class="fine">The downloaded file gets the current time as its PayloadVersion.</p>
+        <pre class="code"><code id="xml"></code></pre>
+      </details>
+    </section>
+
+    <!-- Install -->
+    <section class="screen" id="screen-install" aria-labelledby="title-install" hidden>
+      <div class="head">
+        <h1 class="title" id="title-install" tabindex="-1">Install</h1>
+        <p class="intro">Install the profile on your iPhone in four steps.</p>
+      </div>
+      <ol class="steps">
+        <li>Download the profile on the Profile screen. If Safari asks to download a configuration profile, tap <strong>Allow</strong>.</li>
+        <li>Open <strong>Settings</strong> and tap <strong>Profile Downloaded</strong> near the top.</li>
+        <li>Tap <strong>Install</strong>, enter your passcode, tap <strong>Install</strong> again, then tap <strong>Done</strong>.</li>
+        <li>Check the result. <strong>Settings › General › VPN &amp; Device Management</strong> should list Quiet DNS. Then load a page full of ads, or run a DNS test.</li>
+      </ol>
+      <p class="fine">Not yet tested on an iPhone. Check the entry after each install.</p>
+      <section class="block" aria-labelledby="change-title">
+        <h2 class="block-title" id="change-title">Change a setting</h2>
+        <p>Change the settings, download the profile again, and install it. The new profile replaces the Quiet DNS entry, so you should still see one entry afterwards. If you see two, remove both, then install once.</p>
+      </section>
+      <section class="block" aria-labelledby="pause-title">
+        <h2 class="block-title" id="pause-title">Pause, resume or remove</h2>
+        <dl class="terms">
+          <div><dt>Pause</dt><dd>Turn Quiet DNS off, then download and install the paused profile. This is experimental. Check your DNS afterwards.</dd></div>
+          <div><dt>Resume</dt><dd>Turn Quiet DNS on, then download and install the profile again.</dd></div>
+          <div><dt>Remove</dt><dd>Open Settings › General › VPN &amp; Device Management, tap Quiet DNS, then tap Remove Profile. This always works.</dd></div>
+        </dl>
+      </section>
+    </section>
+
+    <!-- Settings -->
+    <section class="screen" id="screen-settings" aria-labelledby="title-settings" hidden>
+      <div class="head">
+        <h1 class="title" id="title-settings" tabindex="-1">Settings</h1>
+        <p class="intro">Preferences for this website. They don't change the profile. Filters and connection have their own screens.</p>
+      </div>
+      <div class="group">
+        <div class="pref">
+          <span class="row-title" id="appearance-title">Appearance</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="appearance-title">
+            <label class="seg"><input type="radio" name="theme" value="system" checked><span>System</span></label>
+            <label class="seg"><input type="radio" name="theme" value="light"><span>Light</span></label>
+            <label class="seg"><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+          </div>
+          <span class="row-desc">System follows the light or dark setting on your device.</span>
+        </div>
+        <label class="row">
+          <span class="row-text">
+            <span class="row-title" id="l-show_keys">Show profile keys</span>
+            <span class="row-desc">Shows the iPhone profile key behind each setting, such as <code>DNSSettings.ServerURL</code>.</span>
+          </span>
+          <span class="switch">
+            <input type="checkbox" id="show_keys" role="switch" aria-labelledby="l-show_keys" checked>
+            <span class="track" aria-hidden="true"></span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="screen" id="screen-privacy" aria-labelledby="title-privacy" hidden>
+      <div class="head">
+        <h1 class="title" id="title-privacy" tabindex="-1">Privacy</h1>
+        <p class="intro">What happens to your lookups, and what this website keeps.</p>
+      </div>
+      <div class="group">
+        <ul class="points">
+          <li>This website builds your profile in your browser. It doesn't save your choices or send them anywhere.</li>
+          <li>AdGuard DNS sees the domain names your iPhone looks up. Read AdGuard's privacy policy before you rely on it.</li>
+          <li>While Quiet DNS is paused, your network's DNS sees those lookups again.</li>
+          <li>This page loads one font stylesheet from Google Fonts.</li>
+          <li>Quiet is not affiliated with AdGuard or Proton.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

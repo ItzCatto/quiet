@@ -1,0 +1,11 @@
+# Generated output
+dist/
+__pycache__/
+*.pyc
+
+# Secrets: WireGuard configs, certificates, and private keys must never be committed
+*.conf
+*.pem
+*.key
+*.p12
+*.crt
