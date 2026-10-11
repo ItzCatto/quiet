@@ -34,6 +34,16 @@ class ProfileError(ValueError):
     """A profile failed its checks."""
 
 
+# iPhone rejects a profile whose PayloadVersion is a raw Unix time ("The profile version is not supported").
+# Versions count minutes since 1 January 2000 instead. They stay small, still rise with every build,
+# and differ between two builds made a minute apart, so a new download replaces the one before it.
+EPOCH_2000 = 946684800
+
+
+def profile_version(unix_seconds: int) -> int:
+    return (unix_seconds - EPOCH_2000) // 60
+
+
 def profile_name(s: Settings) -> str:
     return DISPLAY_NAME
 

@@ -1,7 +1,7 @@
 /* Quiet DNS setup: screens, settings and the profile download. Depends on core.js. */
 (function () {
   var TOGGLES = ["enabled", "block_ads", "block_adult", "use_tls", "bootstrap_ips", "failover"];
-  var SCREENS = ["home", "filters", "connection", "profile", "install", "privacy", "settings"];
+  var SCREENS = ["home", "setup", "filters", "connection", "profile", "install", "privacy", "settings"];
   var THEME_KEY = "quiet.theme";
   var KEYS_KEY = "quiet.showKeys";
   var FILTER_LABEL = {"default": "Standard", "family": "Family", "unfiltered": "Unfiltered"};
@@ -68,14 +68,14 @@
       ? "Install it on your iPhone. If Quiet DNS is already installed, this updates that entry."
       : "Install it to pause Quiet DNS. Install the normal profile again to turn it back on.";
     $("consent").textContent = QuietCore.consentText(s);
-    $("xml").textContent = QuietCore.profileXML(s, Math.floor(Date.now() / 1000));
+    $("xml").textContent = QuietCore.profileXML(s, QuietCore.profileVersion(Math.floor(Date.now() / 1000)));
   }
 
   function download() {
     var s = normalized();
     var name = fileName(s);
-    // The version is the current time, so every download replaces the profile installed before it.
-    var xml = QuietCore.profileXML(s, Math.floor(Date.now() / 1000));
+    // The version counts minutes, so every download made a minute apart replaces the profile installed before it.
+    var xml = QuietCore.profileXML(s, QuietCore.profileVersion(Math.floor(Date.now() / 1000)));
     try {
       var blob = new Blob([xml], {type: "application/x-apple-aspen-config"});
       var url = URL.createObjectURL(blob);
@@ -167,6 +167,12 @@
 
   applyTheme(readPref(THEME_KEY, "system"));
   applyKeys(readPref(KEYS_KEY, "1") === "1");
+
+  // The dashboard is only for the installed app. In a browser tab the home screen shows the setup instead.
+  // iOS sets navigator.standalone; other browsers use the display-mode media query.
+  var installed = window.navigator.standalone === true ||
+    (window.matchMedia ? window.matchMedia("(display-mode: standalone)").matches : false);
+  document.body.classList.toggle("installed", installed);
 
   render();
   show(current(), false);

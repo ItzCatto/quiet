@@ -324,6 +324,44 @@ body[data-screen="home"] .home a:focus-visible { outline-color: #FFFFFF; }
   white-space: nowrap;
 }
 
+/* Browser tab: the home screen offers setup. The dashboard only shows once the site is installed. */
+.welcome { display: flex; flex-direction: column; gap: 1rem; padding-top: 1rem; }
+body.installed .welcome { display: none; }
+body:not(.installed) .home-grid,
+body:not(.installed) .home-foot { display: none; }
+.welcome-card {
+  display: grid;
+  gap: .6rem;
+  padding: 1.4rem 1.25rem 1.25rem;
+  border: 1px solid rgb(255 255 255 / .16);
+  border-radius: 24px;
+  background: rgb(255 255 255 / .12);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  box-shadow: 0 10px 30px rgb(0 0 0 / .25);
+}
+.welcome-title {
+  font: 650 1.5rem/1.2 var(--sans);
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+.welcome-text { font-size: 1rem; line-height: 1.45; opacity: .85; }
+.welcome-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  margin-top: .4rem;
+  border-radius: 999px;
+  background: #FFFFFF;
+  color: #0B0E1E;
+  font: 600 1.0625rem/1 var(--sans);
+  text-decoration: none;
+}
+.welcome-btn:active { transform: scale(.98); }
+.welcome-alt { padding-inline: .25rem; font-size: .875rem; color: rgb(255 255 255 / .75); }
+.welcome-alt a { color: #FFFFFF; font-weight: 600; }
+
 /* App icons: a rounded square per app, with its name below, as on an iPhone */
 .apps {
   display: grid;

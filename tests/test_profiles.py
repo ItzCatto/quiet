@@ -134,3 +134,14 @@ class ProfileTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ProfileVersionTests(unittest.TestCase):
+    def test_version_is_a_small_integer_that_rises_with_each_minute(self):
+        # A raw Unix time (about 1.79 billion) made iPhone reject the profile as "not supported".
+        start = profiles.EPOCH_2000 + 60 * 1000  # the start of a minute
+        version = profiles.profile_version(start)
+        self.assertEqual(version, 1000)
+        self.assertEqual(profiles.profile_version(start + 59), 1000)
+        self.assertEqual(profiles.profile_version(start + 60), 1001)
+        self.assertLess(profiles.profile_version(1791705995), 2**31)

@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.2.1
+
+### Fixed
+- **"The profile version is not supported" on iPhone.** The profile's PayloadVersion was the Unix time in seconds, which iPhone rejected. It is now the number of minutes since 1 January 2000, so it stays small and still rises with each download. The command line and the website use the same value.
+
+### Changed
+- **Home screen in a browser.** It shows a "Get started" card that explains how to add Quiet DNS to the Home Screen. The dashboard only appears when the site is opened from the Home Screen icon.
+- **Get started screen.** Share, View More, Add to Home Screen, and Open as Web App, with each step numbered.
+
+### Tests
+- 55 automated tests, up from 54. A new test checks the profile version.
+
 ## 2.2.0
 
 ### Changed

@@ -68,7 +68,7 @@ def _inside_project(path: Path) -> bool:
 
 
 def _cmd_presets(args: argparse.Namespace) -> int:
-    version = args.version or int(time.time())
+    version = args.version or profiles.profile_version(int(time.time()))
     # Build and check every preset before writing anything, so a failure never leaves a mix of files.
     built = [(args.out / name, _build(s, version)) for name, s in PRESETS]
     for path, raw in built:
@@ -85,7 +85,7 @@ def _cmd_profile(args: argparse.Namespace) -> int:
         bootstrap_ips=not args.no_bootstrap,
         failover=args.failover,
     )
-    raw = _build(s, args.version or int(time.time()))
+    raw = _build(s, args.version or profiles.profile_version(int(time.time())))
     _write(args.output, raw, args.sign, args.chain)
     return 0
 

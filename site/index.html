@@ -55,6 +55,17 @@
 
       <h1 class="sr-only" id="title-home" tabindex="-1">Quiet DNS</h1>
 
+      <!-- Shown in a browser. The dashboard below appears only when Quiet DNS is opened from the Home Screen. -->
+      <section class="welcome" aria-labelledby="welcome-title">
+        <div class="welcome-card">
+          <p class="widget-kicker">Quiet DNS</p>
+          <h2 class="welcome-title" id="welcome-title">Set up encrypted DNS on your iPhone</h2>
+          <p class="welcome-text">Add Quiet DNS to your Home Screen first, then open it from there to set up the filters and profile.</p>
+          <a class="welcome-btn" href="#setup">Get started</a>
+        </div>
+        <p class="welcome-alt">On a Mac or a computer? <a href="#profile">Download the profile here</a></p>
+      </section>
+
       <div class="home-grid">
         <section class="widget" id="widget" aria-labelledby="w-title">
           <div class="widget-main">
@@ -85,6 +96,22 @@
       </div>
 
       <p class="home-foot">Not affiliated with AdGuard or Proton. Not yet tested on an iPhone.</p>
+    </section>
+
+    <!-- Setup: how to add the site to the Home Screen -->
+    <section class="screen" id="screen-setup" aria-labelledby="title-setup" hidden>
+      <div class="head">
+        <h1 class="title" id="title-setup" tabindex="-1">Get started</h1>
+        <p class="intro">Add Quiet DNS to your Home Screen, then open it from there to set up the filters and profile.</p>
+      </div>
+      <ol class="steps">
+        <li>In Safari, tap the <strong>Share</strong> button, the square with an arrow pointing up.</li>
+        <li>Scroll down the share sheet and tap <strong>View More</strong>.</li>
+        <li>Tap <strong>Add to Home Screen</strong>.</li>
+        <li>Turn on <strong>Open as Web App</strong>, then tap <strong>Add</strong>.</li>
+        <li>Close Safari and open <strong>Quiet DNS</strong> from its icon on your Home Screen.</li>
+      </ol>
+      <p class="fine">If Open as Web App is off, the icon opens in Safari and the dashboard stays hidden.</p>
     </section>
 
     <!-- Filters -->

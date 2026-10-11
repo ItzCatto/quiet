@@ -125,6 +125,11 @@ var QuietCore = (function () {
     }).join("\n") + "\n" + pad + "</dict>";
   }
 
+  // Same as profiles.profile_version: minutes since 1 January 2000, never a raw Unix time.
+  function profileVersion(unixSeconds) {
+    return Math.floor((unixSeconds - 946684800) / 60);
+  }
+
   function profileXML(s, version) {
     return '<?xml version="1.0" encoding="UTF-8"?>\n' +
       '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
@@ -133,6 +138,7 @@ var QuietCore = (function () {
 
   return {
     RESOLVERS: RESOLVERS,
+    profileVersion: profileVersion,
     resolverKey: resolverKey,
     profileName: profileName,
     summary: summary,
