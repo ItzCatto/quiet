@@ -45,7 +45,7 @@
     $("block_ads").disabled = state.block_adult;
     $("note-block_ads").hidden = !state.block_adult;
 
-    // Dial, status line and connection value
+    // State band, status line and connection value
     $("widget").classList.toggle("is-on", s.enabled);
     $("w-title").textContent = s.enabled ? "Quiet DNS is on" : "Quiet DNS is paused";
     $("w-sub").textContent = s.enabled ? FILTER_LABEL[key] + " filter, " + transport : "Using your network's DNS";

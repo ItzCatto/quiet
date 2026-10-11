@@ -50,12 +50,12 @@ class SiteAssetTests(unittest.TestCase):
             with self.subTest(screen=name):
                 self.assertIn(f'id="title-{name}" tabindex="-1"', self.html)
 
-    def test_karla_font_is_bundled_with_its_license(self):
+    def test_font_is_bundled_with_its_license(self):
         # The type comes from this folder, not from a font service, so the page makes no request to another website.
         css = (SITE / "site.css").read_text(encoding="utf-8")
-        self.assertIn('url("fonts/karla-latin-wght-normal.woff2")', css)
-        self.assertTrue((SITE / "fonts" / "karla-latin-wght-normal.woff2").exists())
-        self.assertTrue((SITE / "fonts" / "Karla-OFL.txt").exists())
+        self.assertIn('url("fonts/schibsted-grotesk-latin-wght-normal.woff2")', css)
+        self.assertTrue((SITE / "fonts" / "schibsted-grotesk-latin-wght-normal.woff2").exists())
+        self.assertTrue((SITE / "fonts" / "Schibsted-Grotesk-OFL.txt").exists())
 
     def test_page_loads_nothing_from_another_website(self):
         # The privacy screen says the site makes no requests to other websites, so fonts and scripts stay on this host.
