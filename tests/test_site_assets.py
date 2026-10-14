@@ -118,6 +118,20 @@ class SiteAssetTests(unittest.TestCase):
         boot = (SITE / "boot.js").read_text(encoding="utf-8")
         self.assertIn('classList.add("installed")', boot)
 
+    def test_site_version_matches_the_newest_changelog_entry(self):
+        # The support details print the site's version, so it has to be the release in the changelog.
+        js = (SITE / "app.js").read_text(encoding="utf-8")
+        version = re.search(r'APP_VERSION = "([^"]+)"', js).group(1)
+        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        newest = re.search(r"^## (\S+)", changelog, re.MULTILINE).group(1)
+        self.assertEqual(version, newest)
+
+    def test_larger_text_scales_the_whole_site(self):
+        # Every size on the page is in rem, so one rule on the root element scales all of it.
+        css = (SITE / "site.css").read_text(encoding="utf-8")
+        self.assertIn('html[data-text="larger"]', css)
+        self.assertIn('value="larger"', self.html)
+
     def test_numbered_steps_let_their_text_flow_as_one_piece(self):
         # A grid splits a sentence around its bold words and links into separate cells, so steps must not use one.
         css = (SITE / "site.css").read_text(encoding="utf-8")

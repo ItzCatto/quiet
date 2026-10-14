@@ -95,7 +95,7 @@ code { font-family: var(--mono); }
   margin: 0 auto;
   padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 56px max(16px, env(safe-area-inset-left));
 }
-body.installed .wrap { padding-bottom: 150px; }
+body.installed .wrap { padding-bottom: 184px; }
 .screen { display: grid; gap: 28px; padding-top: 12px; }
 .screen > * { min-width: 0; }
 
@@ -118,7 +118,19 @@ body.installed[data-screen="home"] .bar { display: none; }
 .section-title { font: 700 1.25rem/1.3 var(--font); letter-spacing: -.01em; }
 /* A link inside a sentence stays inline, so it can't stretch the line. A link on its own line gets a full tap target. */
 .textlink { font-weight: 600; }
-.link-action { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+.link-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--on);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
 
 /* Browser home page. The dashboard only shows in the installed app. */
 body.installed .landing { display: none; }
@@ -323,6 +335,9 @@ body.hide-keys code.key { display: none; }
 .btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 .btn:disabled { background: var(--track); color: var(--text-2); cursor: default; }
 .btn-sm { min-height: 44px; padding: 0 20px; font-size: .9375rem; }
+/* A quieter button beside Save: the track colour, not the mint */
+.btn-quiet { background: var(--track); color: var(--text); }
+.btn-quiet:disabled { background: var(--track); color: var(--text-2); }
 
 /* Steps: numbered only because they really are in order */
 .steps { display: grid; gap: 16px; counter-reset: step; }
@@ -429,7 +444,8 @@ body.hide-keys code.key { display: none; }
 }
 .more[open] summary::after { content: "\2212"; }
 .more > p { padding-bottom: 18px; color: var(--text-2); font-size: .9375rem; line-height: 1.5; text-wrap: pretty; }
-.more > .code { margin-bottom: 18px; }
+.more > .code, .more > .points { margin-bottom: 18px; }
+.more > .points li { padding: 12px 0; font-size: .9375rem; }
 .code {
   max-width: 100%;
   overflow-x: auto;
@@ -474,6 +490,9 @@ body.installed .savebar {
 }
 .savebar-text.is-unsaved::before { background: var(--amber); }
 .save-status { color: var(--text-2); font-size: .875rem; line-height: 1.35; text-wrap: pretty; }
+
+/* Larger text, chosen in Settings. Every size on the page is in rem, so the whole site scales. */
+html[data-text="larger"] { font-size: 112.5%; }
 
 /* Larger type from a wider phone or a tablet */
 @media (min-width: 40rem) {

@@ -174,6 +174,7 @@
         <div><dt>Server</dt><dd id="fact-host"></dd></div>
         <div><dt>Protocol</dt><dd id="fact-proto"></dd></div>
         <div><dt>Addresses</dt><dd id="fact-ips"></dd></div>
+        <div><dt>Last saved</dt><dd id="fact-saved"></dd></div>
       </dl>
       <p class="callout" id="warn" hidden>Fallback is on. If AdGuard DNS can't be reached, lookups aren't encrypted.</p>
       <div class="actions">
@@ -181,6 +182,7 @@
         <p class="note" id="next-step"></p>
         <p class="status-line" id="download-status" role="status" aria-live="polite"></p>
         <p class="note"><a class="link-action" href="#install">Show me how to install it</a></p>
+        <p class="note"><button class="link-action" id="copy-details" type="button">Copy details for support</button></p>
       </div>
       <div>
         <details class="more">
@@ -237,6 +239,14 @@
       <p class="lede">Answers to the questions people ask most.</p>
       <div>
         <details class="more">
+          <summary>What's the difference between the filters?</summary>
+          <ul class="points">
+            <li><strong>Standard</strong> blocks ads, trackers and phishing sites. It's the recommended choice for most people.</li>
+            <li><strong>Family</strong> also blocks adult websites and turns on safe search.</li>
+            <li><strong>Unfiltered</strong> doesn't block ads or trackers. Lookups are still encrypted.</li>
+          </ul>
+        </details>
+        <details class="more">
           <summary>Some ads still show</summary>
           <p>Ads served from the same website as the content, such as ads inside a video, can't be blocked by DNS. Most other ads and trackers are blocked.</p>
         </details>
@@ -277,6 +287,14 @@
         </div>
         <p class="note">System follows the appearance setting on your iPhone.</p>
       </div>
+      <div class="field">
+        <h2 class="field-label" id="textsize-title">Text size</h2>
+        <div class="choices" role="radiogroup" aria-labelledby="textsize-title">
+          <label><input type="radio" name="text" value="standard"><span>Standard</span></label>
+          <label><input type="radio" name="text" value="larger"><span>Larger</span></label>
+        </div>
+        <p class="note">Makes the text on this website bigger. It doesn't change your iPhone.</p>
+      </div>
       <div class="opts">
         <label class="opt">
           <span class="opt-main">
@@ -312,6 +330,7 @@
       <p class="savebar-text" id="savebar-text">Unsaved</p>
       <p class="save-status" id="save-status" role="status" aria-live="polite"></p>
     </div>
+    <button class="btn btn-sm btn-quiet" id="discard" type="button" hidden>Discard</button>
     <button class="btn btn-sm" id="save" type="button">Save</button>
   </div>
 </div>

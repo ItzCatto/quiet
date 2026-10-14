@@ -1,23 +1,29 @@
 /* Quiet DNS website: screens, settings and the profile download. Depends on core.js and boot.js. */
 (function () {
+  // Shown in the support details. Keep it equal to the newest version in CHANGELOG.md; a test checks this.
+  var APP_VERSION = "2.2.1";
   // Every setting the profile depends on. The filter choice on the home screen sets block_ads and block_adult.
   var SETTINGS = ["enabled", "block_ads", "block_adult", "use_tls", "bootstrap_ips", "failover"];
   // The settings with a switch of their own: the power switch, and the Connection page.
   var SWITCHES = ["enabled", "use_tls", "bootstrap_ips", "failover"];
+  var DEFAULTS = {enabled: true, block_ads: true, block_adult: false, use_tls: false, bootstrap_ips: true, failover: false};
   var SCREENS = ["home", "setup", "connection", "profile", "install", "help", "privacy", "settings"];
   // A browser tab can open these. The other screens need the installed app, so they go to the setup page.
   var BROWSER_SCREENS = ["home", "setup", "privacy", "help"];
   var THEME_KEY = "quiet.theme";
+  var TEXT_KEY = "quiet.textSize";
   var KEYS_KEY = "quiet.showKeys";
   // The settings last downloaded as a profile. The save bar compares the current settings with them.
   var DOWNLOADED_KEY = "quiet.downloaded";
+  // When the profile was last downloaded, for the Profile page and the support details.
+  var SAVED_AT_KEY = "quiet.savedAt";
   var FILTER_LABEL = {"default": "Standard", "family": "Family", "unfiltered": "Unfiltered"};
   var FILTER_NOTE = {
-    "default": "Blocks ads, trackers and phishing sites.",
+    "default": "Recommended for most people. Blocks ads, trackers and phishing sites.",
     "family": "Also blocks adult websites and turns on safe search.",
     "unfiltered": "Nothing is blocked. Lookups are still encrypted."
   };
-  var state = {enabled: true, block_ads: true, block_adult: false, use_tls: false, bootstrap_ips: true, failover: false};
+  var state = JSON.parse(JSON.stringify(DEFAULTS));
   // True after Save starts a download, until the person taps Continue.
   var awaitingAllow = false;
   // Set by boot.js before this file runs.
@@ -59,6 +65,18 @@
     try { window.localStorage.setItem(key, value); } catch (err) { /* keep working without memory */ }
   }
 
+  // True when the settings on screen differ from the last profile downloaded.
+  function isUnsaved() {
+    return readPref(DOWNLOADED_KEY, "") !== JSON.stringify(normalized());
+  }
+
+  function savedText() {
+    var value = readPref(SAVED_AT_KEY, "");
+    var when = value ? new Date(value) : null;
+    if (!when || isNaN(when.getTime())) { return "Not yet"; }
+    return when.toLocaleString(undefined, {dateStyle: "medium", timeStyle: "short"});
+  }
+
   function render() {
     var s = normalized();
     var key = QuietCore.resolverKey(s);
@@ -88,6 +106,7 @@
     $("fact-host").textContent = host;
     $("fact-proto").textContent = transport;
     $("fact-ips").textContent = s.bootstrap_ips ? (r.ipv4.length + r.ipv6.length) + " included" : "Not included";
+    $("fact-saved").textContent = savedText();
     $("warn").hidden = !(s.enabled && s.failover);
     $("download").textContent = s.enabled ? "Download profile" : "Download paused profile";
     $("next-step").textContent = s.enabled
@@ -97,11 +116,14 @@
     $("xml").textContent = QuietCore.profileXML(s);
 
     // Save bar: unsaved until the profile is downloaded with these settings. After Save it waits for Allow,
-    // and Continue then opens the install steps.
-    var unsaved = downloaded !== JSON.stringify(s);
+    // and Continue then opens the install steps. Discard puts the settings back to the last download.
+    var unsaved = isUnsaved();
     var waiting = awaitingAllow && !unsaved;
     $("savebar-text").textContent = waiting ? "Waiting for Allow" : (unsaved ? "Unsaved" : "Saved");
     $("savebar-text").classList.toggle("is-unsaved", unsaved || waiting);
+    // Discard only shows when there is something to discard: a change since the last download, or any change
+    // before the first download.
+    $("discard").hidden = !unsaved || (downloaded === "" && JSON.stringify(s) === JSON.stringify(DEFAULTS));
     $("save").textContent = waiting ? "Continue" : "Save";
     $("save").disabled = !unsaved && !waiting;
 
@@ -132,6 +154,7 @@
     // Remember what was downloaded, so the save bar shows Saved. A web page can't open Settings on iPhone,
     // so the bar says where to tap instead.
     savePref(DOWNLOADED_KEY, JSON.stringify(s));
+    savePref(SAVED_AT_KEY, new Date().toISOString());
     $("download-status").textContent = "Download started. If nothing happens, allow downloads for this site.";
     awaitingAllow = fromSave;
     $("save-status").textContent = fromSave
@@ -146,6 +169,44 @@
     $("save-status").textContent = "Downloaded. Next, open Settings, tap General, then VPN & Device Management.";
     window.location.hash = "#install";
     render();
+  }
+
+  // Back to the settings last downloaded, or to the defaults when nothing has been downloaded yet.
+  function discard() {
+    var base = DEFAULTS;
+    try {
+      var saved = readPref(DOWNLOADED_KEY, "");
+      if (saved) { base = JSON.parse(saved); }
+    } catch (err) {
+      base = DEFAULTS;
+    }
+    SETTINGS.forEach(function (k) { state[k] = base[k] === undefined ? DEFAULTS[k] : base[k]; });
+    awaitingAllow = false;
+    $("download-status").textContent = "";
+    $("save-status").textContent = "Changes discarded.";
+    render();
+  }
+
+  // Copies a short summary for support. It holds the settings and the version, and nothing about the device.
+  function copyDetails() {
+    var text = [
+      "Quiet DNS " + APP_VERSION,
+      "Status: " + $("fact-state").textContent,
+      "Server: " + $("fact-host").textContent,
+      "Protocol: " + $("fact-proto").textContent,
+      "Addresses: " + $("fact-ips").textContent,
+      "Last saved: " + $("fact-saved").textContent
+    ].join("\n");
+    function report(ok) {
+      $("download-status").textContent = ok
+        ? "Copied. Paste it into your message."
+        : "Couldn't copy on this phone. Try again, or write the details down.";
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { report(true); }, function () { report(false); });
+    } catch (err) {
+      report(false);
+    }
   }
 
   // Screens are chosen by the URL hash, so every row is a real link that works without a page reload.
@@ -186,12 +247,16 @@
 
   window.addEventListener("hashchange", function () { show(current(), true); });
 
-  // Any change clears the messages from the last download, then redraws.
+  // Any change clears the messages from the last download, then redraws. Until the profile is saved and installed,
+  // the iPhone keeps its current setting, so the save bar says so as soon as something changes.
   function changed() {
     awaitingAllow = false;
     $("download-status").textContent = "";
     $("save-status").textContent = "";
     render();
+    if (isUnsaved()) {
+      $("save-status").textContent = "Not on your iPhone yet. Save, then install the profile.";
+    }
   }
 
   SWITCHES.forEach(function (id) {
@@ -214,6 +279,8 @@
   $("save").addEventListener("click", function () {
     if (awaitingAllow) { continueToInstall(); } else { download(true); }
   });
+  $("discard").addEventListener("click", discard);
+  $("copy-details").addEventListener("click", copyDetails);
 
   function applyTheme(value) {
     var root = document.documentElement;
@@ -224,6 +291,19 @@
       root.removeAttribute("data-theme");
     }
     document.querySelectorAll('input[name="theme"]').forEach(function (radio) {
+      radio.checked = radio.value === value;
+    });
+  }
+
+  function applyText(value) {
+    var root = document.documentElement;
+    if (value === "larger") {
+      root.setAttribute("data-text", "larger");
+    } else {
+      value = "standard";
+      root.removeAttribute("data-text");
+    }
+    document.querySelectorAll('input[name="text"]').forEach(function (radio) {
       radio.checked = radio.value === value;
     });
   }
@@ -239,12 +319,19 @@
       savePref(THEME_KEY, radio.value);
     });
   });
+  document.querySelectorAll('input[name="text"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      applyText(radio.value);
+      savePref(TEXT_KEY, radio.value);
+    });
+  });
   $("show_keys").addEventListener("change", function () {
     applyKeys($("show_keys").checked);
     savePref(KEYS_KEY, $("show_keys").checked ? "1" : "0");
   });
 
   applyTheme(readPref(THEME_KEY, "dark"));
+  applyText(readPref(TEXT_KEY, "standard"));
   applyKeys(readPref(KEYS_KEY, "0") === "1");
 
   render();

@@ -37,13 +37,14 @@ Every Quiet DNS profile has the same name, identifier and UUID. A new download i
 ## Status
 
 **Checked here:**
-- 67 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, and the website's assets, icons, install pictures, bundled font and content security policy.
+- 76 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, the resolver check's replies, and the website's assets, icons, install pictures, bundled font and content security policy.
 - The browser builder matches the Python builder for all 64 combinations of settings.
 - A headless Chromium run at phone and desktop widths: every screen fits, the On and Off switch, the other switches and links work with focus moved to each screen's title, and the downloaded profiles (including the paused one) match the Python output.
 
 **Not checked yet:**
 - Installing on a real iPhone: the owner has installed the profile, and it appears under Downloaded Profile and in VPN & Device Management. Ads being blocked in Safari and other apps isn't confirmed yet. Start with [docs/install-iphone.md](docs/install-iphone.md).
 - Installing on a Mac.
+- The weekly AdGuard DNS check (`.github/workflows/resolver-check.yml`). It hasn't run on GitHub yet. The sandbox used to build it couldn't reach AdGuard's hostnames, so the first scheduled run is the real test. Run it by hand with `python3 scripts/check_resolvers.py` from a machine that can reach AdGuard.
 - Whether a new download updates the existing entry instead of adding one.
 - Pausing. The paused profile is experimental.
 - Signing with a real certificate. Only a throwaway test certificate was used.
