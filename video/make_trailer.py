@@ -4,7 +4,7 @@
     python3 video/make_trailer.py        # writes dist/Quiet-DNS-trailer.mp4
 
 Needs Pillow, numpy, fonttools and brotli (to read the site's WOFF2 font), and ffmpeg on the PATH
-(or the imageio-ffmpeg package). Everything on screen comes from this repo: the wave mark with the same path as the site, the Schibsted Grotesk font, and the colours in site/site.css. The app's screens are not shown in this cut, so the trailer says COMING SOON in their place.
+(or the imageio-ffmpeg package). Everything on screen comes from this repo: the wave mark with the same path as the site, the Schibsted Grotesk font, and the colours in site/site.css. No app screens are shown; the trailer uses the logo mark and says COMING SOON near the end.
 """
 
 from __future__ import annotations
@@ -175,9 +175,10 @@ HERO_LEADING = 1.06  # line spacing as a multiple of the hero size
 
 # The cuts. Each one is a hard cut with a quick snap in, not a slow fade, so the pace comes from the edit.
 CUT_LOGO = 2.0       # the hook ends and the logo draws on
-CUT_PHONES = 4.0     # the logo snaps away and the title card lands
-CUT_PHRASES = 9.0    # the title card leaves and the three promises begin
+CUT_PHONES = 4.0     # the logo snaps away and the wave rows start
+CUT_PHRASES = 9.0    # the wave rows stop and the three promises begin
 CUT_CLOSE = 15.0     # the promises end and the logo settles
+CUT_SOON = 21.0       # COMING SOON lands under the closing line
 CUT_END = 23.2       # the picture fades to black
 
 SNAP = 0.12          # seconds for a line of type to land
@@ -206,22 +207,30 @@ def scene2(frame: Image.Image, t: float) -> None:
     paste_logo(frame, W / 2, 960, LOGO_SIZE, alpha=fade, progress=draw)
 
 
+# The wave mark, in three rows that move at their own speeds. The outer rows are muted; the middle one is mint.
+MARK_ROW_SIZE = 260
+MARK_ROW_GAP = 330      # distance between neighbouring marks in a row
+MUTED = (58, 66, 76)
+MARK_ROWS = [(700, -380, MUTED), (960, 300, MINT), (1220, -460, MUTED)]  # (centre y, px per second, colour)
+
+
+def paste_mark(frame: Image.Image, cx: float, cy: float, mask: Image.Image, color, alpha: float) -> None:
+    if alpha <= 0:
+        return
+    m = mask if alpha >= 1 else mask.point(lambda v: int(v * alpha))
+    x0 = int(round(cx - mask.width / 2))
+    y0 = int(round(cy - mask.height / 2))
+    frame.paste(color, (x0, y0, x0 + mask.width, y0 + mask.height), m)
+
+
 def scene3(frame: Image.Image, t: float) -> None:
-    """4-9 s: a title card. The app's screens are not shown in this cut, so the trailer says COMING SOON."""
-    out = 1 - ramp(t, CUT_PHRASES - 0.1, 0.1)
-    f = face(HERO_SIZE, 800)
-    step = HERO_SIZE * HERO_LEADING
-    for text, t0, row in (("COMING", CUT_PHONES, -0.5), ("SOON", CUT_PHONES + 0.5, 0.5)):
-        k = ease_out_expo(ramp(t, t0, SNAP))
-        rise = (1 - k) * 28
-        paint(frame, text_mask(text, f, W / 2, H / 2 + row * step + rise, k * out))
-    # A mint hairline opens above the words, as it does for the promises.
-    grow = ease_out_expo(ramp(t, CUT_PHONES, 0.2)) * out
-    half = int(100 * grow)
-    top = int(H / 2 - 0.5 * step - 0.72 * HERO_SIZE - 40)
-    bar = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(bar).rectangle((W // 2 - half, top, W // 2 + half, top + 3), fill=255)
-    paint(frame, bar, MINT)
+    """4-9 s: the wave mark in three rows, each moving at its own speed. No app screens are shown."""
+    alpha = ramp(t, CUT_PHONES, SNAP) * (1 - ramp(t, CUT_PHRASES - 0.1, 0.1))
+    mask = logo_mask(MARK_ROW_SIZE)
+    for cy, speed, color in MARK_ROWS:
+        shift = (speed * (t - CUT_PHONES)) % MARK_ROW_GAP
+        for k in range(-1, W // MARK_ROW_GAP + 3):
+            paste_mark(frame, k * MARK_ROW_GAP + shift, cy, mask, color, alpha)
 
 
 def scene4(frame: Image.Image, t: float) -> None:
@@ -258,6 +267,9 @@ def scene5(frame: Image.Image, t: float) -> None:
 
     line_a = ease_in_out(ramp(t, CUT_CLOSE + 1.8, 0.6)) * out
     paint(frame, text_mask("Your phone, the way you deserve it.", face(44, 400), W / 2, 1100, line_a), TEXT2)
+
+    soon_a = ease_out_expo(ramp(t, CUT_SOON, SNAP)) * out
+    paint(frame, text_mask("COMING SOON", face(40, 700), W / 2, 1200, soon_a, track=8), MINT)
 
 
 def frame_at(t: float) -> Image.Image:
@@ -330,7 +342,10 @@ def make_sound() -> np.ndarray:
         _add(buf, _kick(0.22), cut)
     for land in (0.5, 1.0):                                  # the second and third hook lines
         _add(buf, _tick(2200, 0.05, 0.04), land)
-    _add(buf, _tick(1400, 0.05, 0.025), CUT_PHONES + 0.5)   # SOON lands
+
+    for k in range(1, 10):                                    # a hat on each half-beat of the rows
+        _add(buf, _tick(1400, 0.05, 0.02), CUT_PHONES + 0.5 * k)
+    _add(buf, _tick(1800, 0.07, 0.03), CUT_SOON)              # COMING SOON lands
 
     # The logo draws on with a rising sweep.
     _add(buf, _tick(2200, 0.09, 0.045), CUT_LOGO + 0.1)
