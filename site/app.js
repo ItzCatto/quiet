@@ -1,7 +1,7 @@
 /* Quiet DNS website: screens, settings and the profile download. Depends on core.js and boot.js. */
 (function () {
   // Shown in the support details. Keep it equal to the newest version in CHANGELOG.md; a test checks this.
-  var APP_VERSION = "2.2.1";
+  var APP_VERSION = "2.3.0";
   // Every setting the profile depends on. The filter choice on the home screen sets block_ads and block_adult.
   var SETTINGS = ["enabled", "block_ads", "block_adult", "use_tls", "bootstrap_ips", "failover"];
   // The settings with a switch of their own: the power switch, and the Connection page.
@@ -70,6 +70,29 @@
     return readPref(DOWNLOADED_KEY, "") !== JSON.stringify(normalized());
   }
 
+  // The address this page was opened from, for the Home Screen icon in the profile. Only a secure address
+  // works, so a page opened from a file or a preview gets no icon.
+  function pageAddress() {
+    var href = window.location.href.split("#")[0].split("?")[0];
+    return /^https:\/\//.test(href) ? href : null;
+  }
+
+  // The settings that differ from the last download, in words. Empty before the first download.
+  function changedNames() {
+    var saved = readPref(DOWNLOADED_KEY, "");
+    if (!saved) { return []; }
+    var base;
+    try { base = JSON.parse(saved); } catch (err) { return []; }
+    var now = normalized();
+    var names = [];
+    if (QuietCore.resolverKey(base) !== QuietCore.resolverKey(now)) { names.push("Filter"); }
+    if (!!base.enabled !== !!now.enabled) { names.push("Quiet DNS on or paused"); }
+    if (!!base.use_tls !== !!now.use_tls) { names.push("DNS over TLS"); }
+    if (!!base.bootstrap_ips !== !!now.bootstrap_ips) { names.push("AdGuard's IP addresses"); }
+    if (!!base.failover !== !!now.failover) { names.push("Fall back to your network's DNS"); }
+    return names;
+  }
+
   function savedText() {
     var value = readPref(SAVED_AT_KEY, "");
     var when = value ? new Date(value) : null;
@@ -107,13 +130,20 @@
     $("fact-proto").textContent = transport;
     $("fact-ips").textContent = s.bootstrap_ips ? (r.ipv4.length + r.ipv6.length) + " included" : "Not included";
     $("fact-saved").textContent = savedText();
+    $("fact-clip").textContent = pageAddress() ? "Added with the profile" : "Not added. Open the hosted site.";
     $("warn").hidden = !(s.enabled && s.failover);
     $("download").textContent = s.enabled ? "Download profile" : "Download paused profile";
     $("next-step").textContent = s.enabled
       ? "Installing replaces any Quiet DNS profile already on your iPhone, so you won't end up with two."
       : "Installing this pauses Quiet DNS. Install the normal profile to turn it back on.";
-    $("consent").textContent = QuietCore.consentText(s);
-    $("xml").textContent = QuietCore.profileXML(s);
+    var changes = changedNames();
+    $("changes").hidden = changes.length === 0;
+    $("changes").textContent = changes.length
+      ? "Changed since your last download: " + changes.join(", ") + "."
+      : "";
+    $("consent").textContent = QuietCore.consentText(s, !!pageAddress());
+    $("xml").textContent = QuietCore.profileXML(s, pageAddress());
+    $("clip-note").hidden = !pageAddress();
 
     // Save bar: unsaved until the profile is downloaded with these settings. After Save it waits for Allow,
     // and Continue then opens the install steps. Discard puts the settings back to the last download.
@@ -135,7 +165,7 @@
   // The Download button on the Profile page only downloads.
   function download(fromSave) {
     var s = normalized();
-    var xml = QuietCore.profileXML(s);
+    var xml = QuietCore.profileXML(s, pageAddress());
     try {
       var blob = new Blob([xml], {type: "application/x-apple-aspen-config"});
       var url = URL.createObjectURL(blob);

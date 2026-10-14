@@ -8,7 +8,7 @@ Quiet DNS works through one configuration profile. It shows up as one entry, nam
 2. When Safari asks to download a configuration profile, tap **Allow**.
 3. Open **Settings**, tap **General**, then tap **VPN & Device Management**. **Quiet DNS** is listed there.
 4. Tap **Install**, enter your passcode, tap **Install** again, then tap **Done**.
-5. Check it worked. **Settings › General › VPN & Device Management** should list **Quiet DNS**.
+5. Check it worked. **Settings › General › VPN & Device Management** should list **Quiet DNS**. A Quiet DNS icon should also appear on your Home Screen. Open it from there. This is new in 2.3.0 and isn't tested on a phone yet.
 
 If you installed Family or Unfiltered profiles from version 1, remove them first. Version 1 used different identifiers, so the new profile can't replace them.
 

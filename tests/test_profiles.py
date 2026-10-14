@@ -2,6 +2,7 @@ import itertools
 import plistlib
 import unittest
 import uuid
+from pathlib import Path
 
 from quiet import profiles
 from quiet.__main__ import PRESETS
@@ -148,3 +149,52 @@ class PayloadVersionTests(unittest.TestCase):
         data = profiles.build_profile(Settings())
         data["PayloadVersion"] = 2
         self.assertTrue(any("PayloadVersion must be 1" in p for p in profiles.check_profile(data)))
+
+
+ICON = (Path(__file__).resolve().parent.parent / "site" / "icons" / "apple-touch-icon.png").read_bytes()
+SITE = "https://example.com/quiet/"
+
+
+class HomeScreenIconTests(unittest.TestCase):
+    def test_profile_has_no_icon_without_a_site_address(self):
+        for s in (Settings(), Settings(enabled=False)):
+            with self.subTest(settings=s):
+                self.assertEqual(len(build(s)["PayloadContent"]), 1)
+
+    def test_site_address_adds_an_icon_that_opens_it(self):
+        data = profiles.build_profile(Settings(), SITE, ICON)
+        self.assertEqual(len(data["PayloadContent"]), 2)
+        clip = data["PayloadContent"][1]
+        self.assertEqual(clip["PayloadType"], "com.apple.webClip.managed")
+        self.assertEqual(clip["URL"], SITE)
+        self.assertEqual(clip["Icon"], ICON)
+        self.assertEqual(clip["PayloadIdentifier"], profiles.WEBCLIP_ID)
+        self.assertEqual(profiles.check_profile(data), [])
+
+    def test_icon_stays_with_the_profile_when_paused(self):
+        data = profiles.build_profile(Settings(enabled=False), SITE, ICON)
+        self.assertEqual(data["PayloadContent"][1]["PayloadType"], "com.apple.webClip.managed")
+        self.assertEqual(profiles.check_profile(data), [])
+
+    def test_consent_mentions_the_icon_only_when_it_is_added(self):
+        self.assertIn(profiles.WEBCLIP_TEXT, profiles.consent_text(Settings(), webclip=True))
+        self.assertNotIn(profiles.WEBCLIP_TEXT, profiles.consent_text(Settings()))
+
+    def test_icon_needs_the_icon_file(self):
+        with self.assertRaises(profiles.ProfileError):
+            profiles.build_profile(Settings(), SITE, None)
+
+    def test_checker_catches_an_icon_that_does_not_open_https(self):
+        data = profiles.build_profile(Settings(), SITE, ICON)
+        data["PayloadContent"][1]["URL"] = "http://example.com/quiet/"
+        self.assertTrue(any("https://" in p for p in profiles.check_profile(data)))
+
+    def test_checker_catches_a_third_payload(self):
+        data = profiles.build_profile(Settings(), SITE, ICON)
+        data["PayloadContent"].append(dict(data["PayloadContent"][1]))
+        self.assertTrue(any("at most one Home Screen icon" in p for p in profiles.check_profile(data)))
+
+    def test_checker_catches_an_icon_with_another_identity(self):
+        data = profiles.build_profile(Settings(), SITE, ICON)
+        data["PayloadContent"][1]["PayloadUUID"] = "00000000-0000-4000-8000-000000000000"
+        self.assertTrue(any("not the Quiet DNS icon" in p for p in profiles.check_profile(data)))

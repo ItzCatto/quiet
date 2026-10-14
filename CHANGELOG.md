@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.3.0
+
+### Added
+- **A Home Screen icon in the profile.** A profile built from the website also adds a Quiet DNS icon. Installing the profile puts the icon on the Home Screen, and it opens the page you downloaded from. The icon stays when the profile is paused. The command line adds the icon with `--site URL`, which must be an https address. Not tested on a phone yet.
+- **Changes since your last download.** The Profile page lists the settings that differ from the profile on your iPhone, in plain words.
+- **Home Screen icon on the Profile page.** Shows whether the profile includes the icon.
+
+### Changed
+- The Install page says when the Quiet DNS icon will appear.
+
+### Tests
+- 91 automated tests, up from 80. New tests check the icon in the profile, that the browser builder matches the command line with and without the icon, that the embedded icon is the icon file, and that the command line refuses a plain http address.
+
 ## 2.2.1
 
 ### Fixed

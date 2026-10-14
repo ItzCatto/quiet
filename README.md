@@ -37,8 +37,9 @@ Every Quiet DNS profile has the same name, identifier and UUID. A new download i
 ## Status
 
 **Checked here:**
-- 80 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, the resolver check's replies, and the website's assets, icons, install pictures, bundled font and content security policy.
-- The browser builder matches the Python builder for all 64 combinations of settings.
+- 91 automated tests pass: settings, profile structure, the pause rule, the Home Screen icon, WireGuard rewriting, the command line, signing, the browser builder, the resolver check's replies, and the website's assets, icons, install pictures, bundled font and content security policy.
+- The browser builder matches the Python builder for all 64 combinations of settings, with and without the Home Screen icon.
+- A profile downloaded from a secure address carries the Home Screen icon, and the icon is the same image as the site's. Opened from a file, no icon is added.
 - A headless Chromium run at phone and desktop widths: every screen fits, the On and Off switch, the other switches and links work with focus moved to each screen's title, and the downloaded profiles (including the paused one) match the Python output.
 
 **Not checked yet:**
@@ -46,6 +47,7 @@ Every Quiet DNS profile has the same name, identifier and UUID. A new download i
 - Installing on a Mac.
 - The weekly AdGuard DNS check (`.github/workflows/resolver-check.yml`). It hasn't run on GitHub yet. The sandbox used to build it couldn't reach AdGuard's hostnames, so the first scheduled run is the real test. Run it by hand with `python3 scripts/check_resolvers.py` from a machine that can reach AdGuard.
 - Whether a new download updates the existing entry instead of adding one.
+- The Home Screen icon from the profile: whether it appears after install, and whether it opens the full-screen app.
 - Pausing. The paused profile is experimental.
 - Signing with a real certificate. Only a throwaway test certificate was used. The free signing helper (`scripts/make_signing_identity.py`) is tested on a computer, but not yet on an iPhone.
 - Importing the WireGuard output into the WireGuard app.
