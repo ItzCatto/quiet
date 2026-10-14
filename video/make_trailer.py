@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the Quiet DNS launch trailer: 1080x1920, 30 fps, 27 seconds, with synthesized sound.
+"""Render the Quiet DNS launch trailer: 1080x1920, 30 fps, 24 seconds, with synthesized sound.
 
     python3 video/make_trailer.py        # writes dist/Quiet-DNS-trailer.mp4
 
@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 OUT = ROOT / "dist" / "Quiet-DNS-trailer.mp4"
 
-W, H, FPS, DURATION = 1080, 1920, 30, 27.0
+W, H, FPS, DURATION = 1080, 1920, 30, 24.0
 FRAMES = int(round(DURATION * FPS))
 SAMPLE_RATE = 48000
 
@@ -314,108 +314,124 @@ def paste_phone(frame: Image.Image, name: str, dx: float, dy: float, alpha: floa
 HERO_SIZE = 0
 PHRASE_SIZE = 0
 
-
 HERO_LEADING = 1.06  # line spacing as a multiple of the hero size
+
+# The cuts. Each one is a hard cut with a quick snap in, not a slow fade, so the pace comes from the edit.
+CUT_LOGO = 2.0       # the hook ends and the logo draws on
+CUT_PHONES = 4.0     # the logo snaps away and the first screen slides in
+CUT_PHRASES = 9.0    # the last screen leaves and the three promises begin
+CUT_CLOSE = 15.0     # the promises end and the logo settles
+CUT_END = 23.2       # the picture fades to black
+
+SCREENS = [("dashboard", "Quiet DNS"), ("profile", "Profile"), ("photo", "VPN & Device Management")]
+
+PHONE_IN = 0.35      # seconds for a screen to slide in from the right
+PHONE_OUT = 0.25     # seconds for it to slide out to the left
+SNAP = 0.12          # seconds for a line of type to land
+
+
+def ease_out_expo(x: float) -> float:
+    x = clamp(x)
+    return 1.0 if x >= 1.0 else 1.0 - 2.0 ** (-10.0 * x)
+
+
+def ease_in_cubic(x: float) -> float:
+    return clamp(x) ** 3
 
 
 def scene1(frame: Image.Image, t: float) -> None:
-    """0-3 s: the hook. Three lines, with the storyboard's words in order."""
-    out = 1 - ease_in_out(ramp(t, 2.7, 0.3))
-    a1 = ease_out(ramp(t, 0.35, 0.6)) * out
-    a2 = ease_out(ramp(t, 1.1, 0.6)) * out
-    rise1 = (1 - ease_out(ramp(t, 0.35, 0.6))) * 18
-    rise2 = (1 - ease_out(ramp(t, 1.1, 0.6))) * 18
+    """0-2 s: the hook. Each line lands on its own beat, then the picture cuts."""
+    out = 1 - ramp(t, CUT_LOGO - 0.1, 0.1)
     f = face(HERO_SIZE, 800)
     step = HERO_SIZE * HERO_LEADING
-    paint(frame, text_mask("YOUR PHONE.", f, W / 2, H / 2 - step + rise1, a1))
-    paint(frame, text_mask("WITHOUT THE", f, W / 2, H / 2 + rise2, a2))
-    paint(frame, text_mask("NOISE.", f, W / 2, H / 2 + step + rise2, a2))
+    for text, t0, row in (("YOUR PHONE.", 0.0, -1), ("WITHOUT THE", 0.5, 0), ("NOISE.", 1.0, 1)):
+        k = ease_out_expo(ramp(t, t0, SNAP))
+        rise = (1 - k) * 28
+        paint(frame, text_mask(text, f, W / 2, H / 2 + row * step + rise, k * out))
 
 
 def scene2(frame: Image.Image, t: float) -> None:
-    """3-7 s: the logo draws itself on, then leaves."""
-    draw = ease_in_out(ramp(t, 3.2, 1.5))
-    fade = 1 - ease_in_out(ramp(t, 6.6, 0.4))
+    """2-4 s: the logo draws itself on, then snaps away."""
+    draw = ease_in_out(ramp(t, CUT_LOGO + 0.1, 1.2))
+    fade = 1 - ramp(t, CUT_PHONES - 0.25, 0.25)
     paste_logo(frame, W / 2, 960, LOGO_SIZE, alpha=fade, progress=draw)
 
 
-def phone_motion(t: float, enter_at: float, leave_at: float | None, enter: str):
-    """Where a phone is at time t: (dx, dy, alpha), or None when it is not on screen yet."""
+def phone_motion(t: float, enter_at: float, leave_at: float) -> tuple[float, float] | None:
+    """Where a screen is at time t: (dx, alpha), or None before it arrives."""
     if t < enter_at:
         return None
-    e = ease_in_out(ramp(t, enter_at, 0.8))
-    dx, dy, alpha = 0.0, 0.0, e
-    if enter == "right":
-        dx = (1 - e) * 520
-    elif enter == "below":
-        dy = (1 - e) * 40
-    if leave_at is not None:
-        l = ease_in_out(ramp(t, leave_at, 0.8))
+    e = ease_out_expo(ramp(t, enter_at, PHONE_IN))
+    dx = (1 - e) * 520
+    alpha = ramp(t, enter_at, SNAP)
+    if t >= leave_at:
+        l = ease_in_cubic(ramp(t, leave_at, PHONE_OUT))
         dx -= l * 520
         alpha *= 1 - l
-    return dx, dy, alpha
+    return dx, alpha
 
 
 def scene3(frame: Image.Image, t: float) -> None:
-    """7-13 s: three phone screens, one at a time, with restrained slides."""
-    out = 1 - ease_in_out(ramp(t, 12.7, 0.3))
-    shows = [
-        ("dashboard", "Quiet DNS", 7.0, 8.8, "below"),
-        ("profile", "Profile", 8.8, 10.9, "right"),
-        ("photo", "VPN & Device Management", 10.9, None, "right"),
-    ]
+    """4-9 s: three phone screens. Each slides in, holds, and slides out before the next arrives."""
+    slot = (CUT_PHRASES - CUT_PHONES) / len(SCREENS)
     caption_font = face(34, 600)
-    for name, caption, enter_at, leave_at, enter in shows:
-        motion = phone_motion(t, enter_at, leave_at, enter)
+    for i, (name, caption) in enumerate(SCREENS):
+        enter_at = CUT_PHONES + i * slot
+        motion = phone_motion(t, enter_at, enter_at + slot - PHONE_OUT)
         if motion is None:
             continue
-        dx, dy, alpha = motion
-        alpha *= out
-        paste_phone(frame, name, dx, dy, alpha)
-        paint(frame, text_mask(caption, caption_font, W / 2 + dx, 262, alpha * 0.9), TEXT2)
+        dx, alpha = motion
+        if alpha <= 0:
+            continue
+        paste_phone(frame, name, dx, 0.0, alpha)
+        paint(frame, text_mask(caption, caption_font, W / 2 + dx, 262, alpha * 0.9, track=4), TEXT2)
 
 
 def scene4(frame: Image.Image, t: float) -> None:
-    """13-20 s: three phrases, one at a time."""
-    slot = 7.0 / len(PHRASES)
+    """9-15 s: three promises, two seconds each. Each one opens a mint hairline, then the words land."""
+    slot = (CUT_CLOSE - CUT_PHRASES) / len(PHRASES)
     for i, phrase in enumerate(PHRASES):
-        t0 = 13.0 + i * slot
-        if t < t0 or t > t0 + slot:
+        t0 = CUT_PHRASES + i * slot
+        if t < t0 or t >= t0 + slot:
             continue
-        a_in = ease_out(ramp(t, t0, 0.35))
-        a_out = 1 - ease_in_out(ramp(t, t0 + slot - 0.35, 0.35))
-        a = min(a_in, a_out)
-        rise = (1 - a_in) * 14
+        k = ease_out_expo(ramp(t, t0, SNAP))
+        out = 1 - ramp(t, t0 + slot - 0.08, 0.08)
+        a = k * out
+        rise = (1 - k) * 26
+        half = 100 * ease_out_expo(ramp(t, t0, 0.2)) * out
         bar = Image.new("L", (W, H), 0)
-        x0 = (W - 120) // 2
-        ImageDraw.Draw(bar).rectangle((x0, int(896 + rise), x0 + 120, int(904 + rise)), fill=int(255 * a))
+        ImageDraw.Draw(bar).rectangle(
+            (int(W / 2 - half), int(896 + rise), int(W / 2 + half), int(899 + rise)), fill=int(255 * a))
         paint(frame, bar, MINT)
         paint(frame, text_mask(phrase, face(PHRASE_SIZE, 800), W / 2, 1010 + rise, a))
 
 
 def scene5(frame: Image.Image, t: float) -> None:
-    """20-27 s: the logo returns, then the name and the line. Ends on black."""
-    out = 1 - ease_in_out(ramp(t, 26.2, 0.7))
-    logo_a = ease_in_out(ramp(t, 20.0, 0.6)) * out
-    paste_logo(frame, W / 2, 680, MARK_SIZE_END, alpha=logo_a)
+    """15-24 s: the logo settles into place, then the name and the line. Fades to black."""
+    out = 1 - ease_in_out(ramp(t, CUT_END, DURATION - CUT_END))
 
-    name_a = ease_out(ramp(t, 20.7, 0.5)) * out
-    name_rise = (1 - ease_out(ramp(t, 20.7, 0.5))) * 16
-    paint(frame, text_mask("QUIET DNS", face(118, 800), W / 2, 1010 + name_rise, name_a, track=12))
+    settle = ease_out_expo(ramp(t, CUT_CLOSE, 1.3))
+    size = int(round(MARK_SIZE_END * (1.12 - 0.12 * settle)))
+    logo_a = ease_out_expo(ramp(t, CUT_CLOSE, 0.15)) * out
+    paste_logo(frame, W / 2, 680, size, alpha=logo_a)
 
-    line_a = ease_out(ramp(t, 21.4, 0.5)) * out
+    name_k = ease_out_expo(ramp(t, CUT_CLOSE + 1.0, 0.35))
+    name_rise = (1 - name_k) * 20
+    paint(frame, text_mask("QUIET DNS", face(118, 800), W / 2, 1010 + name_rise, name_k * out, track=14))
+
+    line_a = ease_in_out(ramp(t, CUT_CLOSE + 1.8, 0.6)) * out
     paint(frame, text_mask("Your phone, the way you deserve it.", face(44, 400), W / 2, 1100, line_a), TEXT2)
 
 
 def frame_at(t: float) -> Image.Image:
     frame = Image.new("RGB", (W, H), BG)
-    if t < 3.0:
+    if t < CUT_LOGO:
         scene1(frame, t)
-    elif t < 7.0:
+    elif t < CUT_PHONES:
         scene2(frame, t)
-    elif t < 13.0:
+    elif t < CUT_PHRASES:
         scene3(frame, t)
-    elif t < 20.0:
+    elif t < CUT_CLOSE:
         scene4(frame, t)
     else:
         scene5(frame, t)
@@ -451,35 +467,53 @@ def _whoosh(dur: float, amp: float, seed: int) -> np.ndarray:
     return amp * band / (np.max(np.abs(band)) + 1e-9) * env
 
 
+def _kick(amp: float) -> np.ndarray:
+    """A short low thump whose pitch falls. It marks each cut."""
+    n = int(0.35 * SAMPLE_RATE)
+    t = np.arange(n) / SAMPLE_RATE
+    freq = 45 + 120 * np.exp(-t / 0.04)
+    phase = 2 * np.pi * np.cumsum(freq) / SAMPLE_RATE
+    return amp * np.sin(phase) * np.exp(-t / 0.09)
+
+
 def make_sound() -> np.ndarray:
     n = int(DURATION * SAMPLE_RATE)
     buf = np.zeros(n)
     t = np.arange(n) / SAMPLE_RATE
 
     # A low drone that swells slowly and fades out with the picture.
-    env = np.clip(t / 1.2, 0, 1) * np.clip((DURATION - t) / 1.4, 0, 1)
+    env = np.clip(t / 1.0, 0, 1) * np.clip((DURATION - t) / 1.4, 0, 1)
     swell = 0.7 + 0.3 * np.sin(2 * np.pi * 0.09 * t)
     buf += env * swell * (0.028 * np.sin(2 * np.pi * 82.4 * t) + 0.016 * np.sin(2 * np.pi * 123.5 * t))
 
-    _add(buf, _tick(55, 0.7, 0.12), 0.0)                   # a soft opening thud
-    _add(buf, _tick(2200, 0.09, 0.045), 3.2)               # the logo starts to draw
-    sweep_n = int(1.5 * SAMPLE_RATE)
+    # A thump on each cut, and a tick when a line or a screen lands.
+    phone_slot = (CUT_PHRASES - CUT_PHONES) / len(SCREENS)
+    phrase_slot = (CUT_CLOSE - CUT_PHRASES) / len(PHRASES)
+    cuts = [0.0, CUT_LOGO, CUT_PHONES, CUT_CLOSE] + [CUT_PHRASES + i * phrase_slot for i in range(len(PHRASES))]
+    for cut in cuts:
+        _add(buf, _kick(0.22), cut)
+    for land in (0.5, 1.0):                                  # the second and third hook lines
+        _add(buf, _tick(2200, 0.05, 0.04), land)
+    for i in range(1, len(SCREENS)):                          # each new screen slides in
+        _add(buf, _tick(1400, 0.05, 0.025), CUT_PHONES + i * phone_slot)
+
+    # The logo draws on with a rising sweep.
+    _add(buf, _tick(2200, 0.09, 0.045), CUT_LOGO + 0.1)
+    sweep_n = int(1.2 * SAMPLE_RATE)
     st = np.arange(sweep_n) / SAMPLE_RATE
-    freq = 320 + (880 - 320) * st / 1.5
+    freq = 320 + (880 - 320) * st / 1.2
     phase = 2 * np.pi * np.cumsum(freq) / SAMPLE_RATE
-    _add(buf, 0.012 * np.sin(phase) * np.sin(np.pi * st / 1.5), 3.2)
-    _add(buf, _whoosh(0.6, 0.03, seed=1), 6.6)
-    _add(buf, _tick(1400, 0.05, 0.02), 8.8)
-    _add(buf, _tick(1400, 0.05, 0.02), 10.9)
-    _add(buf, _whoosh(0.6, 0.03, seed=2), 12.7)
-    for i in range(len(PHRASES)):
-        _add(buf, _tick(1600, 0.06, 0.035), 13.0 + i * 7.0 / len(PHRASES))
-    _add(buf, _whoosh(0.6, 0.03, seed=3), 19.7)
-    _add(buf, _tick(1800, 0.07, 0.03), 20.7)
+    _add(buf, 0.012 * np.sin(phase) * np.sin(np.pi * st / 1.2), CUT_LOGO + 0.1)
+
+    _add(buf, _whoosh(0.5, 0.03, seed=1), CUT_PHONES - 0.3)
+    _add(buf, _whoosh(0.5, 0.03, seed=2), CUT_PHRASES - 0.5)
+    _add(buf, _whoosh(0.5, 0.03, seed=3), CUT_CLOSE - 0.5)
+
+    # A chime when the name lands.
     chime_n = int(2.0 * SAMPLE_RATE)
     ct = np.arange(chime_n) / SAMPLE_RATE
     chime = np.exp(-ct / 0.7) * (0.03 * np.sin(2 * np.pi * 660 * ct) + 0.015 * np.sin(2 * np.pi * 990 * ct))
-    _add(buf, chime, 21.4)
+    _add(buf, chime, CUT_CLOSE + 1.0)
 
     peak = np.max(np.abs(buf))
     if peak > 0.8:
