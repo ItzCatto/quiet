@@ -37,7 +37,7 @@ Every Quiet DNS profile has the same name, identifier and UUID. A new download i
 ## Status
 
 **Checked here:**
-- 76 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, the resolver check's replies, and the website's assets, icons, install pictures, bundled font and content security policy.
+- 80 automated tests pass: settings, profile structure, the pause rule, WireGuard rewriting, the command line, signing, the browser builder, the resolver check's replies, and the website's assets, icons, install pictures, bundled font and content security policy.
 - The browser builder matches the Python builder for all 64 combinations of settings.
 - A headless Chromium run at phone and desktop widths: every screen fits, the On and Off switch, the other switches and links work with focus moved to each screen's title, and the downloaded profiles (including the paused one) match the Python output.
 
@@ -47,7 +47,7 @@ Every Quiet DNS profile has the same name, identifier and UUID. A new download i
 - The weekly AdGuard DNS check (`.github/workflows/resolver-check.yml`). It hasn't run on GitHub yet. The sandbox used to build it couldn't reach AdGuard's hostnames, so the first scheduled run is the real test. Run it by hand with `python3 scripts/check_resolvers.py` from a machine that can reach AdGuard.
 - Whether a new download updates the existing entry instead of adding one.
 - Pausing. The paused profile is experimental.
-- Signing with a real certificate. Only a throwaway test certificate was used.
+- Signing with a real certificate. Only a throwaway test certificate was used. The free signing helper (`scripts/make_signing_identity.py`) is tested on a computer, but not yet on an iPhone.
 - Importing the WireGuard output into the WireGuard app.
 - How iOS combines a WireGuard tunnel's DNS with an installed DNS profile.
 

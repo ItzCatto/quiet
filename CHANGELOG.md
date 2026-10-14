@@ -23,6 +23,7 @@
 - **Filter comparison on Help.** The first question says what Standard, Family and Unfiltered each do.
 - **Last saved and support details.** The Profile page shows when the profile was last downloaded. Copy details for support copies the version, status, server, protocol, addresses and last saved time. It holds nothing about the device.
 - **Larger text.** Settings > Text size makes all the text on the site bigger. Every size on the page is in rem units, so the whole site scales.
+- **Free signing for your own iPhone.** `scripts/make_signing_identity.py` makes a signing key and certificate outside the project, and a profile that installs the certificate as trusted on your iPhone. Profiles you sign then show your name as the signer on that phone. Other iPhones still show "Not Verified". Tested on a computer, not yet on an iPhone.
 - **A weekly check of AdGuard DNS.** `scripts/check_resolvers.py` asks each DNS-over-HTTPS and DNS-over-TLS address for example.com, and tries each IPv4 address the profiles include. A scheduled GitHub workflow runs it every Monday, and GitHub emails the owner if a run fails.
 
 ### Changed
@@ -40,7 +41,7 @@
 - **Save bar.** Discard appears beside Save when there is something to discard. The page leaves more room below the content, so the bar never covers the last line at large text sizes.
 
 ### Tests
-- 76 automated tests, up from 54. New tests check that the site's version matches the newest changelog entry, that larger text scales the whole site, and that the resolver check builds its query and reads replies correctly.
+- 80 automated tests, up from 54. New tests check that the site's version matches the newest changelog entry, that larger text scales the whole site, and that the resolver check builds its query and reads replies correctly.
 - 67 automated tests at the last release check. Among them, every profile uses PayloadVersion 1 and that other versions are rejected, that the page loads nothing from another website, that the bundled font ships with its licence, that the page runs under a strict policy with no inline scripts, that every picture has alt text and no photo details, that the page never links to Settings by URL, that the home-screen icons have no transparency, and that the icon and the page draw the same logo.
 
 ## 2.2.0

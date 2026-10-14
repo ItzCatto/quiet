@@ -48,5 +48,5 @@ Removing the profile turns Quiet DNS off completely, and iPhone goes back to you
 - **Lookups still go through AdGuard after pausing.** The paused profile may not work on your iPhone yet. Remove the profile to stop Quiet DNS.
 - **No internet after installing.** Remove the profile. If AdGuard is unreachable, the device can't resolve names, unless you turned on the fallback setting. Removing the profile restores your network's DNS.
 - **Safari doesn't offer to install the profile.** Make sure you downloaded it from a normal web host, not a preview. Otherwise AirDrop the file from a Mac.
-- **iPhone says the profile is "Not Signed".** That's expected for the included profiles, which aren't signed with a certificate. Signing with your own certificate changes the label. See [security.md](security.md).
+- **iPhone says the profile is "Not Signed".** That's expected for the included profiles, which aren't signed with a certificate. A signature changes the label only if iPhone trusts the certificate. For free signing on your own iPhone, see [security.md](security.md).
 - **You installed a version 2.0 turn-off profile.** It has no DNS settings. Installing a current profile should replace it. Check that only one entry is listed.

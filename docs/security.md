@@ -34,6 +34,19 @@ python3 -m quiet presets --sign cert.pem key.pem --chain chain.pem
 
 Signing shows who made the profile. It doesn't make the profile safer or change what it does. Keep your private key safe. Anyone who has it can sign profiles that look like yours.
 
+### Free signing for your own iPhone
+
+A certificate from a trusted authority costs money. Apple's developer membership is $99 a year, and it's the usual way to get a certificate that iPhone trusts for everyone. You don't need either to sign profiles for your own iPhone. You can make a signing certificate yourself and install it as trusted on that phone:
+
+1. On your computer, run `python3 scripts/make_signing_identity.py`. It writes `key.pem`, `cert.pem` and `trust-on-iphone.mobileconfig` to `~/quiet-signing`, outside the project. The key is never written into the project folder.
+2. AirDrop `trust-on-iphone.mobileconfig` to your iPhone and open it. Then go to Settings, Downloaded Profile, and tap Install. iPhone warns that the profile isn't signed. That warning is expected for this profile.
+3. Go to Settings, General, About, Certificate Trust Settings, and turn on the entry for your name, if it's listed.
+4. From the project folder, sign the profiles: `python3 -m quiet presets --sign ~/quiet-signing/cert.pem ~/quiet-signing/key.pem`.
+
+Profiles you sign then show your name as the signer on iPhones where you installed the trust profile. On any other iPhone they show "Not Verified". The certificate lasts two years by default. Keep `key.pem` private, and back it up somewhere safe. If you lose it, you can't sign new profiles that your phone trusts.
+
+The helper is tested on a computer, not on an iPhone. The trust step on your phone is the part to check. If iPhone doesn't show the entry in Certificate Trust Settings, the profile may still install, but the signature won't show as trusted.
+
 ## Keys and secrets in this project
 
 - `.gitignore` excludes `*.conf`, `*.pem`, `*.key`, and `dist/`.
