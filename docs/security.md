@@ -14,11 +14,11 @@ The profile never includes a WireGuard config, a private key, or your account de
 
 ## Who sees your DNS lookups
 
-When Quiet DNS is on, AdGuard DNS sees the domain names your iPhone looks up. Your network provider can no longer see those names, but it can still see that your device connects to AdGuard. Read AdGuard's privacy policy before relying on it.
+When Quiet DNS is on, the resolver you chose sees the domain names your iPhone looks up. Your network provider can no longer see those names, but it can still see that your device connects to that resolver. Read the privacy policy of the provider you choose before relying on it. The provider links are in [resolvers.md](resolvers.md).
 
 While Quiet DNS is paused, lookups are meant to go to your network's normal DNS, so your network can see the domain names again. The paused profile still contains the DNS settings. It only tells iPhone not to use them.
 
-Turning on the failover setting sends lookups to your network's DNS if AdGuard can't be reached. Those lookups are not encrypted.
+Turning on the failover setting sends lookups to your network's DNS if the resolver can't be reached. Those lookups are not encrypted.
 
 ## Removal
 
@@ -55,4 +55,4 @@ The helper is tested on a computer, not on an iPhone. The trust step on your pho
 
 ## Not affiliated
 
-Quiet is not affiliated with AdGuard or Proton. The names are used only to say which services the profiles connect to.
+Quiet is not affiliated with AdGuard, DNS4EU, Control D, Hagezi or Proton. The names are used only to say which services the profiles connect to.

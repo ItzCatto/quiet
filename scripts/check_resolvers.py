@@ -1,11 +1,11 @@
-"""Checks that AdGuard DNS still answers at the addresses the Quiet DNS profiles use.
+"""Checks that each resolver Quiet DNS uses still answers at the addresses the profiles include.
 
 Run from the project folder:  python3 scripts/check_resolvers.py
 
-For each filter it asks the DNS-over-HTTPS address and the DNS-over-TLS name for the address of example.com,
-and it tries a connection to each IP address the profiles include. The only name it looks up is example.com.
-It exits with 1 if a required check fails. IPv6 failures are reported but don't fail the run, because not
-every network has IPv6.
+For each resolver it asks the DNS-over-HTTPS address for the address of example.com. It asks the DNS-over-TLS
+name too, for the resolvers that have one, and it tries a connection to each IP address the profiles include.
+The only name it looks up is example.com. It exits with 1 if a required check fails. IPv6 failures are reported
+but don't fail the run, because not every network has IPv6.
 """
 
 from __future__ import annotations
@@ -106,11 +106,11 @@ def report(label: str, problem: str | None, required: bool = True) -> tuple[int,
 def main() -> int:
     failures = warnings = 0
     for name, resolver in RESOLVERS.items():
-        print(name)
-        for result in (
-            report(f"  HTTPS  {resolver['doh']}", check_https(resolver["doh"])),
-            report(f"  TLS    {resolver['dot']}:853", check_tls(resolver["dot"])),
-        ):
+        print(f"{name}  ({resolver['provider']}: {resolver['name']})")
+        checks = [report(f"  HTTPS  {resolver['doh']}", check_https(resolver["doh"]))]
+        if resolver["dot"] is not None:
+            checks.append(report(f"  TLS    {resolver['dot']}:853", check_tls(resolver["dot"])))
+        for result in checks:
             failures, warnings = failures + result[0], warnings + result[1]
         for ip in resolver["ipv4"]:
             result = report(f"  IPv4   {ip}:443", check_address(ip))

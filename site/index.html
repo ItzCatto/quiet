@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Quiet DNS</title>
-<meta name="description" content="Ad and tracker blocking for your whole iPhone. Quiet DNS sets up encrypted DNS through AdGuard with a profile you can remove any time.">
+<meta name="description" content="Ad and tracker blocking for your whole iPhone. Quiet DNS sets up encrypted DNS with an ad-blocking resolver you choose, in a profile you can remove any time.">
 <meta property="og:title" content="Quiet DNS">
 <meta property="og:description" content="Ad and tracker blocking for your whole iPhone, with a profile you can remove any time.">
 <meta property="og:type" content="website">
@@ -50,7 +50,7 @@
           </li>
           <li>
             <h2>Keeps lookups from your network</h2>
-            <p>Your Wi-Fi network or carrier can't see which websites you look up. AdGuard DNS can.</p>
+            <p>Your Wi-Fi network or carrier can't see which websites you look up. The resolver you choose can.</p>
           </li>
           <li>
             <h2>Easy to undo</h2>
@@ -58,7 +58,7 @@
           </li>
         </ul>
 
-        <p class="fine">Quiet DNS is an independent project. It is not affiliated with AdGuard.</p>
+        <p class="fine">Quiet DNS is an independent project. It is not affiliated with AdGuard, DNS4EU or Control D.</p>
         <nav class="fine-links" aria-label="More information">
           <a href="#privacy">Privacy</a>
           <a href="#help">Help</a>
@@ -79,11 +79,27 @@
 
         <section class="field" aria-labelledby="pick-title">
           <h2 class="field-label" id="pick-title">Filter</h2>
-          <div class="choices" role="radiogroup" aria-labelledby="pick-title">
-            <label><input type="radio" name="filter" value="default"><span>Standard</span></label>
-            <label><input type="radio" name="filter" value="family"><span>Family</span></label>
-            <label><input type="radio" name="filter" value="unfiltered"><span>Unfiltered</span></label>
-          </div>
+          <select class="select" id="resolver" aria-labelledby="pick-title">
+            <optgroup label="AdGuard DNS">
+              <option value="default">Standard</option>
+              <option value="family">Family</option>
+              <option value="unfiltered">Unfiltered</option>
+            </optgroup>
+            <optgroup label="DNS4EU">
+              <option value="dns4eu-protective">Security only</option>
+              <option value="dns4eu-child">Child protection</option>
+              <option value="dns4eu-noads">Ads and trackers</option>
+              <option value="dns4eu-child-noads">Ads, trackers and child protection</option>
+              <option value="dns4eu-unfiltered">Unfiltered</option>
+            </optgroup>
+            <optgroup label="Control D">
+              <option value="controld-ads">Ads and tracking</option>
+              <option value="controld-hagezi-normal">Hagezi Normal</option>
+              <option value="controld-hagezi-pro">Hagezi Pro</option>
+              <option value="controld-hagezi-proplus">Hagezi Pro Plus</option>
+              <option value="controld-hagezi-ultimate">Hagezi Ultimate</option>
+            </optgroup>
+          </select>
           <p class="note" id="pick-note"></p>
         </section>
 
@@ -133,6 +149,7 @@
           <span class="opt-main">
             <span class="opt-label" id="l-use_tls">Use DNS over TLS</span>
             <span class="opt-desc">A different connection type, on port 853 instead of 443. Try it only if the default doesn't work on your network.</span>
+            <span class="opt-desc" id="note-use_tls" hidden>The filter you chose doesn't offer this. Choose another filter to use it.</span>
             <code class="key">DNSProtocol</code>
           </span>
           <span class="switch-wrap">
@@ -142,8 +159,8 @@
         </label>
         <label class="opt">
           <span class="opt-main">
-            <span class="opt-label" id="l-bootstrap_ips">Include AdGuard's IP addresses</span>
-            <span class="opt-desc">Lets your iPhone reach AdGuard DNS without first looking up its address.</span>
+            <span class="opt-label" id="l-bootstrap_ips">Include the resolver's IP addresses</span>
+            <span class="opt-desc">Lets your iPhone reach the resolver without first looking up its address.</span>
             <code class="key">ServerAddresses</code>
           </span>
           <span class="switch-wrap">
@@ -154,7 +171,7 @@
         <label class="opt">
           <span class="opt-main">
             <span class="opt-label" id="l-failover">Fall back to your network's DNS</span>
-            <span class="opt-desc">If AdGuard DNS can't be reached, use your network's DNS. Those lookups aren't encrypted. Needs iOS or macOS 26 or later.</span>
+            <span class="opt-desc">If the resolver can't be reached, use your network's DNS. Those lookups aren't encrypted. Needs iOS or macOS 26 or later.</span>
             <code class="key">AllowFailover</code>
           </span>
           <span class="switch-wrap">
@@ -177,7 +194,7 @@
         <div><dt>Home Screen icon</dt><dd id="fact-clip"></dd></div>
         <div><dt>Last saved</dt><dd id="fact-saved"></dd></div>
       </dl>
-      <p class="callout" id="warn" hidden>Fallback is on. If AdGuard DNS can't be reached, lookups aren't encrypted.</p>
+      <p class="callout" id="warn" hidden>Fallback is on. If the resolver can't be reached, lookups aren't encrypted.</p>
       <div class="actions">
         <button class="btn" id="download" type="button">Download profile</button>
         <p class="note" id="next-step"></p>
@@ -259,7 +276,7 @@
         </details>
         <details class="more">
           <summary>Devices on my home network stop resolving</summary>
-          <p>While Quiet DNS is on, AdGuard DNS can't see your home network, so names for local devices may stop working. Use their IP addresses instead, or pause Quiet DNS.</p>
+          <p>While Quiet DNS is on, the resolver can't see your home network, so names for local devices may stop working. Use their IP addresses instead, or pause Quiet DNS.</p>
         </details>
         <details class="more">
           <summary>I see two Quiet DNS profiles</summary>
@@ -317,7 +334,7 @@
       <h1 class="title" id="title-privacy" tabindex="-1">Privacy</h1>
       <p class="lede">What Quiet DNS and this website can see.</p>
       <ul class="points">
-        <li><strong>Your network can't see the sites you look up</strong> while Quiet DNS is on. AdGuard DNS can. Read AdGuard DNS's privacy policy on its website.</li>
+        <li><strong>Your network can't see the sites you look up</strong> while Quiet DNS is on. The resolver you chose can. Read that provider's privacy policy before you rely on it.</li>
         <li>While Quiet DNS is paused, your network's DNS sees your lookups again.</li>
         <li>The profile is built in your browser. This website has no accounts, no analytics and no ads.</li>
         <li>This website keeps only your appearance choice, your profile-key choice and the settings you last downloaded. They stay in this browser.</li>

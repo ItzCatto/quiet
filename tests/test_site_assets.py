@@ -126,6 +126,12 @@ class SiteAssetTests(unittest.TestCase):
         newest = re.search(r"^## (\S+)", changelog, re.MULTILINE).group(1)
         self.assertEqual(version, newest)
 
+    def test_resolver_picker_is_labelled_by_its_title_and_has_its_notes(self):
+        self.assertIn('aria-labelledby="pick-title"', self.html)
+        for element in ('id="pick-title"', 'id="pick-note"', 'id="resolver"', 'id="note-use_tls"'):
+            with self.subTest(element=element):
+                self.assertIn(element, self.html)
+
     def test_larger_text_scales_the_whole_site(self):
         # Every size on the page is in rem, so one rule on the root element scales all of it.
         css = (SITE / "site.css").read_text(encoding="utf-8")

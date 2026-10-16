@@ -15,7 +15,7 @@ If you installed Family or Unfiltered profiles from version 1, remove them first
 ## Check that it's working
 
 - Load a page that normally shows many ads. Most of them should be gone.
-- Open a DNS test site in Safari. Its report should show an AdGuard resolver.
+- Open a DNS test site in Safari. Its report should show the resolver you chose, such as AdGuard DNS or DNS4EU.
 - Check a local name, such as your router's address or a printer's name. If it stops resolving, see [settings.md](settings.md).
 
 ## Change a setting
@@ -29,7 +29,7 @@ This has not been tested on a device yet. Check the entry after the first change
 1. On the website, turn the Quiet DNS switch off. The button changes to **Download paused profile**.
 2. Download it and install it the same way.
 3. The paused profile keeps your settings, so it's ready when you resume. It also tells iPhone not to use them, so lookups should go to your network's normal DNS.
-4. Check your DNS afterwards with a DNS test site. If it still shows AdGuard, remove the profile (see below).
+4. Check your DNS afterwards with a DNS test site. If it still shows your resolver, remove the profile (see below).
 
 ## Resume
 
@@ -45,8 +45,8 @@ Removing the profile turns Quiet DNS off completely, and iPhone goes back to you
 ## Troubleshooting
 
 - **Two Quiet DNS entries are listed.** Remove both, then install the profile once.
-- **Lookups still go through AdGuard after pausing.** The paused profile may not work on your iPhone yet. Remove the profile to stop Quiet DNS.
-- **No internet after installing.** Remove the profile. If AdGuard is unreachable, the device can't resolve names, unless you turned on the fallback setting. Removing the profile restores your network's DNS.
+- **Lookups still go through your resolver after pausing.** The paused profile may not work on your iPhone yet. Remove the profile to stop Quiet DNS.
+- **No internet after installing.** Remove the profile. If the resolver is unreachable, the device can't resolve names, unless you turned on the fallback setting. Removing the profile restores your network's DNS.
 - **Safari doesn't offer to install the profile.** Make sure you downloaded it from a normal web host, not a preview. Otherwise AirDrop the file from a Mac.
 - **iPhone says the profile is "Not Signed".** That's expected for the included profiles, which aren't signed with a certificate. A signature changes the label only if iPhone trusts the certificate. For free signing on your own iPhone, see [security.md](security.md).
 - **You installed a version 2.0 turn-off profile.** It has no DNS settings. Installing a current profile should replace it. Check that only one entry is listed.

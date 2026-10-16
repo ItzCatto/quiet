@@ -1,10 +1,10 @@
 """Quiet DNS: builds iPhone and Mac profiles that turn on encrypted, filtered DNS.
 
 Modules:
-    settings   - the toggles, and how each one maps to an AdGuard DNS resolver
+    settings   - the resolvers and filters, and how the toggles map to them
     profiles   - builds, checks and serializes the .mobileconfig files
     signing    - optional signing with your own certificate (openssl)
-    wireguard  - points a WireGuard config's DNS at AdGuard DNS, on your computer
+    wireguard  - points a WireGuard config's DNS at a resolver, on your computer
 """
 
-__version__ = "2.3.0"
+__version__ = "2.4.0"

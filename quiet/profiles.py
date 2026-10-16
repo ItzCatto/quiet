@@ -5,7 +5,6 @@ from __future__ import annotations
 import ipaddress
 import plistlib
 from typing import Any
-from urllib.parse import urlparse
 
 from .settings import RESOLVERS, Settings
 
@@ -24,12 +23,6 @@ WEBCLIP_UUID = "21077DBB-A8F2-4AC4-84E7-3E456C036E45"
 WEBCLIP_TEXT = "It also adds a Quiet DNS icon to your Home Screen."
 
 REMOVE_HINT = "You can remove this profile any time in Settings > General > VPN & Device Management."
-
-FILTER_TEXT = {
-    "default": "blocks ads, trackers and phishing sites",
-    "family": "blocks ads, trackers, phishing sites and adult websites, and turns on safe search",
-    "unfiltered": "does not block ads or trackers",
-}
 
 # While paused, the DNS settings stay in the profile, and iOS is told never to connect them.
 PAUSED_RULES = [{"Action": "Disconnect"}]
@@ -53,7 +46,8 @@ def profile_name(s: Settings) -> str:
 def summary(s: Settings) -> str:
     if not s.enabled:
         return "Paused. Lookups use your network's normal DNS until Quiet DNS is turned back on."
-    return f"Encrypted DNS through AdGuard DNS. It {FILTER_TEXT[s.resolver_key()]}."
+    r = s.endpoint()
+    return f"Encrypted DNS through {r['provider']}. It {r['blocks']}."
 
 
 def consent_text(s: Settings, webclip: bool = False) -> str:
@@ -62,11 +56,13 @@ def consent_text(s: Settings, webclip: bool = False) -> str:
         text = ("Quiet DNS is paused, so lookups from this device use your network's normal DNS. "
                 "Install Quiet DNS again to turn it back on.")
     else:
-        text = (f"Lookups from this device go over an encrypted connection to AdGuard DNS, which "
-                f"{FILTER_TEXT[s.resolver_key()]}. Your network can no longer see the domain names this "
-                "device looks up, but AdGuard DNS can.")
+        r = s.endpoint()
+        provider = r["provider"]
+        text = (f"Lookups from this device go over an encrypted connection to {provider}, which "
+                f"{r['blocks']}. Your network can no longer see the domain names this device looks up, "
+                f"but {provider} can.")
         if s.failover:
-            text += (" If AdGuard DNS can't be reached, lookups fall back to your network's DNS, "
+            text += (f" If {provider} can't be reached, lookups fall back to your network's DNS, "
                      "which is not encrypted.")
     if webclip:
         text += " " + WEBCLIP_TEXT
@@ -74,7 +70,9 @@ def consent_text(s: Settings, webclip: bool = False) -> str:
 
 
 def _dns_payload(s: Settings) -> dict[str, Any]:
-    r = s.resolver()
+    r = s.endpoint()
+    if s.use_tls and r["dot"] is None:
+        raise ProfileError(f"{r['provider']} {r['name']} doesn't offer DNS over TLS. Use HTTPS instead.")
     dns: dict[str, Any] = {"DNSProtocol": "TLS" if s.use_tls else "HTTPS"}
     if s.use_tls:
         dns["ServerName"] = r["dot"]
@@ -143,11 +141,16 @@ def to_bytes(profile: dict[str, Any]) -> bytes:
     return plistlib.dumps(profile, fmt=plistlib.FMT_XML)
 
 
-def _resolver_for_host(host: Any) -> dict[str, Any] | None:
-    for r in RESOLVERS.values():
-        if host in (urlparse(r["doh"]).hostname, r["dot"]):
-            return r
-    return None
+def _resolver_for_dns(dns: dict[str, Any]) -> dict[str, Any] | None:
+    """The catalogued resolver a DNSSettings block points at, or None. Matches the whole address, because
+    several filters share one hostname and differ only in their path."""
+    if dns.get("DNSProtocol") == "HTTPS":
+        matches = [r for r in RESOLVERS.values() if r["doh"] == dns.get("ServerURL")]
+    elif dns.get("DNSProtocol") == "TLS":
+        matches = [r for r in RESOLVERS.values() if r["dot"] is not None and r["dot"] == dns.get("ServerName")]
+    else:
+        return None
+    return matches[0] if matches else None
 
 
 def _check_dns_payload(payload: dict[str, Any]) -> list[str]:
@@ -165,22 +168,19 @@ def _check_dns_payload(payload: dict[str, Any]) -> list[str]:
 
     protocol = dns.get("DNSProtocol")
     if protocol == "HTTPS":
-        url = str(dns.get("ServerURL", ""))
-        host = urlparse(url).hostname
-        if not url.startswith("https://"):
+        if not str(dns.get("ServerURL", "")).startswith("https://"):
             problems.append("ServerURL must start with https://")
         if "ServerName" in dns:
             problems.append("ServerName is only used with TLS")
     elif protocol == "TLS":
-        host = dns.get("ServerName")
         if "ServerURL" in dns:
             problems.append("ServerURL is only used with HTTPS")
     else:
         return problems + [f"unknown DNSProtocol {protocol!r}"]
 
-    resolver = _resolver_for_host(host)
+    resolver = _resolver_for_dns(dns)
     if resolver is None:
-        problems.append(f"{host!r} is not an AdGuard DNS host")
+        problems.append("the DNS server is not one of the Quiet DNS resolvers")
 
     if "ServerAddresses" in dns:
         addresses = dns["ServerAddresses"]
@@ -192,7 +192,7 @@ def _check_dns_payload(payload: dict[str, Any]) -> list[str]:
                     ipaddress.ip_address(address)
                 except (ValueError, TypeError):
                     problems.append(f"invalid bootstrap address {address!r}")
-            # Catches a copy-paste error such as the family hostname with the default IPs.
+            # Catches a copy-paste error such as one filter's hostname with another filter's addresses.
             if resolver is not None and not set(addresses) <= set(resolver["ipv4"] + resolver["ipv6"]):
                 problems.append("bootstrap addresses do not belong to this resolver")
 

@@ -1,12 +1,12 @@
 /* Quiet DNS website: screens, settings and the profile download. Depends on core.js and boot.js. */
 (function () {
   // Shown in the support details. Keep it equal to the newest version in CHANGELOG.md; a test checks this.
-  var APP_VERSION = "2.3.0";
-  // Every setting the profile depends on. The filter choice on the home screen sets block_ads and block_adult.
-  var SETTINGS = ["enabled", "block_ads", "block_adult", "use_tls", "bootstrap_ips", "failover"];
+  var APP_VERSION = "2.4.0";
+  // Every setting the profile depends on. The filter choice on the home screen sets the resolver.
+  var SETTINGS = ["enabled", "resolver", "use_tls", "bootstrap_ips", "failover"];
   // The settings with a switch of their own: the power switch, and the Connection page.
   var SWITCHES = ["enabled", "use_tls", "bootstrap_ips", "failover"];
-  var DEFAULTS = {enabled: true, block_ads: true, block_adult: false, use_tls: false, bootstrap_ips: true, failover: false};
+  var DEFAULTS = {enabled: true, resolver: "default", use_tls: false, bootstrap_ips: true, failover: false};
   var SCREENS = ["home", "setup", "connection", "profile", "install", "help", "privacy", "settings"];
   // A browser tab can open these. The other screens need the installed app, so they go to the setup page.
   var BROWSER_SCREENS = ["home", "setup", "privacy", "help"];
@@ -17,12 +17,12 @@
   var DOWNLOADED_KEY = "quiet.downloaded";
   // When the profile was last downloaded, for the Profile page and the support details.
   var SAVED_AT_KEY = "quiet.savedAt";
-  var FILTER_LABEL = {"default": "Standard", "family": "Family", "unfiltered": "Unfiltered"};
-  var FILTER_NOTE = {
-    "default": "Recommended for most people. Blocks ads, trackers and phishing sites.",
-    "family": "Also blocks adult websites and turns on safe search.",
-    "unfiltered": "Nothing is blocked. Lookups are still encrypted."
-  };
+  // The sentence under the filter choice: what it blocks, and the note from the resolver list, if any.
+  function filterNote(key) {
+    var r = QuietCore.RESOLVERS[key];
+    var text = r.blocks.charAt(0).toUpperCase() + r.blocks.slice(1) + ".";
+    return r.note ? text + " " + r.note : text;
+  }
   var state = JSON.parse(JSON.stringify(DEFAULTS));
   // True after Save starts a download, until the person taps Continue.
   var awaitingAllow = false;
@@ -31,12 +31,19 @@
 
   function $(id) { return document.getElementById(id); }
 
-  // What the profile will contain. Adult blocking always includes ad blocking.
-  function normalized() {
+  // The settings in the form the profile uses. Settings saved before resolvers existed have no resolver, so
+  // their two older toggles choose one. DNS over TLS is switched off for a filter that doesn't offer it.
+  function settingsFrom(source) {
     var s = {};
-    SETTINGS.forEach(function (k) { s[k] = state[k]; });
-    if (s.block_adult) { s.block_ads = true; }
+    SETTINGS.forEach(function (k) { s[k] = source[k] === undefined ? DEFAULTS[k] : source[k]; });
+    s.resolver = QuietCore.resolverKey(source);
+    if (!QuietCore.RESOLVERS[s.resolver].dot) { s.use_tls = false; }
     return s;
+  }
+
+  // What the profile will contain.
+  function normalized() {
+    return settingsFrom(state);
   }
 
   function hostOf(url) {
@@ -44,7 +51,7 @@
   }
 
   function fileName(s) {
-    var base = s.enabled ? FILTER_LABEL[QuietCore.resolverKey(s)] : "Paused";
+    var base = s.enabled ? QuietCore.RESOLVERS[QuietCore.resolverKey(s)].file : "Paused";
     if (s.use_tls) { base += "-TLS"; }
     if (s.failover) { base += "-Failover"; }
     return "Quiet-DNS-" + base + ".mobileconfig";
@@ -67,7 +74,13 @@
 
   // True when the settings on screen differ from the last profile downloaded.
   function isUnsaved() {
-    return readPref(DOWNLOADED_KEY, "") !== JSON.stringify(normalized());
+    var saved = readPref(DOWNLOADED_KEY, "");
+    if (!saved) { return true; }
+    try {
+      return JSON.stringify(settingsFrom(JSON.parse(saved))) !== JSON.stringify(normalized());
+    } catch (err) {
+      return true;
+    }
   }
 
   // The address this page was opened from, for the Home Screen icon in the profile. Only a secure address
@@ -88,7 +101,7 @@
     if (QuietCore.resolverKey(base) !== QuietCore.resolverKey(now)) { names.push("Filter"); }
     if (!!base.enabled !== !!now.enabled) { names.push("Quiet DNS on or paused"); }
     if (!!base.use_tls !== !!now.use_tls) { names.push("DNS over TLS"); }
-    if (!!base.bootstrap_ips !== !!now.bootstrap_ips) { names.push("AdGuard's IP addresses"); }
+    if (!!base.bootstrap_ips !== !!now.bootstrap_ips) { names.push("The resolver's IP addresses"); }
     if (!!base.failover !== !!now.failover) { names.push("Fall back to your network's DNS"); }
     return names;
   }
@@ -102,30 +115,30 @@
 
   function render() {
     var s = normalized();
-    var key = QuietCore.resolverKey(s);
+    var key = s.resolver;
     var r = QuietCore.RESOLVERS[key];
     var transport = s.use_tls ? "TLS" : "HTTPS";
     var downloaded = readPref(DOWNLOADED_KEY, "");
 
     SWITCHES.forEach(function (id) { $(id).checked = s[id]; });
+    // Not every filter offers DNS over TLS. Say so, and grey the switch out, when it isn't offered.
+    $("use_tls").disabled = !r.dot;
+    $("note-use_tls").hidden = !!r.dot;
 
     // Switch, status line and connection value
     $("widget").classList.toggle("is-on", s.enabled);
     $("w-title").textContent = s.enabled ? "Quiet DNS is on" : "Quiet DNS is paused";
-    $("w-sub").textContent = s.enabled ? FILTER_LABEL[key] + " filter, " + transport : "Using your network's DNS";
+    $("w-sub").textContent = s.enabled ? r.name + " filter, " + transport : "Using your network's DNS";
     $("v-connection").textContent = transport;
 
-    // Filter picker
-    var filter = s.block_adult ? "family" : (s.block_ads ? "default" : "unfiltered");
-    document.querySelectorAll('input[name="filter"]').forEach(function (radio) {
-      radio.checked = radio.value === filter;
-    });
-    $("pick-note").textContent = FILTER_NOTE[filter];
+    // Filter list
+    $("resolver").value = key;
+    $("pick-note").textContent = filterNote(key);
 
     // Profile screen
     var host = s.use_tls ? r.dot + ", port 853" : hostOf(r.doh) + ", port 443";
     $("summary").textContent = QuietCore.summary(s);
-    $("fact-state").textContent = s.enabled ? "On, " + FILTER_LABEL[key] : "Paused";
+    $("fact-state").textContent = s.enabled ? "On, " + r.provider + " " + r.name : "Paused";
     $("fact-host").textContent = host;
     $("fact-proto").textContent = transport;
     $("fact-ips").textContent = s.bootstrap_ips ? (r.ipv4.length + r.ipv6.length) + " included" : "Not included";
@@ -153,7 +166,7 @@
     $("savebar-text").classList.toggle("is-unsaved", unsaved || waiting);
     // Discard only shows when there is something to discard: a change since the last download, or any change
     // before the first download.
-    $("discard").hidden = !unsaved || (downloaded === "" && JSON.stringify(s) === JSON.stringify(DEFAULTS));
+    $("discard").hidden = !unsaved || (downloaded === "" && JSON.stringify(s) === JSON.stringify(settingsFrom(DEFAULTS)));
     $("save").textContent = waiting ? "Continue" : "Save";
     $("save").disabled = !unsaved && !waiting;
 
@@ -210,7 +223,8 @@
     } catch (err) {
       base = DEFAULTS;
     }
-    SETTINGS.forEach(function (k) { state[k] = base[k] === undefined ? DEFAULTS[k] : base[k]; });
+    var restored = settingsFrom(base);
+    SETTINGS.forEach(function (k) { state[k] = restored[k]; });
     awaitingAllow = false;
     $("download-status").textContent = "";
     $("save-status").textContent = "Changes discarded.";
@@ -296,13 +310,9 @@
     });
   });
 
-  document.querySelectorAll('input[name="filter"]').forEach(function (radio) {
-    radio.addEventListener("change", function () {
-      if (radio.value === "family") { state.block_ads = true; state.block_adult = true; }
-      else if (radio.value === "default") { state.block_ads = true; state.block_adult = false; }
-      else { state.block_ads = false; state.block_adult = false; }
-      changed();
-    });
+  $("resolver").addEventListener("change", function () {
+    state.resolver = $("resolver").value;
+    changed();
   });
 
   $("download").addEventListener("click", function () { download(false); });

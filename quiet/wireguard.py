@@ -1,4 +1,4 @@
-"""Point a WireGuard config's DNS at AdGuard DNS.
+"""Point a WireGuard config's DNS at a Quiet DNS resolver.
 
 This runs on your own computer, on your own config file. It never sends the config anywhere,
 and it never prints the PrivateKey. Error messages avoid echoing config lines for the same reason.
@@ -47,7 +47,7 @@ def current_dns(text: str) -> list[str]:
 
 
 def retarget_dns(text: str, mode: str) -> str:
-    """Return the config with its [Interface] DNS line set to AdGuard DNS for the given mode."""
+    """Return the config with its [Interface] DNS line set to the resolver for the given mode."""
     if mode not in RESOLVERS:
         raise WireGuardError(f"unknown mode {mode!r}; choose one of: {', '.join(RESOLVERS)}")
 

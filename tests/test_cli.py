@@ -8,6 +8,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from quiet.settings import RESOLVERS
+
 ROOT = Path(__file__).resolve().parent.parent
 PRESET_FILES = {
     "Quiet-DNS-Standard.mobileconfig",
@@ -98,6 +100,49 @@ class CliTests(unittest.TestCase):
         result = run("wg", str(conf), "-o", str(target))
         self.assertEqual(result.returncode, 1)
         self.assertFalse(target.exists())
+
+    def test_resolvers_command_lists_every_resolver_with_its_provider(self):
+        result = run("resolvers")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for key, r in RESOLVERS.items():
+            with self.subTest(resolver=key):
+                self.assertIn(key, result.stdout)
+                self.assertIn(r["provider"], result.stdout)
+
+    def test_profile_resolver_option_uses_that_filter(self):
+        target = self.tmp / "dns4eu.mobileconfig"
+        result = run("profile", "-o", str(target), "--resolver", "dns4eu-noads")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        dns = plistlib.loads(target.read_bytes())["PayloadContent"][0]["DNSSettings"]
+        self.assertEqual(dns["ServerURL"], RESOLVERS["dns4eu-noads"]["doh"])
+        self.assertEqual(dns["ServerAddresses"], RESOLVERS["dns4eu-noads"]["ipv4"])
+
+    def test_resolver_option_cannot_be_combined_with_the_filter_toggles(self):
+        for extra in ("--adult", "--no-ads"):
+            with self.subTest(option=extra):
+                target = self.tmp / "clash.mobileconfig"
+                result = run("profile", "-o", str(target), "--resolver", "family", extra)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("--resolver", result.stderr)
+                self.assertFalse(target.exists())
+
+    def test_dns_over_tls_is_refused_for_a_filter_with_no_tls_hostname(self):
+        target = self.tmp / "tls.mobileconfig"
+        result = run("profile", "-o", str(target), "--resolver", "controld-ads", "--tls")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("doesn't offer DNS over TLS", result.stderr)
+        self.assertFalse(target.exists())
+
+    def test_wg_mode_points_the_config_at_the_named_resolver(self):
+        conf = self.tmp / "my.conf"
+        conf.write_text(SAMPLE_CONF, encoding="utf-8")
+        out = self.tmp / "quiet.conf"
+        result = run("wg", str(conf), "-o", str(out), "--mode", "controld-hagezi-pro")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = out.read_text(encoding="utf-8")
+        for address in RESOLVERS["controld-hagezi-pro"]["ipv4"]:
+            self.assertIn(address, text)
+        self.assertNotIn("10.2.0.1", text)
 
     def test_missing_input_is_a_clean_error_not_a_traceback(self):
         result = run("wg", str(self.tmp / "absent.conf"), "-o", str(self.tmp / "out.conf"))

@@ -1,6 +1,6 @@
-# Each week, check that AdGuard DNS still answers at the addresses the Quiet DNS profiles use.
+# Each week, check that every DNS resolver Quiet DNS offers still answers at the addresses the profiles use.
 # GitHub emails the repository owner when a scheduled run fails.
-name: Check AdGuard DNS
+name: Check DNS resolvers
 
 on:
   schedule:
@@ -18,5 +18,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - name: Ask each AdGuard DNS address for example.com
+      - name: Ask each resolver's addresses for example.com
         run: python3 scripts/check_resolvers.py

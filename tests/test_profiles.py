@@ -121,10 +121,10 @@ class ProfileTests(unittest.TestCase):
         data["PayloadRemovalDisallowed"] = True
         self.assertTrue(any("PayloadRemovalDisallowed" in p for p in profiles.check_profile(data)))
 
-    def test_checker_catches_a_host_that_is_not_adguard(self):
+    def test_checker_catches_a_host_that_is_not_a_quiet_resolver(self):
         data = build(Settings())
         data["PayloadContent"][0]["DNSSettings"]["ServerURL"] = "https://resolver.example/dns-query"
-        self.assertTrue(any("not an AdGuard DNS host" in p for p in profiles.check_profile(data)))
+        self.assertTrue(any("not one of the Quiet DNS resolvers" in p for p in profiles.check_profile(data)))
 
     def test_checker_catches_an_empty_consent_text(self):
         data = build(Settings())
@@ -198,3 +198,50 @@ class HomeScreenIconTests(unittest.TestCase):
         data = profiles.build_profile(Settings(), SITE, ICON)
         data["PayloadContent"][1]["PayloadUUID"] = "00000000-0000-4000-8000-000000000000"
         self.assertTrue(any("not the Quiet DNS icon" in p for p in profiles.check_profile(data)))
+
+
+class ResolverTests(unittest.TestCase):
+    def test_every_resolver_builds_and_passes_every_check_in_each_transport(self):
+        for key, r in RESOLVERS.items():
+            for tls, boot, enabled in itertools.product([False, True], repeat=3):
+                s = Settings(resolver=key, use_tls=tls, bootstrap_ips=boot, enabled=enabled)
+                with self.subTest(resolver=key, tls=tls, bootstrap=boot, enabled=enabled):
+                    if tls and r["dot"] is None:
+                        with self.assertRaises(profiles.ProfileError):
+                            build(s)
+                        continue
+                    data = build(s)
+                    self.assertEqual(profiles.check_profile(data), [])
+                    self.assertEqual(plistlib.loads(profiles.to_bytes(data)), data)
+                    dns = data["PayloadContent"][0]["DNSSettings"]
+                    if tls:
+                        self.assertEqual(dns["ServerName"], r["dot"])
+                    else:
+                        self.assertEqual(dns["ServerURL"], r["doh"])
+                    if boot:
+                        self.assertEqual(dns["ServerAddresses"], r["ipv4"] + r["ipv6"])
+
+    def test_a_named_resolver_is_used_instead_of_the_toggles(self):
+        dns = dns_of(Settings(resolver="dns4eu-noads", block_ads=False, block_adult=True))
+        self.assertEqual(dns["ServerURL"], RESOLVERS["dns4eu-noads"]["doh"])
+
+    def test_summary_and_consent_name_the_provider_and_what_it_blocks(self):
+        s = Settings(resolver="dns4eu-noads")
+        self.assertEqual(profiles.summary(s), "Encrypted DNS through DNS4EU. It blocks malware, phishing, ads and trackers.")
+        self.assertIn("encrypted connection to DNS4EU, which blocks malware, phishing, ads and trackers.",
+                      profiles.consent_text(s))
+        self.assertIn("but DNS4EU can.", profiles.consent_text(s))
+
+    def test_a_filter_without_dns_over_tls_refuses_it_rather_than_guessing(self):
+        with self.assertRaises(profiles.ProfileError):
+            build(Settings(resolver="controld-ads", use_tls=True))
+
+    def test_control_d_filters_share_a_hostname_and_are_told_apart_by_their_addresses(self):
+        data = build(Settings(resolver="controld-hagezi-pro"))
+        data["PayloadContent"][0]["DNSSettings"]["ServerURL"] = RESOLVERS["controld-ads"]["doh"]
+        self.assertTrue(any("do not belong" in p for p in profiles.check_profile(data)))
+
+    def test_checker_catches_a_dns_over_tls_host_that_is_not_a_resolver(self):
+        data = build(Settings(use_tls=True))
+        data["PayloadContent"][0]["DNSSettings"]["ServerName"] = "dns.example"
+        self.assertTrue(any("not one of the Quiet DNS resolvers" in p for p in profiles.check_profile(data)))
