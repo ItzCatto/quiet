@@ -13,12 +13,15 @@
 - DNS over TLS is off for the Control D filters, which publish only HTTPS addresses. The website turns the switch off for them, and the command line refuses `--tls` with them.
 - The website and the docs say "the resolver you chose" where they used to name AdGuard.
 
+### Removed
+- **The Home Screen icon in the profile.** Every install added another icon, and you add the icon yourself, so profiles no longer include one. The `--site` option went with it. If an icon from an earlier profile is still on your Home Screen, delete it by hand.
+
 ### Unverified
 - The sandbox used to build this release couldn't reach any resolver. The addresses were checked against each provider's published page, but whether each resolver answers, and whether DNS over TLS works for Control D, is first tested by the weekly check on GitHub.
 - Nothing in this release has been tested on an iPhone.
 
 ### Tests
-- 109 automated tests, up from 91. New tests check every resolver in both transports, that the website and the command line build identical profiles for each, that DNS over TLS is refused where a filter has no hostname, the resolver list, and the new command-line options.
+- 101 automated tests, up from 91. New tests check every resolver in both transports, that the website and the command line build identical profiles for each, that DNS over TLS is refused where a filter has no hostname, the resolver list, the new command-line options, and that a profile never adds a Home Screen icon.
 
 ## 2.3.0
 

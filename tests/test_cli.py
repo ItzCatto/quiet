@@ -56,24 +56,15 @@ class CliTests(unittest.TestCase):
         self.assertEqual(dns["DNSProtocol"], "TLS")
         self.assertEqual(dns["ServerName"], "family.adguard-dns.com")
 
-    def test_site_option_adds_a_home_screen_icon_and_plain_profiles_have_none(self):
-        with_icon = self.tmp / "with-icon.mobileconfig"
-        result = run("profile", "-o", str(with_icon), "--site", "https://example.com/quiet/")
-        self.assertEqual(result.returncode, 0, result.stderr)
-        content = plistlib.loads(with_icon.read_bytes())["PayloadContent"]
-        self.assertEqual(content[1]["URL"], "https://example.com/quiet/")
-        self.assertEqual(content[1]["PayloadType"], "com.apple.webClip.managed")
+    def test_the_site_option_is_gone_so_no_home_screen_icon_is_added(self):
+        target = self.tmp / "site.mobileconfig"
+        result = run("profile", "-o", str(target), "--site", "https://example.com/quiet/")
+        self.assertEqual(result.returncode, 2)
+        self.assertFalse(target.exists())
 
         plain = self.tmp / "plain.mobileconfig"
         self.assertEqual(run("profile", "-o", str(plain)).returncode, 0)
         self.assertEqual(len(plistlib.loads(plain.read_bytes())["PayloadContent"]), 1)
-
-    def test_site_option_refuses_a_plain_http_address(self):
-        target = self.tmp / "bad.mobileconfig"
-        result = run("profile", "-o", str(target), "--site", "http://example.com/quiet/")
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("https://", result.stderr)
-        self.assertFalse(target.exists())
 
     def test_wg_writes_a_private_file_and_refuses_to_overwrite_without_force(self):
         conf = self.tmp / "my.conf"

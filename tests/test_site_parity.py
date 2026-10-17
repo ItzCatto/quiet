@@ -1,6 +1,5 @@
 """The website builds its profile in the browser. This checks it builds the same profile as Python."""
 
-import base64
 import itertools
 import json
 import plistlib
@@ -14,8 +13,6 @@ from quiet import profiles
 from quiet.settings import RESOLVERS, Settings
 
 ROOT = Path(__file__).resolve().parent.parent
-ICON = ROOT / "site" / "icons" / "apple-touch-icon.png"
-SITE_URL = "https://example.com/quiet/"
 
 # Loads the page's <script id="quiet-core"> in a sandbox. Each case gives a profile, or the error the browser raises.
 NODE_PROFILES = r"""
@@ -26,7 +23,7 @@ vm.createContext(ctx);
 vm.runInContext(input.core, ctx);
 const out = input.cases.map(c => {
   try {
-    return { xml: ctx.QuietCore.profileXML(c.settings, c.siteUrl) };
+    return { xml: ctx.QuietCore.profileXML(c.settings) };
   } catch (e) {
     return { error: String((e && e.message) || e) };
   }
@@ -45,16 +42,14 @@ process.stdout.write(JSON.stringify(ctx.QuietCore.RESOLVERS));
 
 
 def every_case() -> list[dict]:
-    """Every named resolver in every transport and toggle, plus the settings with no named resolver."""
+    """Every named resolver in both transports and every toggle, plus the settings with no named resolver."""
     cases = []
-    for key, tls, boot, failover, enabled, site in itertools.product(
-            RESOLVERS, [False, True], [False, True], [False, True], [False, True], [None, SITE_URL]):
+    for key, tls, boot, failover, enabled in itertools.product(
+            RESOLVERS, [False, True], [False, True], [False, True], [False, True]):
         cases.append({"settings": asdict(Settings(enabled=enabled, use_tls=tls, bootstrap_ips=boot,
-                                                  failover=failover, resolver=key)),
-                      "siteUrl": site})
+                                                  failover=failover, resolver=key))})
     for values in itertools.product([True, False], repeat=6):
-        for site in (None, SITE_URL):
-            cases.append({"settings": asdict(Settings(*values)), "siteUrl": site})
+        cases.append({"settings": asdict(Settings(*values))})
     return cases
 
 
@@ -82,26 +77,20 @@ class SiteParityTests(unittest.TestCase):
         results = self.run_node(NODE_PROFILES, {"core": self.core, "cases": cases})
         self.assertEqual(len(results), len(cases))
 
-        icon = ICON.read_bytes()
         for case, result in zip(cases, results):
             s = Settings(**case["settings"])
-            with self.subTest(settings=case["settings"], siteUrl=case["siteUrl"]):
+            with self.subTest(settings=case["settings"]):
                 if refused(s):
                     self.assertIn("error", result)
                     with self.assertRaises(profiles.ProfileError):
-                        profiles.build_profile(s, case["siteUrl"], icon if case["siteUrl"] else None)
+                        profiles.build_profile(s)
                     continue
                 self.assertNotIn("error", result, result.get("error"))
-                self.assertEqual(plistlib.loads(result["xml"].encode("utf-8")),
-                                 profiles.build_profile(s, case["siteUrl"], icon if case["siteUrl"] else None))
+                self.assertEqual(plistlib.loads(result["xml"].encode("utf-8")), profiles.build_profile(s))
 
     def test_browser_resolver_table_matches_python(self):
         table = self.run_node(NODE_CATALOGUE, {"core": self.core})
         self.assertEqual(table, json.loads(json.dumps(RESOLVERS)))
-
-    def test_home_screen_icon_in_the_browser_is_the_icon_file(self):
-        encoded = base64.b64encode(ICON.read_bytes()).decode("ascii")
-        self.assertIn(f'icon: "{encoded}"', self.core)
 
     def test_page_never_accepts_a_config_file(self):
         # The site must not take WireGuard configs or keys, so nothing secret reaches a web page.

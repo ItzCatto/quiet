@@ -17,11 +17,6 @@ DNS_ID = "com.quiet.dns.settings"
 DNS_UUID = "F5D2B0C1-7A83-4E96-9B21-6C8D4F0A2E17"
 DISPLAY_NAME = "Quiet DNS"
 
-# An optional Home Screen icon that opens the Quiet DNS site. It is added only when a site address is given.
-WEBCLIP_ID = "com.quiet.dns.webclip"
-WEBCLIP_UUID = "21077DBB-A8F2-4AC4-84E7-3E456C036E45"
-WEBCLIP_TEXT = "It also adds a Quiet DNS icon to your Home Screen."
-
 REMOVE_HINT = "You can remove this profile any time in Settings > General > VPN & Device Management."
 
 # While paused, the DNS settings stay in the profile, and iOS is told never to connect them.
@@ -50,7 +45,7 @@ def summary(s: Settings) -> str:
     return f"Encrypted DNS through {r['provider']}. It {r['blocks']}."
 
 
-def consent_text(s: Settings, webclip: bool = False) -> str:
+def consent_text(s: Settings) -> str:
     """Shown to the person when they install the profile, so it has to match the settings."""
     if not s.enabled:
         text = ("Quiet DNS is paused, so lookups from this device use your network's normal DNS. "
@@ -64,8 +59,6 @@ def consent_text(s: Settings, webclip: bool = False) -> str:
         if s.failover:
             text += (f" If {provider} can't be reached, lookups fall back to your network's DNS, "
                      "which is not encrypted.")
-    if webclip:
-        text += " " + WEBCLIP_TEXT
     return text + " " + REMOVE_HINT
 
 
@@ -97,34 +90,11 @@ def _dns_payload(s: Settings) -> dict[str, Any]:
     return payload
 
 
-def _webclip_payload(site_url: str, icon: bytes) -> dict[str, Any]:
+def build_profile(s: Settings) -> dict[str, Any]:
+    """Return the profile as a plist-ready dict. Pausing keeps the DNS payload and adds a rule."""
     return {
-        "FullScreen": True,
-        "Icon": icon,
-        "Label": DISPLAY_NAME,
-        "PayloadDescription": "Opens Quiet DNS from your Home Screen.",
-        "PayloadDisplayName": DISPLAY_NAME,
-        "PayloadIdentifier": WEBCLIP_ID,
-        "PayloadType": "com.apple.webClip.managed",
-        "PayloadUUID": WEBCLIP_UUID,
-        "PayloadVersion": PAYLOAD_VERSION,
-        "URL": site_url,
-    }
-
-
-def build_profile(s: Settings, site_url: str | None = None, icon: bytes | None = None) -> dict[str, Any]:
-    """Return the profile as a plist-ready dict. Pausing keeps the DNS payload and adds a rule.
-
-    With a site address, the profile also adds a Home Screen icon that opens it. The icon is the PNG bytes.
-    """
-    content: list[dict[str, Any]] = [_dns_payload(s)]
-    if site_url is not None:
-        if icon is None:
-            raise ProfileError("a Home Screen icon needs the icon file")
-        content.append(_webclip_payload(site_url, icon))
-    return {
-        "ConsentText": {"default": consent_text(s, webclip=site_url is not None)},
-        "PayloadContent": content,
+        "ConsentText": {"default": consent_text(s)},
+        "PayloadContent": [_dns_payload(s)],
         "PayloadDescription": summary(s),
         "PayloadDisplayName": DISPLAY_NAME,
         "PayloadIdentifier": PROFILE_ID,
@@ -224,29 +194,11 @@ def check_profile(data: dict[str, Any]) -> list[str]:
         problems.append("ConsentText must include a non-empty default string")
 
     content = data.get("PayloadContent")
-    if (not isinstance(content, list) or not 1 <= len(content) <= 2
-            or not all(isinstance(p, dict) for p in content)):
-        return problems + ["a Quiet DNS profile has one DNS payload, and at most one Home Screen icon"]
+    if not isinstance(content, list) or len(content) != 1 or not isinstance(content[0], dict):
+        return problems + ["a Quiet DNS profile has exactly one payload, the DNS settings"]
 
     payload = content[0]
     problems.extend(_check_dns_payload(payload))
     if "OnDemandRules" in payload and payload["OnDemandRules"] != PAUSED_RULES:
         problems.append("OnDemandRules is only used to pause Quiet DNS")
-    if len(content) == 2:
-        problems.extend(_check_webclip_payload(content[1]))
-    return problems
-
-
-def _check_webclip_payload(payload: dict[str, Any]) -> list[str]:
-    problems: list[str] = []
-    if payload.get("PayloadType") != "com.apple.webClip.managed":
-        problems.append("Home Screen icon has the wrong PayloadType")
-    if payload.get("PayloadIdentifier") != WEBCLIP_ID or payload.get("PayloadUUID") != WEBCLIP_UUID:
-        problems.append("Home Screen icon identifier or UUID is not the Quiet DNS icon")
-    if type(payload.get("PayloadVersion")) is not int or payload["PayloadVersion"] != PAYLOAD_VERSION:
-        problems.append("Home Screen icon PayloadVersion must be 1")
-    if not str(payload.get("URL", "")).startswith("https://"):
-        problems.append("Home Screen icon must open an https:// address")
-    if not isinstance(payload.get("Icon"), bytes) or not payload["Icon"]:
-        problems.append("Home Screen icon needs its icon image")
     return problems

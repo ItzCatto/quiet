@@ -83,13 +83,6 @@
     }
   }
 
-  // The address this page was opened from, for the Home Screen icon in the profile. Only a secure address
-  // works, so a page opened from a file or a preview gets no icon.
-  function pageAddress() {
-    var href = window.location.href.split("#")[0].split("?")[0];
-    return /^https:\/\//.test(href) ? href : null;
-  }
-
   // The settings that differ from the last download, in words. Empty before the first download.
   function changedNames() {
     var saved = readPref(DOWNLOADED_KEY, "");
@@ -143,7 +136,6 @@
     $("fact-proto").textContent = transport;
     $("fact-ips").textContent = s.bootstrap_ips ? (r.ipv4.length + r.ipv6.length) + " included" : "Not included";
     $("fact-saved").textContent = savedText();
-    $("fact-clip").textContent = pageAddress() ? "Added with the profile" : "Not added. Open the hosted site.";
     $("warn").hidden = !(s.enabled && s.failover);
     $("download").textContent = s.enabled ? "Download profile" : "Download paused profile";
     $("next-step").textContent = s.enabled
@@ -154,9 +146,8 @@
     $("changes").textContent = changes.length
       ? "Changed since your last download: " + changes.join(", ") + "."
       : "";
-    $("consent").textContent = QuietCore.consentText(s, !!pageAddress());
-    $("xml").textContent = QuietCore.profileXML(s, pageAddress());
-    $("clip-note").hidden = !pageAddress();
+    $("consent").textContent = QuietCore.consentText(s);
+    $("xml").textContent = QuietCore.profileXML(s);
 
     // Save bar: unsaved until the profile is downloaded with these settings. After Save it waits for Allow,
     // and Continue then opens the install steps. Discard puts the settings back to the last download.
@@ -178,7 +169,7 @@
   // The Download button on the Profile page only downloads.
   function download(fromSave) {
     var s = normalized();
-    var xml = QuietCore.profileXML(s, pageAddress());
+    var xml = QuietCore.profileXML(s);
     try {
       var blob = new Blob([xml], {type: "application/x-apple-aspen-config"});
       var url = URL.createObjectURL(blob);
