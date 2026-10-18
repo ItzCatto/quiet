@@ -15,7 +15,7 @@ If you installed Family or Unfiltered profiles from version 1, remove them first
 ## Check that it's working
 
 - Load a page that normally shows many ads. Most of them should be gone.
-- Open a DNS test site in Safari. Its report should show the resolver you chose, such as AdGuard DNS or Control D.
+- Open a DNS test site in Safari. Its report should show the filter you chose, such as AdGuard DNS Family.
 - Check a local name, such as your router's address or a printer's name. If it stops resolving, see [settings.md](settings.md).
 
 ## Change a setting

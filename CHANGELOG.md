@@ -3,25 +3,21 @@
 ## 2.4.0
 
 ### Added
-- **Eight resolvers and filters.** Besides AdGuard DNS Standard, Family and Unfiltered, you can now choose Control D's ads and tracking filter, or one of four Hagezi blocklist tiers: Normal, Pro, Pro Plus and Ultimate. The website's Filter list shows them grouped by provider. The command line takes `--resolver KEY`, and `python3 -m quiet resolvers` lists every key.
-- **Where each resolver comes from.** [docs/resolvers.md](docs/resolvers.md) gives the source of each address and filter, what each one blocks, and the date it was checked (16 October 2026). It also says what is left out and why: Mullvad's public DNS is discontinued on 2 November 2026, and account-based resolvers are left out so no account ID goes into a profile.
-- **`wg --mode` takes every resolver.** The WireGuard command can point a config at any of the eight.
-- **The weekly check covers every resolver.** It asks each resolver's HTTPS address, and its DNS over TLS address where one is published, then tries each IPv4 address the profiles include.
+- **Where the filters come from.** [docs/resolvers.md](docs/resolvers.md) gives the source of the AdGuard DNS addresses, what each filter blocks, and what is left out. Mullvad's public DNS is discontinued on 2 November 2026, and account-based resolvers are left out so no account ID goes into a profile.
+- **The weekly check covers every filter.** It asks each AdGuard DNS address over HTTPS and over DNS over TLS for `example.com`, then tries each IPv4 address the profiles include.
 
 ### Changed
-- A named resolver decides what is blocked, so `--resolver` can't be combined with `--no-ads` or `--adult`. Without `--resolver`, the two AdGuard options work as before, and the presets are unchanged.
-- DNS over TLS is off for the Control D filters, which publish only HTTPS addresses. The website turns the switch off for them, and the command line refuses `--tls` with them.
 - The website and the docs say "the resolver you chose" where they used to name AdGuard.
 
 ### Removed
 - **The Home Screen icon in the profile.** Every install added another icon, and you add the icon yourself, so profiles no longer include one. The `--site` option went with it. If an icon from an earlier profile is still on your Home Screen, delete it by hand.
 
 ### Unverified
-- The sandbox used to build this release couldn't reach any resolver. The addresses were checked against each provider's published page, but whether each resolver answers, and whether DNS over TLS works for Control D, is first tested by the weekly check on GitHub.
+- The sandbox used to build this release couldn't reach any resolver. This release did not re-read AdGuard DNS's page, so whether each address answers, and whether DNS over TLS works, is first tested by the weekly check on GitHub.
 - Nothing in this release has been tested on an iPhone.
 
 ### Tests
-- 101 automated tests, up from 91. New tests check every resolver in both transports, that the website and the command line build identical profiles for each, that DNS over TLS is refused where a filter has no hostname, the resolver list, the new command-line options, and that a profile never adds a Home Screen icon.
+- 97 automated tests, up from 91. New tests check every filter in both transports, that the website and the command line build identical profiles for each, that DNS over TLS is refused where a filter has no hostname, the filter list, the command-line options, and that a profile never adds a Home Screen icon.
 
 ## 2.3.0
 

@@ -55,4 +55,4 @@ The helper is tested on a computer, not on an iPhone. The trust step on your pho
 
 ## Not affiliated
 
-Quiet is not affiliated with AdGuard, Control D, Hagezi or Proton. The names are used only to say which services the profiles connect to.
+Quiet is not affiliated with AdGuard or Proton. The names are used only to say which services the profiles connect to.

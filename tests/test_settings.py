@@ -21,8 +21,8 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(Settings(block_ads=False).resolver_key(), "unfiltered")
 
     def test_a_named_resolver_decides_the_filter_and_ignores_the_two_toggles(self):
-        s = Settings(resolver="controld-ads", block_ads=False, block_adult=True)
-        self.assertEqual(s.resolver_key(), "controld-ads")
+        s = Settings(resolver="unfiltered", block_ads=False, block_adult=True)
+        self.assertEqual(s.resolver_key(), "unfiltered")
 
     def test_an_unknown_resolver_is_refused(self):
         with self.assertRaises(ValueError):

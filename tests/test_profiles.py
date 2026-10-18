@@ -1,6 +1,7 @@
 import itertools
 import plistlib
 import unittest
+from unittest import mock
 import uuid
 
 from quiet import profiles
@@ -186,24 +187,26 @@ class ResolverTests(unittest.TestCase):
                         self.assertEqual(dns["ServerAddresses"], r["ipv4"] + r["ipv6"])
 
     def test_a_named_resolver_is_used_instead_of_the_toggles(self):
-        dns = dns_of(Settings(resolver="controld-ads", block_ads=False, block_adult=True))
-        self.assertEqual(dns["ServerURL"], RESOLVERS["controld-ads"]["doh"])
+        dns = dns_of(Settings(resolver="unfiltered", block_ads=False, block_adult=True))
+        self.assertEqual(dns["ServerURL"], RESOLVERS["unfiltered"]["doh"])
 
     def test_summary_and_consent_name_the_provider_and_what_it_blocks(self):
-        s = Settings(resolver="controld-ads")
-        self.assertEqual(profiles.summary(s), "Encrypted DNS through Control D. It blocks ads and tracking domains.")
-        self.assertIn("encrypted connection to Control D, which blocks ads and tracking domains.",
+        s = Settings(resolver="unfiltered")
+        self.assertEqual(profiles.summary(s), "Encrypted DNS through AdGuard DNS. It does not block ads or trackers.")
+        self.assertIn("encrypted connection to AdGuard DNS, which does not block ads or trackers.",
                       profiles.consent_text(s))
-        self.assertIn("but Control D can.", profiles.consent_text(s))
+        self.assertIn("but AdGuard DNS can.", profiles.consent_text(s))
+
+    def test_bootstrap_addresses_from_another_filter_are_caught(self):
+        data = build(Settings(resolver="family"))
+        data["PayloadContent"][0]["DNSSettings"]["ServerAddresses"] = RESOLVERS["unfiltered"]["ipv4"]
+        self.assertTrue(any("do not belong" in p for p in profiles.check_profile(data)))
 
     def test_a_filter_without_dns_over_tls_refuses_it_rather_than_guessing(self):
-        with self.assertRaises(profiles.ProfileError):
-            build(Settings(resolver="controld-ads", use_tls=True))
-
-    def test_control_d_filters_share_a_hostname_and_are_told_apart_by_their_addresses(self):
-        data = build(Settings(resolver="controld-hagezi-pro"))
-        data["PayloadContent"][0]["DNSSettings"]["ServerURL"] = RESOLVERS["controld-ads"]["doh"]
-        self.assertTrue(any("do not belong" in p for p in profiles.check_profile(data)))
+        no_tls = dict(RESOLVERS["default"], dot=None)
+        with mock.patch.dict(RESOLVERS, {"no-tls": no_tls}):
+            with self.assertRaises(profiles.ProfileError):
+                build(Settings(resolver="no-tls", use_tls=True))
 
     def test_checker_catches_a_dns_over_tls_host_that_is_not_a_resolver(self):
         data = build(Settings(use_tls=True))

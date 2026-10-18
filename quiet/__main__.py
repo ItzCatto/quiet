@@ -3,7 +3,6 @@
     python3 -m quiet presets                       # the four preset profiles, into dist/
     python3 -m quiet profile -o my.mobileconfig    # one profile from individual settings
     python3 -m quiet wg my.conf -o quiet.conf      # your WireGuard config, pointed at a Quiet DNS resolver
-    python3 -m quiet resolvers                     # every resolver and filter Quiet DNS can use
 
 Run `python3 -m quiet <command> --help` for every option.
 """
@@ -73,9 +72,6 @@ def _cmd_presets(args: argparse.Namespace) -> int:
 
 
 def _cmd_profile(args: argparse.Namespace) -> int:
-    if args.resolver is not None and (args.no_ads or args.adult):
-        raise profiles.ProfileError("--resolver already chooses the filter, so it can't be combined with "
-                                    "--no-ads or --adult")
     s = Settings(
         enabled=not args.off,
         block_ads=not args.no_ads,
@@ -83,20 +79,9 @@ def _cmd_profile(args: argparse.Namespace) -> int:
         use_tls=args.tls,
         bootstrap_ips=not args.no_bootstrap,
         failover=args.failover,
-        resolver=args.resolver,
     )
     raw = _build(s)
     _write(args.output, raw, args.sign, args.chain)
-    return 0
-
-
-def _cmd_resolvers(args: argparse.Namespace) -> int:
-    for key, r in RESOLVERS.items():
-        transport = f"DoH {r['doh']}" + (f", DoT {r['dot']}" if r["dot"] else ", no DoT")
-        print(f"{key:<26} {r['provider']}: {r['name']}")
-        print(f"{'':<26} {transport}")
-        print(f"{'':<26} {r['blocks']}")
-    print("\nSee docs/resolvers.md for the sources and what each filter blocks.")
     return 0
 
 
@@ -143,23 +128,19 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--adult", action="store_true",
                    help="block adult sites and turn on safe search (this includes ad blocking)")
     c.add_argument("--tls", action="store_true", help="use DNS over TLS (port 853) instead of HTTPS")
-    c.add_argument("--resolver", choices=list(RESOLVERS), default=None, metavar="KEY",
-                   help="use this resolver and filter, such as controld-ads (run `resolvers` to list them); "
-                        "replaces --no-ads and --adult")
     c.add_argument("--no-bootstrap", action="store_true", help="leave the resolver's IP addresses out")
     c.add_argument("--failover", action="store_true",
                    help="fall back to the network's DNS if the resolver can't be reached (iOS/macOS 26+)")
     _add_build_options(c)
     c.set_defaults(func=_cmd_profile)
 
-    sub.add_parser("resolvers", help="list every resolver and filter").set_defaults(func=_cmd_resolvers)
 
     w = sub.add_parser("wg", help="point a WireGuard config's DNS at a Quiet DNS resolver")
     w.add_argument("config", type=Path, help="your own WireGuard .conf file")
     w.add_argument("-o", "--output", type=Path, required=True,
                    help="where to write the new config (must be outside this project)")
     w.add_argument("--mode", choices=list(RESOLVERS), default="default",
-                   help="which resolver to use (default: default, AdGuard Standard; run `resolvers` to list them)")
+                   help="which filter to use (default: default, AdGuard Standard)")
     w.add_argument("--force", action="store_true", help="replace the output file if it exists")
     w.set_defaults(func=_cmd_wg)
 

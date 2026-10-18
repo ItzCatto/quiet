@@ -15,7 +15,8 @@ Choose a mode with `--mode`:
 - `default` (the default): AdGuard DNS Standard, which blocks ads, trackers and phishing sites.
 - `family`: AdGuard DNS Family, which also blocks adult sites and turns on safe search.
 - `unfiltered`: AdGuard DNS Unfiltered, encrypted, with no filtering.
-- Any other key from `python3 -m quiet resolvers`, such as `controld-hagezi-pro`. [resolvers.md](resolvers.md) says what each one blocks.
+
+[resolvers.md](resolvers.md) gives each filter's addresses and what it blocks.
 
 The command prints the old DNS and the new DNS. It never prints the private key. The output file is readable only by your user account.
 
