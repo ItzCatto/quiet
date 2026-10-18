@@ -66,7 +66,7 @@ class SettingsTests(unittest.TestCase):
 
     def test_the_website_offers_every_resolver_and_no_other(self):
         html = (ROOT / "site" / "index.html").read_text(encoding="utf-8")
-        offered = re.findall(r'<option value="([^"]+)"', html)
+        offered = re.findall(r'<input type="radio" name="resolver" value="([^"]+)"', html)
         self.assertEqual(sorted(offered), sorted(RESOLVERS))
 
 

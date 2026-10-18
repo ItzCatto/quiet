@@ -124,8 +124,10 @@
     $("w-sub").textContent = s.enabled ? r.name + " filter, " + transport : "Using your network's DNS";
     $("v-connection").textContent = transport;
 
-    // Filter list
-    $("resolver").value = key;
+    // Filter
+    document.querySelectorAll('input[name="resolver"]').forEach(function (radio) {
+      radio.checked = radio.value === key;
+    });
     $("pick-note").textContent = filterNote(key);
 
     // Profile screen
@@ -301,9 +303,11 @@
     });
   });
 
-  $("resolver").addEventListener("change", function () {
-    state.resolver = $("resolver").value;
-    changed();
+  document.querySelectorAll('input[name="resolver"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      state.resolver = radio.value;
+      changed();
+    });
   });
 
   $("download").addEventListener("click", function () { download(false); });

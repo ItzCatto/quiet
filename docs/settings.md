@@ -5,8 +5,8 @@ Each setting maps to one part of the iPhone profile. The website shows the same 
 | Setting | Website | Command line | What the profile does |
 |---|---|---|---|
 | Quiet DNS on | Quiet DNS switch | (default) / `--off` | On: includes the DNS settings. Off: builds a paused profile. It keeps the DNS settings and adds a rule (`OnDemandRules`: `Disconnect`) that tells iPhone not to use them. |
-| Block ads and trackers | Part of the Filter list | (default) / `--no-ads` | Without options: AdGuard DNS Standard, which blocks ads and trackers. With `--no-ads`: AdGuard DNS Unfiltered. |
-| Block adult sites and turn on safe search | Part of the Filter list | `--adult` | AdGuard DNS Family. Ad and tracker blocking is included. |
+| Block ads and trackers | Part of the Filter | (default) / `--no-ads` | Without options: AdGuard DNS Standard, which blocks ads and trackers. With `--no-ads`: AdGuard DNS Unfiltered. |
+| Block adult sites and turn on safe search | Part of the Filter | `--adult` | AdGuard DNS Family. Ad and tracker blocking is included. |
 | Use DNS over TLS | Use DNS over TLS… | `--tls` | Sets `DNSProtocol` to `TLS` with `ServerName`, on port 853, instead of HTTPS. |
 | Include the resolver's IP addresses | Include the resolver's IP addresses | (default) / `--no-bootstrap` | Adds `ServerAddresses`, so the device can reach the resolver before DNS switches. |
 | Fall back when the resolver is unreachable | Fall back to your network's DNS… | `--failover` | Sets `AllowFailover`. Lookups that fall back are not encrypted. iOS and macOS 26 or later. |

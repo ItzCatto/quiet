@@ -79,11 +79,11 @@
 
         <section class="field" aria-labelledby="pick-title">
           <h2 class="field-label" id="pick-title">Filter</h2>
-          <select class="select" id="resolver" aria-labelledby="pick-title">
-              <option value="default">Standard</option>
-              <option value="family">Family</option>
-              <option value="unfiltered">Unfiltered</option>
-            </select>
+          <div class="choices" id="resolver" role="radiogroup" aria-labelledby="pick-title">
+            <label><input type="radio" name="resolver" value="default"><span>Standard</span></label>
+            <label><input type="radio" name="resolver" value="family"><span>Family</span></label>
+            <label><input type="radio" name="resolver" value="unfiltered"><span>Unfiltered</span></label>
+          </div>
           <p class="note" id="pick-note"></p>
         </section>
 
