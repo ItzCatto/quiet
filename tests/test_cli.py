@@ -101,12 +101,12 @@ class CliTests(unittest.TestCase):
                 self.assertIn(r["provider"], result.stdout)
 
     def test_profile_resolver_option_uses_that_filter(self):
-        target = self.tmp / "dns4eu.mobileconfig"
-        result = run("profile", "-o", str(target), "--resolver", "dns4eu-noads")
+        target = self.tmp / "controld.mobileconfig"
+        result = run("profile", "-o", str(target), "--resolver", "controld-ads")
         self.assertEqual(result.returncode, 0, result.stderr)
         dns = plistlib.loads(target.read_bytes())["PayloadContent"][0]["DNSSettings"]
-        self.assertEqual(dns["ServerURL"], RESOLVERS["dns4eu-noads"]["doh"])
-        self.assertEqual(dns["ServerAddresses"], RESOLVERS["dns4eu-noads"]["ipv4"])
+        self.assertEqual(dns["ServerURL"], RESOLVERS["controld-ads"]["doh"])
+        self.assertEqual(dns["ServerAddresses"], RESOLVERS["controld-ads"]["ipv4"] + RESOLVERS["controld-ads"]["ipv6"])
 
     def test_resolver_option_cannot_be_combined_with_the_filter_toggles(self):
         for extra in ("--adult", "--no-ads"):

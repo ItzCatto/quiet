@@ -5,7 +5,7 @@ Each setting maps to one part of the iPhone profile. The website shows the same 
 | Setting | Website | Command line | What the profile does |
 |---|---|---|---|
 | Quiet DNS on | Quiet DNS switch | (default) / `--off` | On: includes the DNS settings. Off: builds a paused profile. It keeps the DNS settings and adds a rule (`OnDemandRules`: `Disconnect`) that tells iPhone not to use them. |
-| Filter | Filter list | `--resolver KEY` | Chooses one resolver and filter from the thirteen in [resolvers.md](resolvers.md). Without this option, the two rows below choose one. |
+| Filter | Filter list | `--resolver KEY` | Chooses one resolver and filter from the eight in [resolvers.md](resolvers.md). Without this option, the two rows below choose one. |
 | Block ads and trackers | Part of the Filter list | (default) / `--no-ads` | Without `--resolver`: AdGuard DNS Standard blocks ads and trackers. With `--no-ads`: AdGuard DNS Unfiltered. |
 | Block adult sites and turn on safe search | Part of the Filter list | `--adult` | Without `--resolver`: AdGuard DNS Family. Ad and tracker blocking is included. |
 | Use DNS over TLS | Use DNS over TLS… | `--tls` | Sets `DNSProtocol` to `TLS` with `ServerName`, on port 853, instead of HTTPS. Only filters that publish a DNS over TLS hostname offer it. The website turns the switch off for the others, and the command line refuses `--tls` for them. |
@@ -21,11 +21,6 @@ Each key names one resolver and filter. Run `python3 -m quiet resolvers` for the
 | `default` | AdGuard DNS Standard | Yes |
 | `family` | AdGuard DNS Family | Yes |
 | `unfiltered` | AdGuard DNS Unfiltered | Yes |
-| `dns4eu-protective` | DNS4EU Security only | Yes |
-| `dns4eu-child` | DNS4EU Child protection | Yes |
-| `dns4eu-noads` | DNS4EU Ads and trackers | Yes |
-| `dns4eu-child-noads` | DNS4EU Ads, trackers and child protection | Yes |
-| `dns4eu-unfiltered` | DNS4EU Unfiltered | Yes |
 | `controld-ads` | Control D Ads and tracking | No, HTTPS only |
 | `controld-hagezi-normal` | Control D Hagezi Normal | No, HTTPS only |
 | `controld-hagezi-pro` | Control D Hagezi Pro | No, HTTPS only |
@@ -52,7 +47,5 @@ Each key names one resolver and filter. Run `python3 -m quiet resolvers` for the
 **Stricter filters can break things.** Hagezi Pro Plus can cause some false positives. Hagezi Ultimate can stop some apps and sites from working, such as some Facebook and Messenger features.
 
 **DNS can't block everything.** An ad served from the same domain as the content gets through, such as an ad inside a YouTube video.
-
-**DNS4EU's court orders.** Court-ordered domain blocks apply to every DNS4EU filter, including the unfiltered one.
 
 **Settings can't be changed in iPhone Settings.** To change a setting, download a new profile and install it. The same entry is updated.

@@ -1,6 +1,6 @@
 # Quiet DNS
 
-Quiet DNS sends your DNS lookups over an encrypted connection to a public resolver you choose, with the filtering you choose. It offers thirteen resolver and filter choices from AdGuard DNS, DNS4EU and Control D. It makes iPhone and Mac profiles that set this up, and it can point a WireGuard config at the same DNS. [docs/resolvers.md](docs/resolvers.md) lists the sources and what each one blocks.
+Quiet DNS sends your DNS lookups over an encrypted connection to a public resolver you choose, with the filtering you choose. It offers eight resolver and filter choices from AdGuard DNS and Control D. It makes iPhone and Mac profiles that set this up, and it can point a WireGuard config at the same DNS. [docs/resolvers.md](docs/resolvers.md) lists the sources and what each one blocks.
 
 ## What's in the project
 
@@ -23,7 +23,7 @@ Run these from the project folder. The code is tested with Python 3.13 and needs
 python3 -m unittest discover -s tests          # run the tests
 python3 -m quiet presets                       # build the four preset profiles into dist/
 python3 -m quiet profile -o my.mobileconfig --adult --tls
-python3 -m quiet profile -o dns4eu.mobileconfig --resolver dns4eu-noads
+python3 -m quiet profile -o controld.mobileconfig --resolver controld-ads
 python3 -m quiet resolvers                     # list every resolver and filter
 python3 -m quiet wg my-tunnel.conf -o ~/Desktop/quiet-tunnel.conf
 ```
@@ -61,4 +61,4 @@ Every Quiet DNS profile has the same name, identifier and UUID. A new download i
 - **Local network names may stop resolving** while Quiet DNS is on, because the encrypted resolver can't see your network. See [docs/settings.md](docs/settings.md).
 - **DNS can't block everything.** An ad served from the same domain as the content, such as an ad inside a YouTube video, gets through. Mullvad's public DNS is left out because it is discontinued on 2 November 2026. [docs/resolvers.md](docs/resolvers.md) explains the other exclusions and the limits.
 
-Quiet is not affiliated with AdGuard, DNS4EU, Control D, Hagezi or Proton.
+Quiet is not affiliated with AdGuard, Control D, Hagezi or Proton.

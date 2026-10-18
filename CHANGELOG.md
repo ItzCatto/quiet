@@ -3,9 +3,9 @@
 ## 2.4.0
 
 ### Added
-- **Thirteen resolvers and filters.** Besides AdGuard DNS Standard, Family and Unfiltered, you can now choose from DNS4EU (five filters) and Control D (five filters, including four Hagezi blocklist tiers). The website's Filter list shows them grouped by provider. The command line takes `--resolver KEY`, and `python3 -m quiet resolvers` lists every key.
+- **Eight resolvers and filters.** Besides AdGuard DNS Standard, Family and Unfiltered, you can now choose Control D's ads and tracking filter, or one of four Hagezi blocklist tiers: Normal, Pro, Pro Plus and Ultimate. The website's Filter list shows them grouped by provider. The command line takes `--resolver KEY`, and `python3 -m quiet resolvers` lists every key.
 - **Where each resolver comes from.** [docs/resolvers.md](docs/resolvers.md) gives the source of each address and filter, what each one blocks, and the date it was checked (16 October 2026). It also says what is left out and why: Mullvad's public DNS is discontinued on 2 November 2026, and account-based resolvers are left out so no account ID goes into a profile.
-- **`wg --mode` takes every resolver.** The WireGuard command can point a config at any of the thirteen.
+- **`wg --mode` takes every resolver.** The WireGuard command can point a config at any of the eight.
 - **The weekly check covers every resolver.** It asks each resolver's HTTPS address, and its DNS over TLS address where one is published, then tries each IPv4 address the profiles include.
 
 ### Changed

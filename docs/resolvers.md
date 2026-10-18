@@ -1,6 +1,6 @@
 # Resolvers and filters
 
-Quiet DNS offers thirteen choices from three providers: AdGuard DNS, DNS4EU and Control D. This page gives the source of each one, what it blocks, and what is left out. Everything here was checked on **16 October 2026** against the providers' published pages. Run `python3 -m quiet resolvers` on your computer for the same list.
+Quiet DNS offers eight choices from two providers: AdGuard DNS and Control D. This page gives the source of each one, what it blocks, and what is left out. Everything here was checked on **16 October 2026** against the providers' published pages. Run `python3 -m quiet resolvers` on your computer for the same list.
 
 The key in the first column is what `--resolver` and `wg --mode` take.
 
@@ -11,16 +11,6 @@ The key in the first column is what `--resolver` and `wg --mode` take.
 | `default` | Standard | Ads, trackers and phishing sites | `https://dns.adguard-dns.com/dns-query` | `dns.adguard-dns.com` |
 | `family` | Family | Ads, trackers, phishing sites and adult websites. Safe search is turned on. | `https://family.adguard-dns.com/dns-query` | `family.adguard-dns.com` |
 | `unfiltered` | Unfiltered | Nothing | `https://unfiltered.adguard-dns.com/dns-query` | `unfiltered.adguard-dns.com` |
-
-## DNS4EU
-
-| Key | Filter | What it blocks | HTTPS address | DNS over TLS |
-|---|---|---|---|---|
-| `dns4eu-protective` | Security only | Malware, phishing and command-and-control domains. Not ads or trackers. | `https://protective.joindns4.eu/dns-query` | `protective.joindns4.eu` |
-| `dns4eu-child` | Child protection | Malware, phishing and content not suitable for children. Not ads or trackers. | `https://child.joindns4.eu/dns-query` | `child.joindns4.eu` |
-| `dns4eu-noads` | Ads and trackers | Malware, phishing, ads and trackers | `https://noads.joindns4.eu/dns-query` | `noads.joindns4.eu` |
-| `dns4eu-child-noads` | Ads, trackers and child protection | Malware, phishing, ads, trackers and content not suitable for children | `https://child-noads.joindns4.eu/dns-query` | `child-noads.joindns4.eu` |
-| `dns4eu-unfiltered` | Unfiltered | No content filtering | `https://unfiltered.joindns4.eu/dns-query` | `unfiltered.joindns4.eu` |
 
 ## Control D
 
@@ -41,7 +31,6 @@ Hagezi's Light tier isn't offered, so Normal is the least strict Hagezi choice h
 ## Sources
 
 - **AdGuard DNS:** [adguard-dns.io/en/public-dns.html](https://adguard-dns.io/en/public-dns.html). The addresses and hostnames are unchanged from version 2.3.0. This release did not re-read the page, so the weekly check is the ongoing test.
-- **DNS4EU:** [joindns4.eu/for-public](https://www.joindns4.eu/for-public). Its page lists the addresses for each filter. The published IPv4 addresses are the only ones it gives, so the DNS4EU filters have no IPv6 bootstrap addresses. DNS4EU applies court-ordered domain blocks to its filters, including the unfiltered one.
 - **Control D:** [docs.controld.com/docs/free-dns](https://docs.controld.com/docs/free-dns). Source of the HTTPS addresses, the IP addresses, and the no-account rule.
 - **Hagezi:** the blocklist project is at [github.com/hagezi/dns-blocklists](https://github.com/hagezi/dns-blocklists). The tier descriptions above come from its FAQ, read through a mirror at [hagezi-mirror.dnsbunker.org/assets/dns-blocklists/faq.html](https://hagezi-mirror.dnsbunker.org/assets/dns-blocklists/faq.html).
 - **Mullvad:** [mullvad.net/da/help/dns-over-https-and-dns-over-tls](https://mullvad.net/da/help/dns-over-https-and-dns-over-tls). It says: "Please note that the public encrypted DNS service will be discontinued on November 2, 2026." Mullvad is left out for that reason.

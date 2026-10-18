@@ -15,7 +15,7 @@ Choose a mode with `--mode`:
 - `default` (the default): AdGuard DNS Standard, which blocks ads, trackers and phishing sites.
 - `family`: AdGuard DNS Family, which also blocks adult sites and turns on safe search.
 - `unfiltered`: AdGuard DNS Unfiltered, encrypted, with no filtering.
-- Any other key from `python3 -m quiet resolvers`, such as `dns4eu-noads` or `controld-hagezi-pro`. [resolvers.md](resolvers.md) says what each one blocks.
+- Any other key from `python3 -m quiet resolvers`, such as `controld-hagezi-pro`. [resolvers.md](resolvers.md) says what each one blocks.
 
 The command prints the old DNS and the new DNS. It never prints the private key. The output file is readable only by your user account.
 
@@ -23,7 +23,7 @@ Then import the new file into the WireGuard app on your iPhone or Mac, the same 
 
 ## What it changes
 
-It replaces the `DNS =` line in the `[Interface]` section with the chosen resolver's IPv4 and IPv6 addresses, and places that line directly after `Address =`. The DNS4EU filters publish IPv4 addresses only, so their line has IPv4 addresses alone. A config without a DNS line gets one. Keys are matched without regard to case, and comments are kept.
+It replaces the `DNS =` line in the `[Interface]` section with the chosen resolver's IPv4 and IPv6 addresses, and places that line directly after `Address =`. A config without a DNS line gets one. Keys are matched without regard to case, and comments are kept.
 
 WireGuard's DNS setting takes IP addresses (and search domains), not DNS-over-HTTPS URLs, so the tunnel uses plain DNS to the resolver's IP addresses. That traffic is encrypted by the tunnel itself, not by DNS over HTTPS.
 

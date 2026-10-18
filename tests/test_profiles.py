@@ -186,15 +186,15 @@ class ResolverTests(unittest.TestCase):
                         self.assertEqual(dns["ServerAddresses"], r["ipv4"] + r["ipv6"])
 
     def test_a_named_resolver_is_used_instead_of_the_toggles(self):
-        dns = dns_of(Settings(resolver="dns4eu-noads", block_ads=False, block_adult=True))
-        self.assertEqual(dns["ServerURL"], RESOLVERS["dns4eu-noads"]["doh"])
+        dns = dns_of(Settings(resolver="controld-ads", block_ads=False, block_adult=True))
+        self.assertEqual(dns["ServerURL"], RESOLVERS["controld-ads"]["doh"])
 
     def test_summary_and_consent_name_the_provider_and_what_it_blocks(self):
-        s = Settings(resolver="dns4eu-noads")
-        self.assertEqual(profiles.summary(s), "Encrypted DNS through DNS4EU. It blocks malware, phishing, ads and trackers.")
-        self.assertIn("encrypted connection to DNS4EU, which blocks malware, phishing, ads and trackers.",
+        s = Settings(resolver="controld-ads")
+        self.assertEqual(profiles.summary(s), "Encrypted DNS through Control D. It blocks ads and tracking domains.")
+        self.assertIn("encrypted connection to Control D, which blocks ads and tracking domains.",
                       profiles.consent_text(s))
-        self.assertIn("but DNS4EU can.", profiles.consent_text(s))
+        self.assertIn("but Control D can.", profiles.consent_text(s))
 
     def test_a_filter_without_dns_over_tls_refuses_it_rather_than_guessing(self):
         with self.assertRaises(profiles.ProfileError):

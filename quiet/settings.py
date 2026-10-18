@@ -13,7 +13,6 @@ from typing import Any
 #   ipv4, ipv6   bootstrap addresses, so the device can reach the resolver before DNS switches over.
 #   name  the short name on screen; file  the name used in download file names.
 #   blocks  what the filter blocks, in words used by the profile and the website. note  an extra line on the website.
-DNS4EU_NOTE = "Court-ordered domain blocks still apply."
 
 RESOLVERS: dict[str, dict[str, Any]] = {
     # AdGuard DNS, from https://adguard-dns.io/en/public-dns.html
@@ -40,42 +39,6 @@ RESOLVERS: dict[str, dict[str, Any]] = {
         "doh": "https://unfiltered.adguard-dns.com/dns-query", "dot": "unfiltered.adguard-dns.com",
         "ipv4": ["94.140.14.140", "94.140.14.141"],
         "ipv6": ["2a10:50c0::1:ff", "2a10:50c0::2:ff"],
-    },
-    # DNS4EU, from https://www.joindns4.eu/for-public. Its published page gives IPv4 addresses only.
-    "dns4eu-protective": {
-        "provider": "DNS4EU", "name": "Security only", "file": "DNS4EU-Security",
-        "blocks": "blocks malware, phishing and command-and-control domains, but not ads or trackers",
-        "note": DNS4EU_NOTE,
-        "doh": "https://protective.joindns4.eu/dns-query", "dot": "protective.joindns4.eu",
-        "ipv4": ["86.54.11.1", "86.54.11.201"], "ipv6": [],
-    },
-    "dns4eu-child": {
-        "provider": "DNS4EU", "name": "Child protection", "file": "DNS4EU-Child",
-        "blocks": "blocks malware, phishing and content not suitable for children, but not ads or trackers",
-        "note": DNS4EU_NOTE,
-        "doh": "https://child.joindns4.eu/dns-query", "dot": "child.joindns4.eu",
-        "ipv4": ["86.54.11.12", "86.54.11.212"], "ipv6": [],
-    },
-    "dns4eu-noads": {
-        "provider": "DNS4EU", "name": "Ads and trackers", "file": "DNS4EU-Ads",
-        "blocks": "blocks malware, phishing, ads and trackers",
-        "note": DNS4EU_NOTE,
-        "doh": "https://noads.joindns4.eu/dns-query", "dot": "noads.joindns4.eu",
-        "ipv4": ["86.54.11.13", "86.54.11.213"], "ipv6": [],
-    },
-    "dns4eu-child-noads": {
-        "provider": "DNS4EU", "name": "Ads, trackers and child protection", "file": "DNS4EU-Ads-Child",
-        "blocks": "blocks malware, phishing, ads, trackers and content not suitable for children",
-        "note": DNS4EU_NOTE,
-        "doh": "https://child-noads.joindns4.eu/dns-query", "dot": "child-noads.joindns4.eu",
-        "ipv4": ["86.54.11.11", "86.54.11.211"], "ipv6": [],
-    },
-    "dns4eu-unfiltered": {
-        "provider": "DNS4EU", "name": "Unfiltered", "file": "DNS4EU-Unfiltered",
-        "blocks": "does not filter content",
-        "note": DNS4EU_NOTE,
-        "doh": "https://unfiltered.joindns4.eu/dns-query", "dot": "unfiltered.joindns4.eu",
-        "ipv4": ["86.54.11.100", "86.54.11.200"], "ipv6": [],
     },
     # Control D's free resolvers, from https://docs.controld.com/docs/free-dns. No account is needed.
     # Control D's page gives an HTTPS address for each filter, and a hostname it doesn't label as DNS over TLS.
@@ -138,7 +101,7 @@ class Settings:
     use_tls: bool = False       # DNS over TLS (port 853) instead of DNS over HTTPS
     bootstrap_ips: bool = True  # include the resolver's IPs so it's reachable before DNS switches
     failover: bool = False      # if the resolver can't be reached, fall back to the network's DNS (iOS/macOS 26+)
-    resolver: str | None = None  # a key of RESOLVERS, such as "dns4eu-noads"
+    resolver: str | None = None  # a key of RESOLVERS, such as "controld-ads"
 
     def resolver_key(self) -> str:
         """Which resolver these settings use. Without a named resolver, adult blocking includes ad blocking."""

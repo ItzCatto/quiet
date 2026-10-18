@@ -144,7 +144,7 @@ def main(argv: list[str] | None = None) -> int:
                    help="block adult sites and turn on safe search (this includes ad blocking)")
     c.add_argument("--tls", action="store_true", help="use DNS over TLS (port 853) instead of HTTPS")
     c.add_argument("--resolver", choices=list(RESOLVERS), default=None, metavar="KEY",
-                   help="use this resolver and filter, such as dns4eu-noads (run `resolvers` to list them); "
+                   help="use this resolver and filter, such as controld-ads (run `resolvers` to list them); "
                         "replaces --no-ads and --adult")
     c.add_argument("--no-bootstrap", action="store_true", help="leave the resolver's IP addresses out")
     c.add_argument("--failover", action="store_true",
